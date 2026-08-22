@@ -464,7 +464,7 @@ describe("MachinesSettingsSection", () => {
     fireEvent.focus(removeItem);
     expect(
       await screen.findByRole("tooltip", {
-        name: "bb's primary machine can't be removed.",
+        name: "AxeAI's primary machine can't be removed.",
       }),
     ).toBeDefined();
     fireEvent.click(removeItem);

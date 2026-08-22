@@ -69,7 +69,7 @@ import {
   permissionDisplayForPromptMode,
 } from "@bb/client-core";
 
-const NEW_THREAD_PROMPT_BOX_MIN_HEIGHT = 80;
+const NEW_THREAD_PROMPT_BOX_MIN_HEIGHT = 56;
 const DEFAULT_NEW_THREAD_COMPOSER_SCOPE = {
   kind: "new-thread",
   projectId: null,
@@ -390,6 +390,30 @@ const DefaultNewThreadComposer = memo(function DefaultNewThreadComposer({
           {modeConfig.banner}
         </ComposerBannersSlot>
       </div>
+      <div className="mb-1 flex min-h-8 select-none items-center gap-1 px-2">
+        {project ? (
+          <ProjectSelector
+            projects={project.projects}
+            value={project.value}
+            onChange={project.onChange}
+            allowNoProject={project.allowNoProject ?? false}
+            createProject={project.createProject}
+            disabled={project.disabled}
+            isLoading={project.isLoading}
+            showChevronWhenDisabled={project.showChevronWhenDisabled}
+            className="shrink-0"
+          />
+        ) : null}
+        {project?.value !== null ? (
+          <ThreadEnvSlot
+            environment={modeConfig.environment}
+            branch={modeConfig.branch}
+            worktree={modeConfig.worktree}
+          />
+        ) : (
+          <ProjectlessMachineSlot environment={modeConfig.environment} />
+        )}
+      </div>
       <PromptBoxInternal
         id={id}
         promptBoxRef={promptBoxRef}
@@ -414,52 +438,25 @@ const DefaultNewThreadComposer = memo(function DefaultNewThreadComposer({
         autoFocus={autoFocus}
         editorLayout="root-compose"
         minHeight={NEW_THREAD_PROMPT_BOX_MIN_HEIGHT}
+        className="rounded-[22px] border-0 bg-secondary shadow-lift"
         placeholder={placeholder}
         header={modeConfig.header}
-        footerStart={<ExecutionControls {...execution} />}
+        footerStart={
+          <>
+            <PermissionModePicker
+              value={modeConfig.permission.value}
+              options={modeConfig.permission.options}
+              onChange={modeConfig.permission.onChange}
+              supported={modeConfig.permission.supported}
+              disabled={permissionPickerDisabledByPlanMode}
+              showChevronWhenDisabled={permissionPickerDisabledByPlanMode}
+              displayOverride={permissionDisplayOverride}
+            />
+            <span className="min-w-2 flex-1" aria-hidden />
+            <ExecutionControls {...execution} />
+          </>
+        }
       />
-      {/* Strip below the prompt-box card: optional project + env + branch (or
-          worktree) on the left, permission picker pinned to the right. `mt-1`
-          reproduces the 4px gap main got from a
-          `space-y-1` wrapper in RootComposeView (now gone since the
-          standalone project row was removed). */}
-      <div className="mt-1 flex select-none items-center justify-between gap-2 px-3.5">
-        <div className="flex min-w-0 flex-1 items-center gap-1">
-          {project ? (
-            <ProjectSelector
-              projects={project.projects}
-              value={project.value}
-              onChange={project.onChange}
-              allowNoProject={project.allowNoProject ?? false}
-              createProject={project.createProject}
-              disabled={project.disabled}
-              isLoading={project.isLoading}
-              showChevronWhenDisabled={project.showChevronWhenDisabled}
-              className="shrink-0"
-            />
-          ) : null}
-          {project?.value !== null ? (
-            <ThreadEnvSlot
-              environment={modeConfig.environment}
-              branch={modeConfig.branch}
-              worktree={modeConfig.worktree}
-            />
-          ) : (
-            <ProjectlessMachineSlot environment={modeConfig.environment} />
-          )}
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <PermissionModePicker
-            value={modeConfig.permission.value}
-            options={modeConfig.permission.options}
-            onChange={modeConfig.permission.onChange}
-            supported={modeConfig.permission.supported}
-            disabled={permissionPickerDisabledByPlanMode}
-            showChevronWhenDisabled={permissionPickerDisabledByPlanMode}
-            displayOverride={permissionDisplayOverride}
-          />
-        </div>
-      </div>
     </div>
   );
 });

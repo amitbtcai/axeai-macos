@@ -10,8 +10,8 @@ export type Auth = ReturnType<typeof createAuth>;
 /**
  * better-auth bound to the Cloud D1 via drizzle. Production uses GitHub;
  * local Cloud additionally enables email/password credentials.
- * Cookies are scoped to `.${BASE_DOMAIN}` so the tunnel gate on
- * `<handle>.${BASE_DOMAIN}` can validate the same session.
+ * Cookies are scoped to the shared parent of APP_URL and BASE_DOMAIN so a
+ * dashboard on app.axeai.com can authenticate the gate on remote.axeai.com.
  */
 export function createAuth(env: Env) {
   const db = drizzle(env.DB);
@@ -20,8 +20,24 @@ export function createAuth(env: Env) {
   const subdomainOrigin = `${appUrl.protocol}//*.${env.BASE_DOMAIN}${
     appUrl.port ? `:${appUrl.port}` : ""
   }`;
+  const appLabels = appUrl.hostname.split(".");
+  const baseLabels = env.BASE_DOMAIN.split(".");
+  const sharedLabels: string[] = [];
+  while (
+    appLabels.length > 0 &&
+    baseLabels.length > 0 &&
+    appLabels.at(-1) === baseLabels.at(-1)
+  ) {
+    const sharedLabel = appLabels.pop();
+    if (sharedLabel === undefined) break;
+    sharedLabels.unshift(sharedLabel);
+    baseLabels.pop();
+  }
+  const cookieDomain = sharedLabels.length >= 2
+    ? sharedLabels.join(".")
+    : env.BASE_DOMAIN;
   return betterAuth({
-    appName: "bb connect",
+    appName: "Axe AI Connect",
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.APP_URL,
     trustedOrigins: [env.APP_URL, subdomainOrigin],
@@ -48,7 +64,7 @@ export function createAuth(env: Env) {
       },
     },
     advanced: {
-      crossSubDomainCookies: { enabled: true, domain: `.${env.BASE_DOMAIN}` },
+      crossSubDomainCookies: { enabled: true, domain: `.${cookieDomain}` },
     },
   });
 }

@@ -249,7 +249,7 @@ function PromptSubmitButton({
       {isSubmitting ? (
         <Icon name="Spinner" className="size-4 animate-spin" />
       ) : (
-        <Icon name="CornerDownLeft" className="size-4" />
+        <Icon name="ArrowUp" className="size-4" />
       )}
     </Button>
   );
@@ -3369,11 +3369,12 @@ export function PromptBoxInternal({
                           disabled={!canStartVoiceInput}
                           onPointerDown={handleVoicePointerDown}
                           onClick={startVoiceInput}
-                          className={
-                            COARSE_POINTER_PROMPT_ICON_ACTION_BUTTON_CLASS
-                          }
+                          className={cn(
+                            COARSE_POINTER_PROMPT_ICON_ACTION_BUTTON_CLASS,
+                            "size-8 rounded-full p-0",
+                          )}
                         >
-                          <Icon name="Mic" className="size-4" />
+                          <Icon name="AudioWave" className="size-4" />
                         </Button>
                       ) : null}
                     </>
@@ -3418,9 +3419,10 @@ export function PromptBoxInternal({
                                 COARSE_POINTER_PROMPT_ACTION_BUTTON_CLASS,
                               ],
                           "transition-colors",
+                          "size-8 rounded-full p-0",
                         )}
                       >
-                        <Icon name="Mic" className="size-4" />
+                        <Icon name="AudioWave" className="size-4" />
                       </Button>
                     ) : (
                       <PromptSubmitButton
@@ -3437,6 +3439,7 @@ export function PromptBoxInternal({
                           // those geometry changes instantaneous so the action
                           // stays pinned while the prompt height animates.
                           "transition-colors",
+                          "size-8 rounded-full p-0",
                         )}
                         disabledReason={
                           !canSubmit ? submitDisabledReason : undefined

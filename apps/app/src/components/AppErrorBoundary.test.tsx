@@ -46,7 +46,7 @@ describe("AppErrorBoundary", () => {
       </AppErrorBoundary>,
     );
 
-    expect(container.textContent).toContain("bb hit an error and stopped");
+    expect(container.textContent).toContain("Axe AI hit an error and stopped");
     expect(container.querySelector("button")?.textContent).toBe("Reload bb");
     // The message stays reachable so a report can carry it.
     expect(container.textContent).toContain("render exploded");
@@ -76,7 +76,7 @@ describe("AppErrorBoundary", () => {
       </AppErrorBoundary>,
     );
 
-    expect(container.textContent).toContain("bb hit an error and stopped");
+    expect(container.textContent).toContain("Axe AI hit an error and stopped");
     dispose();
   });
 });

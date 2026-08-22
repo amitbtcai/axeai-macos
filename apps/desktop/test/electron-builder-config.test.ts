@@ -66,7 +66,7 @@ const macConfigSchema = z
 const linuxConfigSchema = z
   .object({
     category: z.literal("Development"),
-    executableName: z.enum(["bb", "bb-nightly"]),
+    executableName: z.enum(["axeai", "axeai-nightly"]),
     icon: z.string().min(1),
     target: z.tuple([
       z
@@ -261,6 +261,15 @@ const readResolvedConfig: ReadResolvedConfig = async (overrides) => {
 };
 
 describe("electron-builder signing config", () => {
+  it("creates the stable AxeAI product identity", async () => {
+    const { config } = await readResolvedConfig({});
+
+    expect(config.appId).toBe("com.axeai.desktop");
+    expect(config.productName).toBe("AxeAI");
+    expect(config.artifactName).toBe("AxeAI-${version}-${arch}.${ext}");
+    expect(config.linux.executableName).toBe("axeai");
+  });
+
   it("keeps package metadata compatible with electron universal's CJS entry asar", async () => {
     const packageJsonText = await readFile(
       resolve(desktopPackageRoot, "package.json"),
@@ -513,7 +522,7 @@ describe("electron-builder signing config", () => {
 
     expect(config.linux).toMatchObject({
       category: "Development",
-      executableName: "bb",
+      executableName: "axeai",
       target: [{ arch: ["x64"], target: "AppImage" }],
     });
     await expect(
@@ -551,7 +560,7 @@ describe("electron-builder signing config", () => {
 
     expect(config.publish[0]).toMatchObject(DESKTOP_AUTO_UPDATE_FEED_CONFIG);
     expect(DESKTOP_AUTO_UPDATE_FEED_CONFIG.url).toBe(
-      "https://github.com/get-bb/bb/releases/download/desktop-latest/",
+      "https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/",
     );
   });
 
@@ -561,13 +570,13 @@ describe("electron-builder signing config", () => {
     });
     const nightlyRelease = createDesktopReleaseInfo("nightly");
 
-    expect(config.appId).toBe("dev.bb.desktop.nightly");
-    expect(config.productName).toBe("bb Nightly");
-    expect(config.artifactName).toBe("bb-nightly-${version}-${arch}.${ext}");
+    expect(config.appId).toBe("com.axeai.desktop.nightly");
+    expect(config.productName).toBe("AxeAI Nightly");
+    expect(config.artifactName).toBe("AxeAI-Nightly-${version}-${arch}.${ext}");
     expect(config.linux.icon).toBe("assets/icon-nightly.png");
     // A shared Linux binary name would let one channel shadow the other on
     // PATH, and the two channels are meant to be installed side by side.
-    expect(config.linux.executableName).toBe("bb-nightly");
+    expect(config.linux.executableName).toBe("axeai-nightly");
     expect(config.mac.icon).toBe("assets/icon-nightly.icns");
     await expect(
       access(resolve(desktopPackageRoot, config.mac.icon)),
@@ -604,12 +613,12 @@ describe("electron-builder signing config", () => {
     expect(config.dmg.sign).toBe(false);
   });
 
-  it("keeps builds unsigned when keychain auto-discovery is explicitly disabled", async () => {
+  it("ad-hoc signs builds when keychain auto-discovery is explicitly disabled", async () => {
     const { config } = await readResolvedConfig({
       CSC_IDENTITY_AUTO_DISCOVERY: "false",
     });
 
-    expect(config.mac.identity).toBeNull();
+    expect(config.mac.identity).toBe("-");
     expect(config.mac.notarize).toBe(false);
   });
 

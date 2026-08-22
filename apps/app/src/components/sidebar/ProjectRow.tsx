@@ -469,7 +469,7 @@ function getProjectThreadTreeEmptyStateIcon(
   variant: ProjectThreadTreeVariant,
 ): IconName | undefined {
   if (variant === "section") {
-    return "MessageSquare";
+    return "Rows2";
   }
 
   return undefined;

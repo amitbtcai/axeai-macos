@@ -84,7 +84,7 @@ describe("marketplace publisher labels", () => {
       JSON.stringify({
         schemaVersion: 1,
         name: "acme",
-        displayName: "BB Official",
+        displayName: "Axe AI Official",
         plugins: [],
       }),
     );
@@ -103,16 +103,16 @@ describe("marketplace publisher labels", () => {
     expect(
       marketplacePublisherLabel({
         marketplaceName: "acme",
-        displayName: "BB Community",
+        displayName: "Axe AI Community",
       }),
     ).toBe("acme");
     // The curated marketplace keeps its own name.
     expect(
       marketplacePublisherLabel({
         marketplaceName: "bb-community",
-        displayName: "BB Community",
+        displayName: "Axe AI Community",
       }),
-    ).toBe("BB Community");
+    ).toBe("Axe AI Community");
   });
 
   it("keeps a badge when the stored manifest no longer parses", () => {
@@ -132,7 +132,7 @@ describe("marketplace publisher labels", () => {
     ).toBe("acme");
   });
 
-  it("keeps a store-installed bundled plugin on BB Official", () => {
+  it("keeps a store-installed bundled plugin on Axe AI Official", () => {
     const db = connect();
     register(
       db,
@@ -140,7 +140,7 @@ describe("marketplace publisher labels", () => {
       JSON.stringify({
         schemaVersion: 1,
         name: "bb-community",
-        displayName: "BB Community",
+        displayName: "Axe AI Community",
         plugins: [],
       }),
     );
@@ -155,10 +155,10 @@ describe("marketplace publisher labels", () => {
         catalogMarketplaceName: "bb-community",
         labels,
       }),
-    ).toBe("BB Official");
+    ).toBe("Axe AI Official");
   });
 
-  it("badges bundled plugins BB Official and user installs not at all", () => {
+  it("badges bundled plugins Axe AI Official and user installs not at all", () => {
     const labels = marketplacePublisherLabels(connect());
 
     expect(
@@ -168,7 +168,7 @@ describe("marketplace publisher labels", () => {
         catalogMarketplaceName: null,
         labels,
       }),
-    ).toBe("BB Official");
+    ).toBe("Axe AI Official");
     expect(
       pluginPublisherLabel({
         sourceKind: "git",
@@ -179,9 +179,9 @@ describe("marketplace publisher labels", () => {
     ).toBeNull();
   });
 
-  it("does not reuse BB Official for the marketplace bb curates", () => {
+  it("does not reuse Axe AI Official for the marketplace Axe AI curates", () => {
     // The two labels are the whole point of the split: a bundled plugin and a
     // registry listing must not badge the same.
-    expect(BUNDLED_CURATED_MARKETPLACE.displayName).toBe("BB Community");
+    expect(BUNDLED_CURATED_MARKETPLACE.displayName).toBe("Axe AI Community");
   });
 });

@@ -212,7 +212,7 @@ export function PluginDetailReleaseStatus({
       <div className="min-w-0">
         <p className="text-xs leading-relaxed text-muted-foreground">
           {blockedReasons[0] === undefined
-            ? `${displayPluginVersion(blockedVersion)} isn’t compatible with this bb.`
+            ? `${displayPluginVersion(blockedVersion)} isn’t compatible with Axe AI.`
             : sentence(blockedReasons[0])}{" "}
           {displayPluginVersion(plugin.version)} remains installed. Keep using
           it and check again when a compatible plugin version is available.

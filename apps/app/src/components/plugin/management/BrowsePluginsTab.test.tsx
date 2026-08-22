@@ -35,9 +35,9 @@ const MEMORY_ENTRY: PluginCatalogSearchEntry = {
   category: "Context & knowledge",
   source: "builtin:memory",
   repositoryUrl: null,
-  marketplaceDisplayName: "BB Community",
+  marketplaceDisplayName: "Axe AI Community",
   publisherKey: "builtin",
-  publisherLabel: "BB Official",
+  publisherLabel: "Axe AI Official",
   official: true,
   author: null,
   installed: false,
@@ -84,8 +84,8 @@ const INSTALLED_MEMORY_PLUGIN = {
   isOrphanedBuiltin: false,
   catalogEntryId: "memory",
   publisherKey: "bb-community",
-  publisherLabel: "BB Community",
-  sourceDisplay: "BB Official · Memory",
+  publisherLabel: "Axe AI Community",
+  sourceDisplay: "Axe AI Official · Memory",
   updateState: {},
   enabled: true,
   description: MEMORY_ENTRY.description,
@@ -219,7 +219,7 @@ describe("BrowsePluginsTab", () => {
     await screen.findByText("Acme Notes");
     // Two marketplaces, so each group names itself and the third-party one
     // says what it is.
-    expect(screen.getByText("BB Official")).toBeTruthy();
+    expect(screen.getByText("Axe AI Official")).toBeTruthy();
     expect(screen.getAllByText("Acme Plugins").length).toBeGreaterThan(0);
     expect(screen.getByText("third-party marketplace")).toBeTruthy();
     // Cards carry the author with the "By:" prefix.
@@ -245,7 +245,7 @@ describe("BrowsePluginsTab", () => {
         pluginId: "notes",
         displayName: "Acme Notes",
         marketplace: "acme-plugins",
-        marketplaceDisplayName: "BB Official",
+        marketplaceDisplayName: "Axe AI Official",
         // The manifest names itself, so a third-party marketplace can claim a
         // BB label. The server refuses it; grouping must not restore it by
         // keying on the label the entry carries.
@@ -286,7 +286,7 @@ describe("BrowsePluginsTab", () => {
     await screen.findByText("Acme Notes");
     // Two groups, and the third-party one keeps its note. Merging would have
     // hidden that note and lent the entry BB's badge.
-    expect(screen.getByText("BB Official")).toBeTruthy();
+    expect(screen.getByText("Axe AI Official")).toBeTruthy();
     expect(screen.getByText("third-party marketplace")).toBeTruthy();
   });
 
@@ -367,7 +367,7 @@ describe("BrowsePluginsTab", () => {
       screen.getByRole("menuitemcheckbox", { name: "Context & knowledge" }),
     );
     expect(cardCount()).toBe(CATALOG_STATUS.pluginCount);
-    expect(screen.queryByText("BB Official plugins")).toBeNull();
+    expect(screen.queryByText("Axe AI Official plugins")).toBeNull();
   });
 
   it("shows the official plugins and entries", async () => {
@@ -423,13 +423,13 @@ describe("BrowsePluginsTab", () => {
     // The catalog grid stays flat — no per-source section heading above it.
     // The discovery hero's own heading sits above the results and is expected.
     expect(
-      screen.queryByRole("heading", { name: /BB Official plugins/i }),
+      screen.queryByRole("heading", { name: /Axe AI Official plugins/i }),
     ).toBeNull();
     expect(screen.getByRole("heading", { level: 2 }).textContent).toContain(
-      "Turn bb into",
+      "Turn Axe AI into",
     );
     expect(screen.getByRole("button", { name: "Install Memory" })).toBeTruthy();
-    expect(screen.queryByText("BB Official plugins")).toBeNull();
+    expect(screen.queryByText("Axe AI Official plugins")).toBeNull();
 
     expect(screen.queryByText(MEMORY_ENTRY.source)).toBeNull();
     // Incompatible entries never render on Browse: an entry this BB cannot
@@ -453,7 +453,7 @@ describe("BrowsePluginsTab", () => {
     expect(onInstall).toHaveBeenCalledWith({
       entryId: "memory",
       marketplace: "bb-community",
-      publisherLabel: "BB Official",
+      publisherLabel: "Axe AI Official",
       displayName: "Memory",
       icon: "Brain",
       iconUrl: null,
@@ -502,7 +502,7 @@ describe("BrowsePluginsTab", () => {
     );
 
     expect((await screen.findByRole("alert")).textContent).toContain(
-      "BB's official plugins are unavailable.",
+      "Axe AI's official plugins are unavailable.",
     );
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
 

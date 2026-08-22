@@ -162,7 +162,7 @@ function asStatus(payload: unknown): ConnectStatus | null {
     dashboardUrl:
       typeof record.dashboardUrl === "string"
         ? record.dashboardUrl
-        : "https://getbb.app/dashboard",
+        : "https://app.axeai.com/dashboard",
     lastError: typeof record.lastError === "string" ? record.lastError : null,
     nextRetryAt:
       typeof record.nextRetryAt === "number" ? record.nextRetryAt : null,
@@ -576,13 +576,13 @@ function MobilePairingCard({
       <div className={cn("shrink-0", expired && "opacity-40 saturate-0")}>
         <QrCodeImage
           value={qrText}
-          alt="QR code to pair the bb mobile app"
+          alt="QR code to pair the Axe AI mobile app"
           className="size-40"
         />
       </div>
       <div className="min-w-0 flex-1 space-y-2">
         <p className="text-sm">
-          Scan this with the bb mobile app, or enter the code by hand.
+          Scan this with the Axe AI mobile app, or enter the code by hand.
         </p>
         <div className="flex max-w-xs items-center gap-1 rounded-lg border border-border bg-surface-recessed py-1 pl-3.5 pr-1">
           <span
@@ -747,8 +747,8 @@ function AddMobileDeviceSectionContent({
         />
       ) : (
         <p className="text-xs text-subtle-foreground/75">
-          Pair the bb mobile app with this bb. It gets a one-time code to scan
-          or type; the phone then reaches this bb through {dashboardHost}.
+          Pair the Axe AI mobile app with this Mac. It gets a one-time code to
+          scan or type; the phone then reaches Axe AI through {dashboardHost}.
         </p>
       )}
 
@@ -768,7 +768,7 @@ function AddMobileDeviceSectionContent({
       ) : errorCode !== null ? (
         <p className="text-xs text-destructive-text">
           {errorCode === "not_paired"
-            ? "This bb is no longer paired — re-pair, then try again."
+            ? "Axe AI is no longer paired — re-pair, then try again."
             : "Couldn't reach the Connect service to create a code — check your connection, then try again."}
         </p>
       ) : null}
@@ -1088,7 +1088,7 @@ function NotPairedContent({
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Pairing gives this bb a private URL like{" "}
+        Pairing gives Axe AI a private URL like{" "}
         <span className="rounded bg-surface-recessed px-1.5 py-0.5 font-mono text-xs text-foreground">
           you.{dashboardHost}
         </span>
@@ -1124,7 +1124,7 @@ function NotPairedContent({
           className="mt-px size-3.5 shrink-0 opacity-70"
         />
         Anyone signed in to your {dashboardHost} account gets full control of
-        this bb.
+        Axe AI.
       </p>
     </div>
   );
@@ -1166,7 +1166,7 @@ function ConnectedContent({
     );
   }, [rpc, onChanged, onDisconnected]);
 
-  const host = status.url !== null ? hostOf(status.url) : "this bb";
+  const host = status.url !== null ? hostOf(status.url) : "Axe AI";
 
   return (
     <div className="space-y-4">
@@ -1196,7 +1196,7 @@ function ConnectedContent({
       {repairOpen ? (
         <div className="space-y-2 rounded-md border border-border bg-surface-recessed/50 px-3 py-3">
           <p className="text-xs text-muted-foreground">
-            Re-pairing replaces this bb&apos;s credential. Paste a fresh code
+            Re-pairing replaces Axe AI&apos;s credential. Paste a fresh code
             from your dashboard.
           </p>
           <PairForm dashboardUrl={status.dashboardUrl} onPaired={onChanged} />
@@ -1209,7 +1209,7 @@ function ConnectedContent({
 
       <div className="-mx-4 mt-4 flex items-center gap-3 border-t border-border-seam px-4 pt-3">
         <span className="min-w-0 text-xs text-muted-foreground">
-          Disconnecting forgets this bb&apos;s credential.
+          Disconnecting forgets Axe AI&apos;s credential.
         </span>
         <span className="flex-1" />
         <Button
@@ -1269,7 +1269,7 @@ function ReconnectingContent({
     );
   }, [rpc, onChanged, onDisconnected]);
 
-  const host = status.url !== null ? hostOf(status.url) : "this bb";
+  const host = status.url !== null ? hostOf(status.url) : "Axe AI";
   const why = [status.lastError, retryHint(status.nextRetryAt)]
     .filter((part): part is string => part !== null && part.length > 0)
     .join(" · ");
@@ -1290,7 +1290,7 @@ function ReconnectingContent({
 
       <div className="space-y-2 pointer-events-none opacity-60 saturate-[0.85]">
         <p className="text-sm text-muted-foreground">
-          Your bb will be reachable again at:
+          Axe AI will be reachable again at:
         </p>
         {status.url !== null ? (
           <UrlHero url={status.url} showOpen={false} />
@@ -1301,7 +1301,7 @@ function ReconnectingContent({
 
       <div className="-mx-4 mt-4 flex items-center gap-3 border-t border-border-seam px-4 pt-3">
         <span className="min-w-0 text-xs text-muted-foreground">
-          Remote devices can&apos;t reach this bb right now. Local access is
+          Remote devices can&apos;t reach Axe AI right now. Local access is
           unaffected.
         </span>
         <span className="flex-1" />
@@ -1434,7 +1434,7 @@ export default definePluginApp((app) => {
   app.slots.settingsSection({
     id: "remote-access",
     description:
-      "Use this bb from any device, anywhere — powered by getbb.app.",
+      "Use Axe AI from any device, anywhere — securely through app.axeai.com.",
     component: ConnectSettingsSection,
   });
   app.slots.sidebarFooterAction({

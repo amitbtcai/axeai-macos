@@ -466,7 +466,7 @@ The canonical release summary.
     // reachable with nothing to install, and every word in it is the
     // changelog's own.
     expect(
-      screen.getByRole("button", { name: /^Open the full bb .* changelog$/ }),
+      screen.getByRole("button", { name: /^Open the full Axe AI .* changelog$/ }),
     ).toBeDefined();
     const changelog = document.querySelector(
       '[data-updates-domain="changelog"]',
@@ -516,7 +516,7 @@ The canonical release summary.
     expect(changelog?.textContent).toContain("Full changelog");
     expect(
       screen.getByRole("button", {
-        name: "Open the full bb 9.9.9 changelog",
+        name: "Open the full Axe AI 9.9.9 changelog",
       }).className,
     ).toContain("font-semibold");
     // The card carries the whole release, not a fixed three: a truncated list
@@ -532,16 +532,16 @@ The canonical release summary.
     expect(changelog?.textContent).toContain("One current feature.");
     expect(changelog?.textContent).toContain("One current fix.");
     const dismissChangelog = screen.getByRole("button", {
-      name: "Dismiss bb 9.9.9 changelog preview",
+      name: "Dismiss Axe AI 9.9.9 changelog preview",
     });
     expect(dismissChangelog.querySelector('[data-icon="X"]')).not.toBeNull();
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Open the full bb 9.9.9 changelog",
+        name: "Open the full Axe AI 9.9.9 changelog",
       }),
     );
     expect(openUrlInExternalBrowserMock).toHaveBeenCalledWith(
-      "https://getbb.app/changelog#9-9-9",
+      "https://github.com/amitbtcai/axeai-macos/releases#9-9-9",
     );
     vi.useFakeTimers();
     fireEvent.click(dismissChangelog);
@@ -550,7 +550,7 @@ The canonical release summary.
     );
     expect(
       screen.queryByRole("button", {
-        name: "Open the full bb 9.9.9 changelog",
+        name: "Open the full Axe AI 9.9.9 changelog",
       }),
     ).toBeNull();
     expect(changelog?.getAttribute("data-changelog-dismiss-phase")).toBe(
@@ -604,7 +604,7 @@ The canonical release summary.
     await waitFor(() => {
       expect(
         screen.getByRole("button", {
-          name: "Dismiss bb 9.9.9 changelog preview",
+          name: "Dismiss Axe AI 9.9.9 changelog preview",
         }),
       ).toBeDefined();
     });
@@ -668,10 +668,10 @@ The canonical release summary.
     );
     expect(offlineIcon?.getAttribute("class")).not.toContain("text-input");
     const daemonRow = screen
-      .getByText("bb daemon")
+      .getByText("Axe AI daemon")
       .closest("[data-resource-row]");
     expect(daemonRow).not.toBeNull();
-    expect(screen.getByText("bb app")).toBeDefined();
+    expect(screen.getByText("Axe AI app")).toBeDefined();
     expect(
       screen.getByRole("button", { name: "Open homelab settings" }),
     ).toBeDefined();
@@ -769,7 +769,7 @@ The canonical release summary.
     expect(screen.getByText("homelab")).toBeDefined();
     expect(screen.queryByText("1 updating")).toBeNull();
     // The machine owns the section; the row identifies the daemon explicitly.
-    expect(screen.getByText("bb daemon")).toBeDefined();
+    expect(screen.getByText("Axe AI daemon")).toBeDefined();
     expect(screen.getAllByText("In progress").length).toBeGreaterThan(0);
     expect(
       document.querySelector('[data-updates-machine="host_1"]'),
@@ -815,7 +815,7 @@ The canonical release summary.
     expect(screen.queryByText("1 machine needs attention")).toBeNull();
     expect(screen.queryByText(/daemon protocol/)).toBeNull();
     expect(
-      screen.getByText("bb daemon").closest("[data-resource-row]")?.className,
+      screen.getByText("Axe AI daemon").closest("[data-resource-row]")?.className,
     ).not.toContain("bg-surface-destructive");
     // A stalled bb update is outstanding update work, so the page must not
     // claim everything is settled while that row sits under the claim.
@@ -962,7 +962,7 @@ The canonical release summary.
     expect(machineName.nextElementSibling).toBeNull();
     // No summary banner above the rows: with work outstanding the rows are
     // the statement, and with none the settled card is the only thing shown.
-    expect(screen.getByText("bb app")).toBeDefined();
+    expect(screen.getByText("Axe AI app")).toBeDefined();
     expect(screen.queryByLabelText(/available update/)).toBeNull();
     expect(screen.getAllByText("workstation")).toHaveLength(1);
     expect(screen.getByText("Codex")).toBeDefined();
@@ -1436,9 +1436,11 @@ The canonical release summary.
 
     renderSection();
     const relaunch = screen.getByRole("button", {
-      name: /Relaunch bb to finish updating/,
+      name: /Relaunch Axe AI to finish updating/,
     });
-    expect(relaunch.querySelector("img")?.className).toContain("size-3");
+    expect(relaunch.querySelector("svg")?.getAttribute("class")).toContain(
+      "size-3",
+    );
     expect(relaunch.className).toContain("border");
     fireEvent.click(relaunch);
     expect(installUpdate).toHaveBeenCalledOnce();

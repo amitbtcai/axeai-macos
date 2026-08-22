@@ -56,8 +56,8 @@ const GITHUB_PLUGIN = {
   provenance: "catalog" as const,
   isOrphanedBuiltin: false,
   catalogEntryId: "github",
-  publisherLabel: "BB Community",
-  sourceDisplay: "BB Official · GitHub",
+  publisherLabel: "Axe AI Community",
+  sourceDisplay: "Axe AI Official · GitHub",
   updateState: EMPTY_PLUGIN_UPDATE_STATE,
 } satisfies PluginListItem;
 
@@ -73,9 +73,9 @@ const GITHUB_CATALOG_ENTRY = {
   category: "Developer tools",
   source: "builtin:github",
   repositoryUrl: null,
-  marketplaceDisplayName: "BB Official",
+  marketplaceDisplayName: "Axe AI Official",
   publisherKey: "builtin",
-  publisherLabel: "BB Official",
+  publisherLabel: "Axe AI Official",
   official: true,
   author: null,
   installed: false,
@@ -91,7 +91,7 @@ afterEach(() => {
 });
 
 describe("PluginDetail official catalog lifecycle", () => {
-  it("offers Install from an unowned BB Official plugin detail page", () => {
+  it("offers Install from an unowned Axe AI Official plugin detail page", () => {
     const onInstall = vi.fn();
     const { container } = render(
       <CatalogPluginDetail
@@ -101,7 +101,7 @@ describe("PluginDetail official catalog lifecycle", () => {
     );
 
     expect(screen.getByRole("heading", { name: "GitHub" })).toBeTruthy();
-    expect(screen.getByText("BB Official")).toBeTruthy();
+    expect(screen.getByText("Axe AI Official")).toBeTruthy();
     expect(screen.getByText("Developer tools")).toBeTruthy();
     expect(
       screen.getByText("Browse GitHub issues and pull requests in BB."),
@@ -146,12 +146,12 @@ describe("PluginDetail official catalog lifecycle", () => {
 
     expect(screen.queryByRole("alert")).toBeNull();
     const compatibilityStatus = screen
-      .getByText("Update bb to install this plugin")
+      .getByText("Update AxeAI to install this plugin")
       .closest("div[class*='bg-surface-recessed']");
     expect(compatibilityStatus).not.toBeNull();
     if (compatibilityStatus === null) return;
     expect(compatibilityStatus.textContent).toContain(
-      "Update bb to install this plugin",
+      "Update AxeAI to install this plugin",
     );
     expect(compatibilityStatus.textContent).toContain(
       "Requires bb 0.20 or newer.",
@@ -209,10 +209,10 @@ describe("PluginDetail official catalog lifecycle", () => {
       </MemoryRouter>,
     );
 
-    // Only builtin plugins wear the BB Official pill: a catalog install can
+    // Only builtin plugins wear the Axe AI Official pill: a catalog install can
     // come from any marketplace, so this catalog-provenance plugin shows no
     // provenance label — and no uninstall-on-hover control either.
-    expect(screen.queryByText("BB Official")).toBeNull();
+    expect(screen.queryByText("Axe AI Official")).toBeNull();
     expect(
       screen.queryByRole("button", { name: "Uninstall GitHub" }),
     ).toBeNull();
@@ -239,7 +239,7 @@ describe("PluginDetail official catalog lifecycle", () => {
     await waitFor(() => {
       expect(writeText).toHaveBeenCalledWith("/Users/you/.bb/plugins/github");
     });
-    expect(screen.getByText("Updates with bb")).toBeTruthy();
+    expect(screen.getByText("Updates with AxeAI")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Check now" })).toBeNull();
 
     expect(container.querySelector('[data-icon="Github"]')).not.toBeNull();
@@ -347,7 +347,7 @@ describe("PluginDetail official catalog lifecycle", () => {
 
     expect(screen.getByRole("rowheader", { name: "Installed" })).toBeTruthy();
     expect(screen.getByText("Install date unavailable")).toBeTruthy();
-    expect(screen.queryByText("Updates with bb")).toBeNull();
+    expect(screen.queryByText("Updates with AxeAI")).toBeNull();
   });
 
   it.each([
@@ -466,7 +466,7 @@ describe("PluginDetail official catalog lifecycle", () => {
       provenance: "builtin" as const,
       catalogEntryId: null,
       publisherKey: "builtin",
-      publisherLabel: "BB Official",
+      publisherLabel: "Axe AI Official",
     };
     const { wrapper: QueryClientWrapper } = createQueryClientTestHarness();
     render(
@@ -486,7 +486,7 @@ describe("PluginDetail official catalog lifecycle", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("BB Official")).toBeTruthy();
+    expect(screen.getByText("Axe AI Official")).toBeTruthy();
     expect(
       screen.getByRole("switch", { name: "Disable Automations" }),
     ).toBeTruthy();
@@ -503,13 +503,13 @@ describe("PluginDetail official catalog lifecycle", () => {
     fireEvent.pointerMove(uninstall);
     expect(
       await screen.findAllByText(
-        "Included with BB; disable this plugin instead.",
+        "Included with Axe AI; disable this plugin instead.",
       ),
     ).not.toHaveLength(0);
   });
 });
 
-describe("BB Official plugin detail routing", () => {
+describe("Axe AI Official plugin detail routing", () => {
   it("resolves an uninstalled catalog plugin and opens its install confirmation", async () => {
     vi.stubGlobal(
       "fetch",
@@ -612,16 +612,18 @@ describe("plugin removal confirmation", () => {
       screen.getByRole("button", { name: "GitHub actions" }),
     );
     fireEvent.click(
-      await screen.findByRole("menuitem", { name: "Remove from bb" }),
+      await screen.findByRole("menuitem", { name: "Remove from AxeAI" }),
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Remove plugin from bb?" }),
+      await screen.findByRole("heading", {
+        name: "Remove plugin from AxeAI?",
+      }),
     ).toBeTruthy();
     // The server's remove() deletes settings, secrets, and schedules for every
     // source kind; only the files of a local plugin stay. Re-pointing the id at
     // another directory is an install, not a remove, and keeps that state.
-    const description = screen.getByText(/Remove "github" from bb/);
+    const description = screen.getByText(/Remove "github" from AxeAI/);
     expect(description.textContent).toContain(
       "delete its settings, secrets, and schedules",
     );
@@ -741,7 +743,7 @@ describe("PluginDetail runtime health", () => {
       provenance: "builtin" as const,
       catalogEntryId: null,
       publisherKey: "builtin",
-      publisherLabel: "BB Official",
+      publisherLabel: "Axe AI Official",
       status,
       statusDetail: "The runtime reported a problem.",
       ...overrides,
@@ -832,13 +834,13 @@ describe("PluginDetail runtime health", () => {
   it.each([
     [
       "incompatible",
-      "This plugin version isn't compatible with your version of bb.",
-      "Update bb to load a compatible bundled plugin.",
+      "This plugin version isn't compatible with your version of Axe AI.",
+      "Update Axe AI to load a compatible bundled plugin.",
     ],
     [
       "missing",
       "The plugin's files are missing.",
-      "Restart bb. If the files are still missing, reinstall bb.",
+      "Restart Axe AI. If the files are still missing, reinstall Axe AI.",
     ],
   ] as const)(
     "explains the %s condition and a supported recovery",
@@ -861,7 +863,7 @@ describe("PluginDetail runtime health", () => {
     const alert = screen.getByRole("alert");
     expect(alert.textContent).toContain("An API token is required.");
     expect(alert.textContent).toContain(
-      "Complete the Configuration section; bb reloads the plugin after you save.",
+      "Complete the Configuration section; Axe AI reloads the plugin after you save.",
     );
     expect(screen.queryByRole("button", { name: "Reload" })).toBeNull();
   });

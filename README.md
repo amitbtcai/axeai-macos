@@ -1,38 +1,38 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/e40bda56-54a4-47f8-a417-6bbadf2e5b40">
-    <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/4d9d02fb-c179-449b-a38a-041955143232">
-    <img alt="bb" src="https://github.com/user-attachments/assets/4d9d02fb-c179-449b-a38a-041955143232" width="128">
-  </picture>
+  <img alt="AxeAI" src="assets/axeai-logo.png" width="128">
 </p>
 
-# bb
+# AxeAI Desktop
 
 [![npm version](https://img.shields.io/npm/v/bb-app.svg)](https://www.npmjs.com/package/bb-app)
 [![Join Discord](https://img.shields.io/badge/Discord-Join%20server-5865F2?logo=discord&logoColor=white)](https://discord.gg/kvBU6tJhcJ)
 
-bb is an agentic IDE that builds itself. It can control, customize, and automate
+AxeAI is an agentic IDE that can control, customize, and automate
 itself, laying the groundwork for your own software factory.
 
 Every surface — the desktop app, web app, CLI, and HTTP API — is a first-class
-way to drive bb. Work runs in threads you can follow live, steer at any point,
+way to drive AxeAI. Work runs in threads you can follow live, steer at any point,
 or hand off to another agent.
 
+AxeAI Desktop is based on the MIT-licensed
+[`get-bb/bb`](https://github.com/get-bb/bb) project. The original copyright,
+license, and third-party notices are retained in this distribution.
+
 > [!NOTE]
-> bb is in active development. Core architecture is stable, but workflows
+> AxeAI is in active development. Core architecture is stable, but workflows
 > and surfaces are still evolving.
 
 <p align="center">
-  <img alt="bb desktop app showing a code review thread, dispatch panel, and task board" src="assets/app-screenshot.png" width="800">
+  <img alt="AxeAI desktop app showing a code review thread, dispatch panel, and task board" src="assets/app-screenshot.png" width="800">
 </p>
 
-## Use bb
+## Use AxeAI
 
 ### Download the desktop app
 
-The recommended way to start using bb is the desktop app:
+The recommended way to start using AxeAI is the desktop app:
 
-**[Download the latest desktop app](https://github.com/get-bb/bb/releases/tag/desktop-latest)**
+**[Download the latest desktop app](https://github.com/amitbtcai/axeai-macos/releases/tag/desktop-latest)**
 
 The desktop app supports macOS on Apple Silicon (arm64). The Linux x64 AppImage
 is alpha: expect problems, and please report them. Intel Mac users should run bb
@@ -42,7 +42,7 @@ install WSL2 first, then run the same `npx` command below from your WSL2 (Linux)
 shell. Native Windows PowerShell and CMD are not supported.
 
 Early adopters can install
-**[bb Nightly](https://github.com/get-bb/bb/releases/tag/desktop-nightly)**
+**[AxeAI Nightly](https://github.com/amitbtcai/axeai-macos/releases/tag/desktop-nightly)**
 alongside the stable desktop app. It has a separate application identity,
 yellow icon, and auto-update feed.
 
@@ -82,15 +82,9 @@ docs, start with
 
 ### Telemetry
 
-Production runs (the desktop app and `npx bb-app`) send anonymous usage
-telemetry (app starts, thread creation counts, user message counts, and plugin
-installs) to help us understand adoption. Identification is a random per-install
-id stored in your data dir — no user, host, project, workspace, or message
-content is ever attached. Plugin install events name only public plugins
-(bundled plugins and `bb-community` marketplace entries); installs from a local
-path, a private git or npm source, or a third-party marketplace report no name. Development/source runs never send. Opt out any run with
-`BB_TELEMETRY=false`. See
-[`apps/server/src/services/system/telemetry.ts`](./apps/server/src/services/system/telemetry.ts).
+AxeAI telemetry is disabled by default and this fork does not ship the upstream
+analytics key. Connected AI providers and plugins process data under their own
+terms. See [`PRIVACY.md`](./PRIVACY.md).
 
 ## Development
 

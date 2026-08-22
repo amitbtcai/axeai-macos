@@ -1,6 +1,6 @@
 # @bb/desktop
 
-macOS and Linux Electron shell for bb. The desktop app loads the existing bb
+macOS and Linux Electron shell for AxeAI. The desktop app loads the existing bb
 web UI and uses the packaged `bb-app` launcher for server and host-daemon
 lifecycle.
 
@@ -79,9 +79,11 @@ sign with a code-signing identity auto-discovered from the keychain and skip
 notarization. A valid signature matters even for local builds: macOS
 provenance-tracks unsigned apps, forcing syspolicyd to evaluate every exec in
 the app's process tree, which can stall process launches system-wide. On
-machines with no keychain identity (or with `CSC_IDENTITY_AUTO_DISCOVERY=false`,
-as CI sets for workflow-artifact-only builds), artifacts remain unsigned and
-macOS shows the normal Gatekeeper warning on first launch.
+machines with no keychain identity, electron-builder can fall back to unsigned
+output. CI sets `CSC_IDENTITY_AUTO_DISCOVERY=false` and applies an ad-hoc
+signature instead. Ad-hoc signing prevents internal process stalls but does not
+provide Developer ID trust or notarization, so macOS still shows the normal
+Gatekeeper warning on first launch.
 
 ### Linux (AppImage, x64)
 
@@ -161,8 +163,9 @@ tag:
 | Linux    | `.AppImage` (x64)      | `latest-linux.yml`        | `desktop-version-linux.json` |
 
 macOS keeps the unsuffixed feed name because released macOS builds already
-request it. Linux artifacts are unsigned; only the macOS binaries wait on the
-Apple signing secrets.
+request it. Linux artifacts are unsigned. Until Apple signing is configured,
+the workflow creates ad-hoc-signed macOS `.dmg` and `.zip` artifacts for
+internal testing but withholds them from public releases.
 
 ## Nightly channel
 
@@ -183,9 +186,9 @@ nightly channel stays below `latest` until the next scheduled run.
 
 The nightly desktop is a separate installation:
 
-- product name: `bb Nightly`
-- bundle identifier: `dev.bb.desktop.nightly`
-- Linux binary name: `bb-nightly`, so it never shadows stable `bb` on PATH
+- product name: `AxeAI Nightly`
+- bundle identifier: `com.axeai.desktop.nightly`
+- Linux binary name: `axeai-nightly`, so it never shadows stable `axeai` on PATH
 - app/update release: `desktop-nightly`
 - update metadata: `nightly-mac.yml` and `nightly-linux.yml`
 - version feeds: `desktop-version.json` (macOS) and
@@ -193,7 +196,7 @@ The nightly desktop is a separate installation:
 - icon: `assets/icon-nightly.icns` and `assets/icon-nightly.png`
 
 Download it from
-[`desktop-nightly`](https://github.com/get-bb/bb/releases/tag/desktop-nightly)
+[`desktop-nightly`](https://github.com/amitbtcai/axeai-macos/releases/tag/desktop-nightly)
 or run the CLI build with:
 
 ```bash
@@ -202,7 +205,7 @@ npx bb-app@nightly
 
 Stable and nightly desktop bundles can coexist. Electron-owned preferences,
 window state, and process supervision use separate application data
-directories; the embedded bb runtime still uses the normal `~/.bb` data and
+directories; the embedded bb runtime uses `~/.axeai` for AxeAI production data
 default server port unless the corresponding environment variables are
 overridden.
 
@@ -251,9 +254,9 @@ GitHub Actions secrets:
 Once those secrets are present, the next `Build Desktop` workflow run with
 `publish=true` and `release_channel=stable` signs the `.app`, notarizes it, and
 publishes the signed `.dmg` / `.zip` assets to `desktop-latest`. If no required
-signing secrets are configured, the workflow still builds unsigned artifacts, but
-the release job publishes only `desktop-version.json` and withholds unsigned
-binaries from `desktop-latest`. If only some required signing secrets are set,
+signing secrets are configured, the workflow keeps ad-hoc-signed, unnotarized
+macOS builds as internal workflow artifacts and withholds them from public
+releases. If only some required signing secrets are set,
 the workflow fails before packaging so a misconfigured release cannot silently
 produce unsigned or signed-but-not-notarized artifacts.
 
@@ -268,7 +271,7 @@ while the Electron updater only flips the toast to "ready to install" after a
 signed update has actually downloaded. Local dev builds skip Electron auto-update
 unless `BB_DESKTOP_AUTO_UPDATE=1` is set.
 
-`bb Nightly` follows the equivalent isolated `desktop-nightly` release and
+`AxeAI Nightly` follows the equivalent isolated `desktop-nightly` release and
 `nightly-mac.yml`; it never reads or moves the stable feed. The scheduled
 workflow requires the complete signing/notarization secret set before
 publishing nightly desktop assets.
@@ -276,8 +279,8 @@ publishing nightly desktop assets.
 To verify a downloaded or unpacked build:
 
 ```bash
-spctl --assess --verbose /path/to/bb.app
-codesign --verify --deep --strict --verbose=2 /path/to/bb.app
+spctl --assess --verbose /path/to/AxeAI.app
+codesign --verify --deep --strict --verbose=2 /path/to/AxeAI.app
 ```
 
 ## Debugging
@@ -286,11 +289,11 @@ Use the View menu to toggle DevTools. To open them automatically on launch, set
 `BB_DESKTOP_OPEN_DEVTOOLS=1`:
 
 ```bash
-BB_DESKTOP_OPEN_DEVTOOLS=1 apps/desktop/release/mac-arm64/bb.app/Contents/MacOS/bb
+BB_DESKTOP_OPEN_DEVTOOLS=1 apps/desktop/release/mac-arm64/AxeAI.app/Contents/MacOS/AxeAI
 ```
 
 When the desktop app spawns `bb-app`, server and daemon logs land under
-`~/.bb/logs/` or `$BB_DATA_DIR/logs/` when `BB_DATA_DIR` is set.
+`~/.axeai/logs/` or `$BB_DATA_DIR/logs/` when `BB_DATA_DIR` is set.
 
 To verify attach-if-found manually, start a compatible bb first, then launch the
 desktop app:

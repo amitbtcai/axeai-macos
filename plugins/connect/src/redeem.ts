@@ -1,7 +1,7 @@
 // Redeem a one-time connect code against the connect cloud for a durable
 // tunnel credential. Ported from the kernel's services/connect/redeem.ts.
 
-export const DEFAULT_CONNECT_BASE_URL = "https://getbb.app";
+export const DEFAULT_CONNECT_BASE_URL = "https://remote.axeai.com";
 
 /**
  * Resolve the unpaired Connect apex. Source development may point at the

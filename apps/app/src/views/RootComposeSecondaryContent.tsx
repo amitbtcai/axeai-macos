@@ -16,7 +16,7 @@ import {
 } from "@/lib/bb-desktop";
 import { useOptionalPaneContext } from "./thread-detail/PaneContext";
 
-const ROOT_COMPOSE_MAX_WIDTH_CLASS = "max-w-[760px]";
+const ROOT_COMPOSE_MAX_WIDTH_CLASS = "max-w-[980px]";
 
 // Where root compose pins its right-panel toggle in the viewport corner (see
 // rootPanelToggle in RootComposeView, which passes its selected position here).

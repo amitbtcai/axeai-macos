@@ -775,11 +775,11 @@ them by mixing ink into canvas), the `--primary` accent, the secondary text tier
 - Plugins are on by default. Auto-installed builtin plugins ship with bb
   (except `side-chat`, which is gated by the **"Side chat plugin"**
   experiment); official plugins install from the bundled store on demand.
-- **BB Official plugins** (store under `/api/v1/plugin-catalog`):
+- **Axe AI Official plugins** (store under `/api/v1/plugin-catalog`):
   - BB's official plugins (GitHub, Docs, Memory, and Tasks) ship
     bundled inside the app and install from the local copy — no network. Installed official
     plugins are pinned to the bundled copy and update with BB app releases.
-  - The store also lists the **BB Community marketplace** catalog: a manifest
+  - The store also lists the **Axe AI Community marketplace** catalog: a manifest
     the server re-reads at startup and every two hours from
     `https://getbb.app/marketplace/v1/marketplace.json`
     (override with `BB_MARKETPLACE_URL`, which the server reads only at

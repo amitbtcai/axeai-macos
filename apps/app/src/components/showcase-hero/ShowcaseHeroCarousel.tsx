@@ -41,7 +41,7 @@ const ORBIT_POSITIONS: readonly CSSProperties[] = [
 export interface ShowcaseHeroCopy {
   /** Names the carousel region for assistive tech. */
   ariaLabel: string;
-  /** Headline lead-in the archetype noun completes, e.g. "Turn bb into". */
+  /** Headline lead-in the archetype noun completes, e.g. "Turn Axe AI into". */
   headlineLead: string;
   /** The noun shown once the composer takes over, e.g. "whatever you need". */
   composingNoun: string;

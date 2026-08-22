@@ -10,8 +10,8 @@ const SKILL_ROOT_LABELS: Record<
   string
 > = {
   "bb-builtin": "Built-in",
-  "bb-user": "bb · user",
-  "bb-project": "bb · project",
+  "bb-user": "Axe AI · user",
+  "bb-project": "Axe AI · project",
   "shared-user": "Shared · user",
   "shared-project": "Shared · project",
   plugin: "Plugin",

@@ -2481,7 +2481,7 @@ application/json" -d '{}' <server>/api/v1/plugins/<id>/rpc/<method>`,
 - Keep pure logic in plain functions/modules so it is unit-testable without
   a bb server; the factory file should mostly wire registrations.
 
-BB Official plugins in `plugins/` (a bb checkout):
+Axe AI Official plugins in `plugins/` (a bb checkout):
 
 - `github` — a gh-CLI-backed issue/PR browser in a single navPanel (with
   `headerContent`), subPath-based sub-navigation, shared-ui

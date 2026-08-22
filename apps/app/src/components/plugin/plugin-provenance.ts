@@ -9,7 +9,7 @@ const USER_FILTER_ID = "user";
  * `publisherLabel`, so a user filtering to a marketplace never sees rows
  * badged with another.
  *
- * The server decides that label — `BB Official` for bundled plugins, the
+ * The server decides that label — `Axe AI Official` for bundled plugins, the
  * listing marketplace's display name for catalog installs, null for a plugin
  * the user installed from a source. The filter therefore grows a facet
  * whenever a marketplace is added, with no list to update here.

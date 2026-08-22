@@ -60,7 +60,7 @@ function connectPlugin(
     version: "0.1.0",
     provenance: "builtin",
     isOrphanedBuiltin: false,
-    publisherLabel: "BB Official",
+    publisherLabel: "Axe AI Official",
     sourceDisplay: "builtin · connect",
     updateState: {},
     description: null,

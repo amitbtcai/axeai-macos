@@ -11,13 +11,13 @@ host, and the command resolves the thread's host automatically.
 
 1. Check pairing: run `bb connect status --json`. If not paired / not
    connected, give the localhost URL and mention that `bb connect` enables
-   remote URLs once paired from the getbb.app dashboard.
+   remote URLs once paired from the app.axeai.com dashboard.
 2. From the thread that started the HTTP server, run `bb connect expose
 <port>`. It prints that host's share URL. Use `--host <name-or-id>` only
    when you intentionally need another enrolled host; outside a thread,
    sharing defaults to the machine running the bb server.
 3. Give the returned URL to the user as a markdown link. It works for viewers
-   who have the owner's getbb.app session; it is not a public internet link.
+   who have the owner's app.axeai.com session; it is not a public internet link.
 4. When the server stops, run `bb connect unexpose <port>` from the same
    thread (or with the same `--host`) so the share is cleaned up. Use
    `bb connect shares [--host <name-or-id>]` to inspect that host's shares.

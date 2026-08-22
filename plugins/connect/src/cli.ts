@@ -70,19 +70,19 @@ function validateFlags(
 
 function helpText(): string {
   return [
-    "Remote access via getbb.app — this bb becomes reachable at https://<handle>.getbb.app.",
+    "Remote access via Axe AI — this Mac becomes reachable at https://<handle>.remote.axeai.com.",
     "Share HTTP ports from any enrolled host (owner session only).",
     "",
-    "  1. Sign in at https://getbb.app and claim a handle.",
+    "  1. Sign in at https://app.axeai.com and claim a handle.",
     "  2. Copy the connect command from the dashboard and run it here:",
-    "       bb connect --code <code> --server https://<handle>.getbb.app",
+    "       bb connect --code <code> --server https://<handle>.remote.axeai.com",
     "",
     "  bb connect status              Show remote-access status",
     "  bb connect off                 Disconnect and forget the pairing (re-pairing needs a new code)",
     "  bb connect expose <port> [--host <name-or-id>]    Share a port from the thread's host",
     "  bb connect unexpose <port> [--host <name-or-id>]  Stop sharing a port on that host",
     "  bb connect shares [--host <name-or-id>]           List shares for the thread's host",
-    "  bb connect servers             List every bb on this account (from getbb.app)",
+    "  bb connect servers             List every Axe AI Mac on this account",
     "  bb connect machine-code        Mint a one-time code that enrolls the bb mobile app (or another",
     "                                 device) as a connect machine for this bb (needs the",
     '                                 "Mobile app" experiment in Settings → Experiments)',
@@ -93,7 +93,7 @@ function helpText(): string {
 
 function formatStatus(status: ConnectStatus): string {
   if (!status.paired) {
-    return "Not paired\nPair from the getbb.app dashboard — run `bb connect` for a how-to.";
+    return "Not paired\nPair from the app.axeai.com dashboard — run `bb connect` for a how-to.";
   }
   const lines = [`${status.handle}  ${status.url}  ${status.state}`];
   if (status.lastError !== null && status.state !== "connected") {
@@ -115,7 +115,7 @@ function asJson(value: unknown): string {
 }
 
 function notPairedError(): string {
-  return "this bb is not connected to getbb.app — run `bb connect` for how to pair";
+  return "Axe AI is not connected to app.axeai.com — run `bb connect` for how to pair";
 }
 
 /**
@@ -154,7 +154,7 @@ function formatMachineCode(payload: MobilePairingPayload): string {
     "",
     "Enter the code in the bb mobile app when it asks to pair over bb connect (or",
     "scan the QR code from Settings → Remote access → Add mobile device). The phone",
-    "enrolls as a connect machine on this account — it appears in the getbb.app",
+    "enrolls as a connect machine on this account — it appears in the app.axeai.com",
     "dashboard's machine list, where you can revoke it. The code works once.",
   ].join("\n");
 }
@@ -169,7 +169,7 @@ export function registerConnectCli(args: {
   bb.cli.register({
     name: "connect",
     summary:
-      "Expose this bb at https://<handle>.getbb.app (pair with --code/--server from the dashboard)",
+      "Expose this Mac at https://<handle>.remote.axeai.com (pair with --code/--server from the dashboard)",
     commands: [
       {
         name: "status",

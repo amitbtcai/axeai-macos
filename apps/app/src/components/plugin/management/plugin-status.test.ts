@@ -31,7 +31,7 @@ function plugin(
     provenance: "catalog",
     isOrphanedBuiltin: false,
     catalogEntryId: "linear",
-    publisherLabel: "BB Community",
+    publisherLabel: "Axe AI Community",
     sourceDisplay: "npm · @bb-plugins/linear · tracks compatible",
     updateState: { ...EMPTY_PLUGIN_UPDATE_STATE, ...updateState },
     handlerStats: { count: 0, totalMs: 0, maxMs: 0, errorCount: 0 },
@@ -187,7 +187,7 @@ describe("pluginRuntimeStatusPresentation", () => {
         ),
       ),
     ).toMatchObject({
-      recovery: "Restart bb. If the files are still missing, reinstall bb.",
+      recovery: "Restart Axe AI. If the files are still missing, reinstall Axe AI.",
     });
     expect(
       pluginRuntimeStatusPresentation(plugin({}, { status: "missing" })),
@@ -205,7 +205,7 @@ describe("pluginRuntimeStatusPresentation", () => {
       label: "Needs configuration",
       condition: "Required settings are incomplete.",
       recovery:
-        "Complete the Configuration section; bb reloads the plugin after you save.",
+        "Complete the Configuration section; Axe AI reloads the plugin after you save.",
     });
   });
 });

@@ -238,9 +238,9 @@ const SETTINGS_DROPDOWN_CONTENT_CLASS =
   "min-w-[var(--radix-dropdown-menu-trigger-width)]";
 
 const CREATE_CUSTOM_PALETTE_PROMPT =
-  "Create a custom bb palette. First run `bb theme dir` to find the custom theme directory. Ask me for the palette name and visual direction, then create `<theme-dir>/<name>/theme.css` with light and dark theme variables compatible with bb's theme tokens.";
+  "Create a custom Axe AI palette. First run `bb theme dir` to find the custom theme directory. Ask me for the palette name and visual direction, then create `<theme-dir>/<name>/theme.css` with light and dark theme variables compatible with Axe AI's theme tokens.";
 const PALETTE_SETTING_DESCRIPTION =
-  "Palettes change bb's colors, including syntax colors in diffs and file previews. Choose a built-in palette or create one from a prompt.";
+  "Palettes change Axe AI's colors, including syntax colors in diffs and file previews. Choose a built-in palette or create one from a prompt.";
 
 // Renders the favicon glyph itself in the candidate color by using the
 // favicon image as a CSS mask, so the preview matches the resulting tab icon.
@@ -455,10 +455,10 @@ export function LocalOpenTargetSettingsSection({
     const accessDenied = accessState === "denied";
     const accessAvailable = accessState === "available";
     const descriptionText = accessDenied
-      ? "Your browser blocked access to bb on this device. Allow local network access for this site in browser settings, then reload bb."
+      ? "Your browser blocked access to Axe AI on this device. Allow local network access for this site in browser settings, then reload Axe AI."
       : accessAvailable
-        ? "bb couldn’t connect to its local editor helper. Make sure the bb desktop app or CLI is running on this device, then retry. If it is already running, a remote browser origin may need to be configured."
-        : "Connect this browser to bb on this device so it can discover installed editors. bb only contacts the local helper after you choose Enable; your browser may ask for local network access.";
+        ? "Axe AI couldn’t connect to its local editor helper. Make sure the Axe AI desktop app or CLI is running on this device, then retry. If it is already running, a remote browser origin may need to be configured."
+        : "Connect this browser to Axe AI on this device so it can discover installed editors. Axe AI only contacts the local helper after you choose Enable; your browser may ask for local network access.";
     const buttonLabel = accessRequestPending
       ? accessAvailable
         ? "Retrying…"
@@ -748,7 +748,7 @@ export function GeneralSettingsSection({
         {desktopBrowserAvailable ? (
           <SettingsWithControl
             label={IN_APP_BROWSER_LINK_SETTING_LABEL}
-            description="Open web links inside bb."
+            description="Open web links inside Axe AI."
           >
             <Switch
               checked={openLinksInAppBrowser}
@@ -794,7 +794,7 @@ export function DebugSettingsSection({
     <SettingsSection title="Debug">
       <SettingsWithControl
         label={UNHANDLED_PROVIDER_EVENTS_SETTING_LABEL}
-        description="Show raw provider events bb does not recognize. Development builds always show these events."
+        description="Show raw provider events Axe AI does not recognize. Development builds always show these events."
       >
         <Switch
           checked={enabled}
@@ -858,7 +858,7 @@ export function ExperimentsSettingsSection({
 
         <SettingsWithControl
           label={MOBILE_APP_EXPERIMENT_LABEL}
-          description="Pair the bb mobile app over bb connect: shows Add mobile device under Remote access and enables bb connect machine-code."
+          description="Pair the Axe AI mobile app through remote access and enable mobile-device pairing codes."
         >
           <Switch
             checked={mobileAppEnabled}

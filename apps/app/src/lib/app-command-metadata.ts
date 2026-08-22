@@ -84,14 +84,14 @@ export const APP_COMMAND_GROUPS: readonly AppCommandGroup[] = [
       paletteHiddenCommand(
         "palette.open",
         "Open quick palette",
-        "Search and run bb commands from the keyboard.",
+        "Search and run Axe AI commands from the keyboard.",
       ),
-      command("window.new", "New window", "Open another bb desktop window."),
-      command("settings.open", "Open settings", "Open bb settings."),
+      command("window.new", "New window", "Open another Axe AI desktop window."),
+      command("settings.open", "Open settings", "Open Axe AI settings."),
       command(
         "settings.openServers",
         "Open server settings",
-        "Open settings to add or manage bb servers.",
+        "Open settings to add or manage Axe AI servers.",
       ),
       command(
         "sidebar.toggle",
@@ -238,7 +238,7 @@ export const APP_COMMAND_GROUPS: readonly AppCommandGroup[] = [
       paletteHiddenCommand(
         id,
         `Choose answer ${index + 1}`,
-        `Choose visible answer ${index + 1} when bb asks a question.`,
+        `Choose visible answer ${index + 1} when Axe AI asks a question.`,
       ),
     ),
   },

@@ -432,7 +432,7 @@ export function createPluginCatalogService(deps: {
       publisherLabel: BUILTIN_PUBLISHER_LABEL,
       official: true,
       // Bundled plugins are BB's own; attribute them like the seed entries.
-      author: { name: "BB Team", url: "https://getbb.app" },
+      author: { name: "Axe AI Team", url: "https://axeai.com" },
       installed: getInstalledPlugin(deps.db, entry.pluginId) !== undefined,
       compatible: problem === null,
       incompatibleReason: problem,

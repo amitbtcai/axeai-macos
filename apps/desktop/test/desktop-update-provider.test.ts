@@ -9,15 +9,15 @@ describe("desktop update feed url", () => {
     // macOS and Linux assets share the desktop-latest release, so a single
     // feed name would make the last publish overwrite the other platform.
     expect(createDesktopUpdateFeedUrl("macos")).toBe(
-      "https://github.com/get-bb/bb/releases/download/desktop-latest/desktop-version.json",
+      "https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/desktop-version.json",
     );
     expect(createDesktopUpdateFeedUrl("linux")).toBe(
-      "https://github.com/get-bb/bb/releases/download/desktop-latest/desktop-version-linux.json",
+      "https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/desktop-version-linux.json",
     );
   });
 });
 
-const APP_IMAGE_PATH = "/home/user/Apps/bb-0.37.0-x86_64.AppImage";
+const APP_IMAGE_PATH = "/home/user/Apps/AxeAI-0.37.0-x86_64.AppImage";
 const alwaysReplaceable = () => true;
 const neverReplaceable = () => false;
 

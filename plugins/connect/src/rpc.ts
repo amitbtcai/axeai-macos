@@ -15,7 +15,7 @@ import type { ShareListing } from "./shares.js";
 // Panel-facing rpc surface. `server` is optional: the dashboard command
 // carries both --code and --server, but the panel's paste-a-code field only
 // has the code — the server URL is then derived from the redeemed handle
-// (https://<handle>.getbb.app). `baseUrl` overrides the connect cloud apex
+// (https://<handle>.remote.axeai.com). `baseUrl` overrides the connect cloud apex
 // (tests and self-hosted gates).
 const pairInputSchema = z.object({
   code: z.string().min(1),

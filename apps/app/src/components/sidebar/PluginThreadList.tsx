@@ -37,7 +37,7 @@ export function PluginThreadList({
   const handleCrash = useCallback(
     (pluginId: string) => {
       toast.error("Sidebar plugin crashed", {
-        description: `${title} (${pluginId}) stopped working, so bb's own thread list is back.`,
+        description: `${title} (${pluginId}) stopped working, so Axe AI's own thread list is back.`,
       });
     },
     [title],

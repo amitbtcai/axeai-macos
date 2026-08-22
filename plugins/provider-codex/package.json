@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Run bb threads with Codex.",
+  "description": "Run Axe AI threads with Codex.",
   "engines": {
     "bb": ">=0.0"
   },
   "bb": {
     "name": "Codex provider",
-    "description": "Run bb threads with Codex.",
+    "description": "Run Axe AI threads with Codex.",
     "branding": {
       "icon": "./icons/codex.svg"
     },

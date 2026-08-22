@@ -280,7 +280,7 @@ export class ShareRegistry {
     const credential = this.options.getCredential();
     if (credential === null) {
       throw new SharePortError(
-        "this bb is not connected to getbb.app — run `bb connect` for how to pair",
+        "Axe AI is not connected to app.axeai.com — run `bb connect` for how to pair",
       );
     }
     if (host.isServer) this.serverHostId = host.id;

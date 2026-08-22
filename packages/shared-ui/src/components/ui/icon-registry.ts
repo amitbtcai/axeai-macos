@@ -22,6 +22,7 @@ export const EXTENDED_ICON_NAMES = [
   "ArrowTurnBackward",
   "ArrowTurnForward",
   "ArrowUpRight",
+  "AudioWave",
   "Beaker",
   "Browser",
   "Brain",

@@ -427,7 +427,7 @@ describe("connect settings section", () => {
     slot.getByText(/Code expires in 9:5\d/);
     // …and the QR carries the full pairing payload (code + server + apex).
     const qr = (await slot.findByRole("img", {
-      name: "QR code to pair the bb mobile app",
+      name: "QR code to pair the Axe AI mobile app",
     })) as HTMLImageElement;
     expect(qr.src.startsWith("data:image/png")).toBe(true);
     slot.getByText(/bb connect machine-code/);

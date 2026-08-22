@@ -241,7 +241,7 @@ export function BrowsePluginsTab({
                   state={searchQuery.isError ? "error" : "empty"}
                   message={
                     searchQuery.isError
-                      ? "BB's official plugins are unavailable."
+                      ? "Axe AI's official plugins are unavailable."
                       : "No plugins match this search."
                   }
                   onRetry={
@@ -312,7 +312,7 @@ interface PublisherGroup {
  *
  * Publisher, not marketplace: the plugins bundled with the app are listed
  * under the marketplace bb curates, so grouping by marketplace filed all of
- * them under that marketplace's name and told the user BB Community wrote
+ * them under that marketplace's name and told the user Axe AI Community wrote
  * plugins that ship in the build.
  *
  * Groups key on `publisherKey`, never on the label. A marketplace names itself,
@@ -480,7 +480,7 @@ function BrowseCard({
       >
         <ConfirmDeleteDialogContent
           title={`Uninstall ${entry.displayName}?`}
-          description="The plugin, its installed files, and its settings, secrets, and schedules are removed from this BB host."
+          description="The plugin, its installed files, and its settings, secrets, and schedules are removed from this Axe AI host."
           confirmLabel={uninstall.isPending ? "Uninstalling…" : "Uninstall"}
           pending={uninstall.isPending}
           onConfirm={() => uninstall.mutate()}

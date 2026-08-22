@@ -202,7 +202,7 @@ function PluginDetailToolView({ pluginId }: { pluginId: string }) {
     onSuccess: (_data, deletedPlugin) => {
       appToast.success(
         pluginIsLocalSource(deletedPlugin)
-          ? "Plugin removed from bb"
+          ? "Plugin removed from AxeAI"
           : "Plugin uninstalled",
       );
       setDeleteTarget(null);
@@ -359,7 +359,7 @@ function PluginDetailToolView({ pluginId }: { pluginId: string }) {
               <ConfirmDeleteDialogContent
                 title={
                   pluginIsLocalSource(deleteTarget)
-                    ? "Remove plugin from bb?"
+                    ? "Remove plugin from AxeAI?"
                     : "Uninstall plugin?"
                 }
                 description={pluginRemovalDescription(deleteTarget)}

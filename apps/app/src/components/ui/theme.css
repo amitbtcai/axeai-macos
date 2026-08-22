@@ -117,9 +117,12 @@
  * collide with base classes in the cascade.
  */
 @theme {
-  --text-sm: 0.8125rem;
-  --text-base: 0.9375rem;
-  --text-base--line-height: 1.375rem;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
   /* Cadence chrome size (unread divider, count chips, ids) — 10px. Chrome only;
    * never paired with a tier below --subtle-foreground or it fails AA at 10px. */
   --text-2xs: 0.625rem;
@@ -586,7 +589,8 @@
     var(--canvas) 60%
   );
   --sidebar-ring: var(--primary);
-  --font-sans: "Inter Variable", Inter, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Helvetica Neue", sans-serif;
   --font-serif: Georgia, serif;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
@@ -803,11 +807,11 @@
     var(--ink) 25.2%,
     var(--canvas)
   );
-  --sidebar: color-mix(in oklch, var(--ink) 4.3%, var(--canvas));
+  --sidebar: color-mix(in oklch, var(--ink) 8%, var(--canvas));
   --sidebar-foreground: var(--ink);
-  --sidebar-accent: color-mix(in oklch, var(--ink) 12%, var(--canvas));
+  --sidebar-accent: color-mix(in oklch, var(--ink) 14%, var(--canvas));
   --sidebar-accent-foreground: var(--ink);
-  --sidebar-border: color-mix(in oklch, var(--ink) 18.1%, var(--canvas));
+  --sidebar-border: color-mix(in oklch, var(--ink) 14%, var(--canvas));
   /* Search-match highlight: see the light block (oklab mix, same hue caveat).
      Mixed with the (dark) canvas so the manilla reads as a muted tan. */
   --sidebar-search-match: color-mix(
@@ -821,7 +825,8 @@
     var(--canvas) 67%
   );
   --sidebar-ring: var(--primary);
-  --font-sans: "Inter Variable", Inter, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Helvetica Neue", sans-serif;
   --font-serif: Georgia, serif;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
@@ -901,10 +906,18 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-synthesis: none;
   }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-synthesis: none;
   }
 
   button,

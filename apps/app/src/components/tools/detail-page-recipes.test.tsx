@@ -144,8 +144,8 @@ const PLUGIN: PluginListItem = {
   provenance: "catalog",
   isOrphanedBuiltin: false,
   catalogEntryId: "github",
-  publisherLabel: "BB Community",
-  sourceDisplay: "BB Official · GitHub",
+  publisherLabel: "Axe AI Community",
+  sourceDisplay: "Axe AI Official · GitHub",
   updateState: EMPTY_PLUGIN_UPDATE_STATE,
 };
 

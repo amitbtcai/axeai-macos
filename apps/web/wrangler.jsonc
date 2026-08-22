@@ -1,6 +1,6 @@
-// getbb.app site — marketing page + bb connect auth/dashboard, TanStack Start on Workers.
+// AxeAI account + remote-access dashboard, TanStack Start on Workers.
 //
-// Top level = staging (vibecodethis.site); env.production = prod (getbb.app).
+// Top level = upstream staging; env.production = AxeAI production.
 // The @cloudflare/vite-plugin resolves the environment at BUILD time via
 // CLOUDFLARE_ENV (not `wrangler deploy --env`): the build writes the resolved
 // config to dist/server/wrangler.json and a plain `wrangler deploy` follows
@@ -63,17 +63,20 @@
   ],
   "routes": [{ "pattern": "vibecodethis.site", "custom_domain": true }],
   "env": {
-    // Production (getbb.app). Cutover note: the getbb.app + www custom domains
-    // move here from the old bb-landing worker; until then workers_dev gives a
-    // preview URL. `www` is handled by the gate's reserved-handle redirect.
+    // Production: app.axeai.com is the user-facing dashboard and
+    // remote.axeai.com is the pairing API apex. Per-Mac traffic is handled by
+    // axeai-connect at <handle>.remote.axeai.com.
     "production": {
-      "name": "bb-web",
-      "workers_dev": true,
+      "name": "axeai-web",
+      "workers_dev": false,
       "observability": { "enabled": true },
       // Override the inherited staging custom domain; prod domains attach at
       // cutover. Never leave this to inheritance — a prod deploy would steal
       // vibecodethis.site from bb-web-staging.
-      "routes": [],
+      "routes": [
+        { "pattern": "app.axeai.com", "custom_domain": true },
+        { "pattern": "remote.axeai.com", "custom_domain": true }
+      ],
       "secrets": {
         "required": [
           "GITHUB_CLIENT_ID",
@@ -84,15 +87,15 @@
         ],
       },
       "vars": {
-        "BASE_DOMAIN": "getbb.app",
-        "APP_URL": "https://getbb.app",
+        "BASE_DOMAIN": "remote.axeai.com",
+        "APP_URL": "https://app.axeai.com",
         "RESEND_AUDIENCE_ID": "299db4ee-f3db-476d-9847-0bf4344d9c44",
       },
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "bb-connect-prod",
-          "database_id": "5e37a076-93e9-4dcf-933f-761c22f7cf8b",
+          "database_name": "axeai-connect-prod",
+          "database_id": "AXEAI_CONNECT_PROD_D1_ID",
         },
       ],
       "durable_objects": {
@@ -100,7 +103,7 @@
           {
             "name": "TUNNEL_DO",
             "class_name": "TunnelDO",
-            "script_name": "bb-connect",
+            "script_name": "axeai-connect",
           },
         ],
       },

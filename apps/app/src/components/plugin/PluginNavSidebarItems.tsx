@@ -402,23 +402,8 @@ function PluginNavRowVisibilityMenuItem({
   );
 }
 
-/**
- * The Extensions row's glyph. Resting is the toolbox; hovering (or focusing)
- * the row swaps in the tool case.
- *
- * Both glyphs are always rendered into one grid cell and only their opacity
- * changes, so the icon box is the same size in both states and the swap cannot
- * shift the row's text. The trigger is the shared row-hover CSS the sidebar's
- * other affordances already use rather than React hover state, so it stays a
- * paint-only change and matches keyboard focus for free.
- */
 function ToolsNavSidebarItemIcon() {
-  return (
-    <span className="bb-sidebar-row-icon-swap shrink-0" aria-hidden="true">
-      <Icon name="Toolbox" className="bb-sidebar-row-icon-rest" />
-      <Icon name="ToolCase" className="bb-sidebar-row-icon-hover" />
-    </span>
-  );
+  return <Icon name="Puzzle" className="shrink-0" aria-hidden="true" />;
 }
 
 /**
@@ -499,7 +484,13 @@ function PluginNavSidebarItem({
       {...props}
       rowKey={getPluginNavPanelKey(row)}
       title={chrome.title}
-      icon={<PluginIcon pluginId={chrome.pluginId} icon={chrome.icon} />}
+      icon={
+        chrome.title === "Automations" ? (
+          <Icon name="Workflow" aria-hidden="true" />
+        ) : (
+          <PluginIcon pluginId={chrome.pluginId} icon={chrome.icon} />
+        )
+      }
       isActive={pathname === path || pathname.startsWith(`${path}/`)}
       splitMiniMap={splitIndicator.miniMap}
       accessory={sidebarAccessory}

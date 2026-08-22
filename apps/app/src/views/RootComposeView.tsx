@@ -177,11 +177,8 @@ import {
   type RootComposeTerminalTarget,
 } from "./RootComposePanelTabContent";
 
-const ROOT_COMPOSE_SIDEBAR_ACTION_ALIGNED_TOP_PADDING_CLASS = "pt-14";
-
-// Fill the scroll area and center the no-projects welcome both axes.
-const ROOT_COMPOSE_EMPTY_WELCOME_CONTENT_CLASS =
-  "min-h-full flex-1 items-center justify-center pb-12";
+const ROOT_COMPOSE_SIDEBAR_ACTION_ALIGNED_TOP_PADDING_CLASS =
+  "min-h-full flex-1 pb-5 pt-14";
 const EMPTY_TERMINAL_SESSIONS: readonly TerminalSession[] = [];
 
 interface LegacyProjectComposeRedirectProps {
@@ -1754,11 +1751,7 @@ function RootComposeSurface({
     </div>
   ) : null;
   const isForkDraft = forkSeed !== null;
-  const showEmptyWelcome =
-    !isForkDraft &&
-    !startedComposing &&
-    projects !== undefined &&
-    projects.length === 0;
+  const showLanding = !isForkDraft;
   const setPromptTextAndMentions = promptDraft.setTextAndMentions;
   const handleStartComposing = useCallback(
     (prefill?: string) => {
@@ -1952,9 +1945,7 @@ function RootComposeSurface({
           <AppNavigationHostProvider capabilities={appNavigationCapabilities}>
             <RootComposeSecondaryContent
               contentClassName={
-                showEmptyWelcome
-                  ? ROOT_COMPOSE_EMPTY_WELCOME_CONTENT_CLASS
-                  : ROOT_COMPOSE_SIDEBAR_ACTION_ALIGNED_TOP_PADDING_CLASS
+                ROOT_COMPOSE_SIDEBAR_ACTION_ALIGNED_TOP_PADDING_CLASS
               }
               isSecondaryPanelOpen={isSecondaryPanelOpen}
               onToggleSecondaryPanel={handleToggleSecondaryPanel}
@@ -1986,26 +1977,24 @@ function RootComposeSurface({
                 onPanelFocus: touchFixedPanelTabsState,
               }}
             >
-              {showEmptyWelcome ? (
-                <RootComposeEmptyWelcome
-                  onCompose={handleStartComposing}
-                  onAddProject={quickCreateProject.openCreateDialog}
-                  addProjectDisabled={
-                    !quickCreateProject.isAvailable ||
-                    quickCreateProject.isCreating
-                  }
-                />
-              ) : (
-                <>
+              <div className="flex min-h-full w-full flex-1 flex-col">
+                {showLanding ? (
+                  <div className="flex flex-1 items-center justify-center pb-16 pt-8">
+                    <RootComposeEmptyWelcome
+                      onCompose={handleStartComposing}
+                    />
+                  </div>
+                ) : null}
+                <div className="sticky bottom-0 z-10 mt-auto w-full pb-1">
                   {promptBox}
-                  <RootComposeMobileRecents
-                    highlightedThreadId={lastCreatedThreadId}
-                    projectNamesById={mobileRecentProjectNamesById}
-                    showCreatingRow={isSubmitting}
-                    threads={mobileRecentThreads}
-                  />
-                </>
-              )}
+                </div>
+                <RootComposeMobileRecents
+                  highlightedThreadId={lastCreatedThreadId}
+                  projectNamesById={mobileRecentProjectNamesById}
+                  showCreatingRow={isSubmitting}
+                  threads={mobileRecentThreads}
+                />
+              </div>
             </RootComposeSecondaryContent>
           </AppNavigationHostProvider>
         </UrlOpenRoutingProvider>

@@ -62,7 +62,7 @@ function providerLabel(
   provider: SkillProvider | null,
   providerDisplayNames: ProviderDisplayNames,
 ): string {
-  if (provider === null) return "bb";
+  if (provider === null) return "AxeAI";
   return (
     providerDisplayNames.get(provider) ??
     getProviderIconInfo(provider)?.ariaLabel ??
@@ -79,7 +79,7 @@ function providerFilterLabel(
   providerDisplayNames: ProviderDisplayNames,
 ): string {
   return provider === "bb"
-    ? "bb"
+    ? "AxeAI"
     : providerLabel(provider, providerDisplayNames);
 }
 
@@ -94,7 +94,7 @@ function skillSourceFilterId(skill: SkillSummary): ResourceSkillSourceFilter {
 function skillSourceFilterLabel(source: ResourceSkillSourceFilter): string {
   switch (source) {
     case "bb-official":
-      return "BB Official";
+      return "Axe AI Official";
     case "included":
       return "Included in plugin";
     case "user":
@@ -229,11 +229,11 @@ const SKILLS_BROWSE_DESCRIPTION = (
     >
       skills.sh
     </a>
-    . Install one and every agent you use in bb can run it.
+    . Install one and every agent you use in AxeAI can run it.
   </>
 );
 const SKILLS_LIBRARY_DESCRIPTION =
-  "The skills on this bb host — yours, your providers', and those bundled with plugins. They work with every agent you use in bb.";
+  "The skills on this AxeAI host — yours, your providers', and those bundled with plugins. They work with every agent you use in AxeAI.";
 
 /**
  * How long the pointer (or focus) must rest on a row before its detail
@@ -284,7 +284,7 @@ function SkillRow({
         title={skill.name}
         titleMeta={
           skill.scope === "bb-builtin" ? (
-            <ProvenancePill label="BB Official" />
+            <ProvenancePill label="Axe AI Official" />
           ) : skill.scope === "plugin" ? (
             <ProvenancePill
               label="Included"
@@ -565,7 +565,7 @@ export function SkillsOverview({
               action={
                 <CreateWithTemplatesButton
                   kind="skill"
-                  label="New bb skill"
+                  label="New Axe AI skill"
                   onCreate={onCreateSkill}
                 />
               }
@@ -724,9 +724,9 @@ export function SkillDetailDialogView({
       titleBadge={
         skill.scope === "bb-builtin"
           ? {
-              label: "BB Official",
-              tooltip: "Ships with bb",
-              accessibleLabel: `${skill.name} is BB Official`,
+              label: "Axe AI Official",
+              tooltip: "Ships with Axe AI",
+              accessibleLabel: `${skill.name} is Axe AI Official`,
             }
           : bundledPluginName !== null
             ? {

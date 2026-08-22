@@ -32,9 +32,9 @@ export function describeServerUrl(serverUrl: string): string {
   try {
     parsed = new URL(serverUrl);
   } catch {
-    return "the saved bb server";
+    return "the saved AxeAI server";
   }
-  return `the bb server at ${parsed.origin}`;
+  return `the AxeAI server at ${parsed.origin}`;
 }
 
 /**
@@ -81,7 +81,7 @@ export async function loadRemoteServerPage(
         "Window ▸ Server to retry this server or switch to " +
         `${BUILTIN_SERVER_NAME}.`,
       logs: "",
-      title: "Could not reach this bb server",
+      title: "Could not reach this AxeAI server",
     });
     return false;
   }

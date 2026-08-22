@@ -33,17 +33,17 @@ export interface ConnectStatus {
    * paired. Null when unpaired.
    */
   handle: string | null;
-  /** Public URL, e.g. https://<label>.getbb.app; null when not paired. */
+  /** Public URL, e.g. https://<label>.remote.axeai.com; null when not paired. */
   url: string | null;
   /**
-   * getbb.app dashboard URL to mint connect codes — derived from the paired
+   * AxeAI dashboard URL to mint connect codes — derived from the paired
    * base domain (or the connect apex when unpaired), never a frontend
    * literal, so staging/self-hosted gates point at their own dashboard.
    */
   dashboardUrl: string;
   /**
    * Human transport error for the reconnecting state (e.g. "can't reach
-   * getbb.app — connection refused"); null when connected or never failed.
+   * remote.axeai.com — connection refused"); null when connected or never failed.
    */
   lastError: string | null;
   /**

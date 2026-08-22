@@ -51,7 +51,7 @@ export function ProvidersSettingsSection({
   return (
     <SettingsSection
       title="Providers"
-      description="The agents bb can run a thread on, in picker order. Each provider's own options live on its plugin page under Plugins."
+      description="The agents Axe AI can run a thread on, in picker order. Each provider's own options live on its plugin page under Plugins."
     >
       {providersQuery.isPending ? (
         <p className="text-sm text-muted-foreground">Loading providers…</p>

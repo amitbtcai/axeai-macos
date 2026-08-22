@@ -20,7 +20,7 @@ import { usePluginSlots } from "@/lib/plugin-slots";
 
 const BUILT_IN_OPTION = {
   key: BUILT_IN_REPLACEMENT_PROVIDER,
-  title: "bb (built-in)",
+  title: "Axe AI (built-in)",
   description: "Projects, sections, and nested threads.",
 } as const;
 
@@ -55,7 +55,7 @@ export function SidebarThreadListSetting() {
   return (
     <SettingsWithControl
       label="Sidebar"
-      description="Choose automatic activation, BB's list, or a specific plugin on this device."
+      description="Choose automatic activation, Axe AI's list, or a specific plugin on this device."
     >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

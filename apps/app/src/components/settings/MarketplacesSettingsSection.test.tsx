@@ -14,7 +14,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 
 const OFFICIAL = {
   name: "bb-community",
-  displayName: "BB Community",
+  displayName: "Axe AI Community",
   description: null,
   official: true,
   sourceKind: "https",
@@ -96,7 +96,7 @@ describe("MarketplacesSettingsSection", () => {
     render(<MarketplacesSettingsSection />, { wrapper });
 
     await screen.findByText("Acme Plugins");
-    expect(screen.queryByRole("button", { name: "Remove BB Official" })).toBe(
+    expect(screen.queryByRole("button", { name: "Remove Axe AI Official" })).toBe(
       null,
     );
     expect(

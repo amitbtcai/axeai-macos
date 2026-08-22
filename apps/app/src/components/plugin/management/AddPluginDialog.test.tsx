@@ -28,8 +28,8 @@ function installPlanFor(url: string): unknown {
     pluginId: entryId,
     displayName: entryId,
     marketplace,
-    marketplaceDisplayName: official ? "BB Official" : "Acme Plugins",
-    publisherLabel: official ? "BB Official" : "Acme Plugins",
+    marketplaceDisplayName: official ? "Axe AI Official" : "Acme Plugins",
+    publisherLabel: official ? "Axe AI Official" : "Acme Plugins",
     official,
     author: { name: "Acme", url: "https://github.com/acme" },
     source: "git:https://github.com/acme/plugins.git@semver:^1.0.0",
@@ -218,7 +218,7 @@ describe("AddPluginDialog", () => {
     const { unmount } = renderDialog({
       entryId: "linear",
       marketplace: "bb-community",
-      publisherLabel: "BB Community",
+      publisherLabel: "Axe AI Community",
       displayName: "Linear",
       icon: "Github",
       iconUrl: null,
@@ -226,7 +226,7 @@ describe("AddPluginDialog", () => {
       source: "builtin:linear",
     });
     expect(
-      screen.getByText("Install this plugin, bundled with BB."),
+      screen.getByText("Install this plugin, bundled with Axe AI."),
     ).not.toBeNull();
     unmount();
 
@@ -235,7 +235,7 @@ describe("AddPluginDialog", () => {
     const git = renderDialog({
       entryId: "thread-hover-cards",
       marketplace: "bb-community",
-      publisherLabel: "BB Community",
+      publisherLabel: "Axe AI Community",
       displayName: "Thread Hover Cards",
       icon: "Github",
       iconUrl: null,
@@ -244,16 +244,16 @@ describe("AddPluginDialog", () => {
     });
     expect(
       screen.getByText(
-        "Install this BB Community plugin from its listed source repository.",
+        "Install this Axe AI Community plugin from its listed source repository.",
       ),
     ).not.toBeNull();
-    expect(screen.queryByText(/bundled with BB/)).toBeNull();
+    expect(screen.queryByText(/bundled with Axe AI/)).toBeNull();
     git.unmount();
 
     renderDialog({
       entryId: "widgets",
       marketplace: "bb-community",
-      publisherLabel: "BB Community",
+      publisherLabel: "Axe AI Community",
       displayName: "Widgets",
       icon: "Zap",
       iconUrl: null,
@@ -262,7 +262,7 @@ describe("AddPluginDialog", () => {
     });
     expect(
       screen.getByText(
-        "Install this BB Community plugin from its listed npm package.",
+        "Install this Axe AI Community plugin from its listed npm package.",
       ),
     ).not.toBeNull();
   });
@@ -278,7 +278,7 @@ describe("AddPluginDialog", () => {
       iconUrl: null,
       iconTinted: false,
       marketplace: "bb-community",
-      publisherLabel: "BB Community",
+      publisherLabel: "Axe AI Community",
       source: "npm:bb-plugin-widgets@^1.0.0 (registry https://npm.acme.test)",
     });
 
@@ -294,7 +294,7 @@ describe("AddPluginDialog", () => {
     renderDialog({
       entryId: "linear",
       marketplace: "bb-community",
-      publisherLabel: "BB Community",
+      publisherLabel: "Axe AI Community",
       displayName: "Linear",
       icon: "Github",
       iconUrl: null,
@@ -326,7 +326,7 @@ describe("AddPluginDialog", () => {
     renderDialog({
       entryId: "widgets",
       marketplace: "bb-community",
-      publisherLabel: "BB Community",
+      publisherLabel: "Axe AI Community",
       displayName: "Widgets",
       icon: null,
       iconUrl,
@@ -351,7 +351,7 @@ describe("AddPluginDialog", () => {
         initial={{
           entryId: "linear",
           marketplace: "bb-community",
-          publisherLabel: "BB Community",
+          publisherLabel: "Axe AI Community",
           displayName: "Linear",
           icon: "Github",
           iconUrl: null,
@@ -462,7 +462,7 @@ describe("AddPluginDialog", () => {
     renderDialog({
       entryId: "linear",
       marketplace: "bb-community",
-      publisherLabel: "BB Community",
+      publisherLabel: "Axe AI Community",
       displayName: "Linear",
       icon: "Github",
       iconUrl: null,

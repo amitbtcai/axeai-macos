@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Run bb threads with Claude Code.",
+  "description": "Run Axe AI threads with Claude Code.",
   "engines": {
     "bb": ">=0.0"
   },
   "bb": {
     "name": "Claude Code provider",
-    "description": "Run bb threads with Claude Code.",
+    "description": "Run Axe AI threads with Claude Code.",
     "branding": {
       "icon": "./icons/claude-code.svg"
     },

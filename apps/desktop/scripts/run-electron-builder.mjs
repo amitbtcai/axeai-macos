@@ -88,7 +88,7 @@ function logSigningPlan(signingPlan) {
     );
   } else {
     logWarning(
-      "macOS signing skipped: CSC_IDENTITY_AUTO_DISCOVERY=false and no signing secrets found. Artifacts will be unsigned.",
+      "Apple Developer signing is unavailable; applying an ad-hoc signature. Artifacts remain unnotarized beta builds.",
     );
   }
 
@@ -116,8 +116,9 @@ function autoDiscoveryExplicitlyDisabled(env) {
  *   evaluate every exec in the app's process tree and can stall execs
  *   system-wide. Machines without a signing identity fall back to unsigned
  *   artifacts inside electron-builder.
- * - "disabled": no secrets and CSC_IDENTITY_AUTO_DISCOVERY=false — explicitly
- *   unsigned (the CI path for workflow-artifact-only builds).
+ * - "disabled": no secrets and CSC_IDENTITY_AUTO_DISCOVERY=false — ad-hoc
+ *   signed so macOS can execute the bundled process tree without provenance
+ *   stalls. This does not provide Developer ID trust or notarization.
  */
 function createSigningPlan(env) {
   const presentSigningKeys = presentEnvironmentKeys(
@@ -170,7 +171,7 @@ function resolveElectronBuilderConfig(baseConfig, env) {
   };
 
   if (signingPlan.mode === "disabled") {
-    mac.identity = null;
+    mac.identity = "-";
   } else if (signingPlan.identityName) {
     mac.identity = signingPlan.identityName;
   } else {

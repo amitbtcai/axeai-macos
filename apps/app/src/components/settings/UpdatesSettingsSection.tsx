@@ -93,7 +93,7 @@ const EMPTY_PROVIDER_CLI_FAILURES: ReadonlyMap<
   string,
   ProviderCliInstallFailure
 > = new Map();
-const CHANGELOG_URL = "https://getbb.app/changelog";
+const CHANGELOG_URL = "https://github.com/amitbtcai/axeai-macos/releases";
 const CHANGELOG_STALE_TIME_MS = 5 * 60_000;
 const CHANGELOG_DISMISSED_VERSION_STORAGE_KEY =
   "bb.settings.updates.dismissed-changelog-version";
@@ -706,7 +706,7 @@ export function ChangelogPreviewCard() {
                   variant="ghost"
                   size="icon"
                   className="size-7 text-muted-foreground hover:text-foreground"
-                  aria-label={`Dismiss bb ${entry.version} changelog preview`}
+                  aria-label={`Dismiss Axe AI ${entry.version} changelog preview`}
                   onClick={() => {
                     rawStringLocalStorage.setItem(
                       CHANGELOG_DISMISSED_VERSION_STORAGE_KEY,
@@ -789,7 +789,7 @@ export function ChangelogPreviewCard() {
               <button
                 type="button"
                 disabled={!releaseVisible}
-                aria-label={`Open the full bb ${entry.version} changelog`}
+                aria-label={`Open the full Axe AI ${entry.version} changelog`}
                 onClick={() =>
                   openUrlInExternalBrowser(
                     `${CHANGELOG_URL}#${entry.version.replaceAll(".", "-")}`,
@@ -900,7 +900,7 @@ export function BbAppUpdateRows({
       // One bb, however it happens to be packaged. The desktop shell and a
       // web/npm install are two ways to reach the same thing to update, not
       // two things, so the row does not rename itself per surface.
-      <RowName name="bb app" current={null} latest={null} />,
+      <RowName name="Axe AI app" current={null} latest={null} />,
       <RowStateControl live state="in-progress" />,
     );
   }
@@ -910,7 +910,7 @@ export function BbAppUpdateRows({
       desktopInfo.pendingVersion ?? desktopInfo.latestVersion;
     const latest = desktopInfo.updateAvailable ? pendingVersion : null;
     const name = (
-      <RowName name="bb app" current={desktopInfo.version} latest={latest} />
+      <RowName name="Axe AI app" current={desktopInfo.version} latest={latest} />
     );
 
     if (desktopInfo.updateDownloaded) {
@@ -921,7 +921,7 @@ export function BbAppUpdateRows({
           state="restart-required"
           buttonLeading={<BbLogo className="size-3" />}
           buttonLabel="Relaunch"
-          actionLabel="Relaunch bb to finish updating"
+          actionLabel="Relaunch Axe AI to finish updating"
           onClick={() => onRelaunchDesktop?.()}
         />,
       );
@@ -951,14 +951,14 @@ export function BbAppUpdateRows({
 
   if (systemVersion === undefined) {
     return row(
-      <RowName name="bb app" current={null} latest={null} />,
+      <RowName name="Axe AI app" current={null} latest={null} />,
       <RowStateControl state="in-progress" />,
     );
   }
 
   const name = (
     <RowName
-      name="bb app"
+      name="Axe AI app"
       detail={
         systemVersion.updateAvailable ? (
           // The command is a readback of what the button copies, so it sits in
@@ -1103,7 +1103,7 @@ export function BbDaemonUpdateRow({
           <BbLogo className="size-4" />
         </span>
       }
-      title="bb daemon"
+      title="Axe AI daemon"
       state={daemonCaption}
       trailingMeta={null}
       actions={

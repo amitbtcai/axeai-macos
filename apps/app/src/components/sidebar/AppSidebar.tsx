@@ -34,7 +34,6 @@ import {
 } from "@/lib/bb-desktop";
 import { getRootComposeRoutePath, getThreadRoutePath } from "@/lib/route-paths";
 import { usePaneContentSplitDrag } from "./usePaneContentSplitDrag";
-import { openUrlInExternalBrowser } from "@/lib/url-open-routing";
 import type { SidebarThreadSearchNavigationItem } from "./sidebarThreadSearch";
 import { useSidebarThreadSearch } from "./useSidebarThreadSearch";
 import {
@@ -56,7 +55,6 @@ import { useRouteState } from "@/hooks/useRouteState";
 
 const NEW_THREAD_PANE_CONTENT = { kind: "new-thread" } as const;
 
-const BUG_REPORT_NEW_ISSUE_URL = "https://github.com/get-bb/bb/issues/new";
 const SIDEBAR_FOOTER_ACTION_CLASS = cn(
   COARSE_POINTER_CHILD_ICON_BUTTON_CLASS,
   "text-muted-foreground hover:text-sidebar-foreground [&>svg]:opacity-80",
@@ -398,24 +396,6 @@ export function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
           <PluginSidebarFooterActions onNavigate={closeOnMobile} />
-          <SidebarMenuItem className="min-w-0">
-            <SidebarMenuButton
-              className={SIDEBAR_FOOTER_ACTION_CLASS}
-              tooltip={{
-                children: "Report a bug",
-                hidden: false,
-                side: "top",
-              }}
-              aria-label="Report a bug"
-              onClick={() => {
-                closeOnMobile();
-                openUrlInExternalBrowser(BUG_REPORT_NEW_ISSUE_URL);
-              }}
-            >
-              <Icon name="Bug" />
-              <span className="sr-only">Report a bug</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <li aria-hidden="true" className="min-w-0 flex-1" />
           <SidebarPluginAttentionGlyph
             className={SIDEBAR_FOOTER_ACTION_CLASS}

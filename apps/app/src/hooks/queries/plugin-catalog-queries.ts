@@ -242,7 +242,7 @@ export interface PluginCatalogSearchEntry {
   /** Stable publisher identity, for grouping; never the label, which a
    * marketplace chooses for itself. */
   publisherKey: string;
-  /** Publisher badge: the marketplace's name, or `BB Official` when bundled. */
+  /** Publisher badge: the marketplace's name, or `Axe AI Official` when bundled. */
   publisherLabel: string;
   official: boolean;
   author: PluginCatalogAuthor | null;

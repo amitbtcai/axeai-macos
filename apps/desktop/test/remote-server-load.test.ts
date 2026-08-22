@@ -58,7 +58,7 @@ describe("loadRemoteServerPage", () => {
 
     expect(harness.shownErrors).toHaveLength(1);
     const view = harness.shownErrors[0];
-    expect(view?.title).toBe("Could not reach this bb server");
+    expect(view?.title).toBe("Could not reach this AxeAI server");
     expect(view?.details).toContain("http://bb-host.tailnet.ts.net:38886");
     expect(view?.details).toContain("Window ▸ Server");
     expect(view?.details).toContain("This Mac");
@@ -109,10 +109,10 @@ describe("describeServerUrl", () => {
   it("names only the origin", () => {
     expect(
       describeServerUrl("http://user:pw@host.ts.net:38886/app?token=x#y"),
-    ).toBe("the bb server at http://host.ts.net:38886");
+    ).toBe("the AxeAI server at http://host.ts.net:38886");
   });
 
   it("falls back to a generic label for an unparseable URL", () => {
-    expect(describeServerUrl("not a url")).toBe("the saved bb server");
+    expect(describeServerUrl("not a url")).toBe("the saved AxeAI server");
   });
 });

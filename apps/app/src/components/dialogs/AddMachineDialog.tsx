@@ -199,7 +199,7 @@ function UnreachableServerNotice({
       <p className="text-xs text-subtle-foreground">
         The pairing command would target{" "}
         <span className="font-mono">{serverUrl}</span>, which points to the
-        machine that runs it, not to this bb.{" "}
+        machine that runs it, not to Axe AI.{" "}
         {reason === "disabled"
           ? "The Connect plugin is disabled, so remote access is off. Enable it, then come back here to get a pairing command that works from anywhere."
           : "Set up remote access first, then come back here to get a pairing command that works from anywhere."}

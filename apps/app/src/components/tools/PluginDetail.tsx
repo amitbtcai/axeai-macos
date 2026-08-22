@@ -61,7 +61,7 @@ import { usePluginSlots } from "@/lib/plugin-slots";
 import { useClipboardCopy } from "@/lib/clipboard";
 
 /**
- * Passive publisher shown beside an installed plugin's name: `BB Official` for
+ * Passive publisher shown beside an installed plugin's name: `Axe AI Official` for
  * a plugin bundled with the app, the listing marketplace's display name for a
  * catalog install. A plugin the user added from a source wears no pill —
  * naming a publisher there would be a trust signal bb cannot back.
@@ -76,7 +76,7 @@ export function pluginIsLocalSource(plugin: PluginListItem): boolean {
 }
 
 export function pluginRemovalLabel(plugin: PluginListItem): string {
-  return pluginIsLocalSource(plugin) ? "Remove from bb" : "Uninstall";
+  return pluginIsLocalSource(plugin) ? "Remove from AxeAI" : "Uninstall";
 }
 
 /**
@@ -87,7 +87,7 @@ export function pluginRemovalLabel(plugin: PluginListItem): string {
  */
 export function pluginRemovalDescription(plugin: PluginListItem): string {
   return pluginIsLocalSource(plugin)
-    ? `Remove "${plugin.id}" from bb and delete its settings, secrets, and schedules? Its source files stay on disk. To move it to another directory, install the new path instead; that keeps its settings.`
+    ? `Remove "${plugin.id}" from AxeAI and delete its settings, secrets, and schedules? Its source files stay on disk. To move it to another directory, install the new path instead; that keeps its settings.`
     : `Uninstall "${plugin.id}" and delete its managed files, settings, secrets, and schedules?`;
 }
 
@@ -216,7 +216,7 @@ export function CatalogPluginDetailBanner({
     <PluginBannerBar
       tone="warning"
       icon="AlertTriangle"
-      title="Update bb to install this plugin"
+      title="Update AxeAI to install this plugin"
       detail={entry.incompatibleReason}
     />
   );
@@ -322,7 +322,7 @@ export function PluginDetail({
   const updatesWithBb = plugin.source.startsWith("builtin:");
   const installedAt = sourceQuery.data?.installedAt ?? null;
   const installedValue = updatesWithBb
-    ? "Updates with bb"
+    ? "Updates with AxeAI"
     : installedAt !== null
       ? formatAbsoluteDate(installedAt)
       : sourceQuery.isPending
@@ -369,7 +369,7 @@ export function PluginDetail({
       disabled: pending || plugin.provenance === "builtin",
       disabledReason:
         plugin.provenance === "builtin"
-          ? "Included with BB; disable this plugin instead."
+          ? "Included with Axe AI; disable this plugin instead."
           : undefined,
       onSelect: () => onDelete(plugin),
     },
@@ -382,7 +382,7 @@ export function PluginDetail({
       // Provenance is a label, not a control: it sits flush to the name as a
       // passive badge. Default owned sources need no label; only BB-published
       // plugins carry provenance here. It used to render as a green
-      // "Installed"/"BB Official"
+      // "Installed"/"Axe AI Official"
       // button that swapped to a red Uninstall on hover — a status that
       // deleted on click, at the same weight as the enable toggle.
       titleMeta={<PluginProvenancePill plugin={plugin} />}

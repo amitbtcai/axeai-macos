@@ -28,7 +28,7 @@ export const CURATED_MARKETPLACE_NAME = CURATED_PLUGIN_MARKETPLACE_NAME;
  * build, not from a marketplace refresh, so they keep their own label even
  * though the store groups them under the official marketplace.
  */
-export const BUILTIN_PUBLISHER_LABEL = "BB Official";
+export const BUILTIN_PUBLISHER_LABEL = "Axe AI Official";
 
 /**
  * Grouping identity of those plugins. It is not a marketplace name, and a

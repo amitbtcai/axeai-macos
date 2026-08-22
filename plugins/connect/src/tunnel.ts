@@ -222,7 +222,7 @@ export class ConnectTunnel {
     if (credential === null) {
       throw new ConnectListError(
         "not_paired",
-        "this bb is not connected to getbb.app — run `bb connect` for how to pair",
+        "Axe AI is not connected to app.axeai.com — run `bb connect` for how to pair",
       );
     }
     return listAccountServers(credential);
@@ -279,6 +279,13 @@ export class ConnectTunnel {
       this.credential !== null
         ? deriveConnectBaseUrl(this.credential.serverUrl)
         : this.options.defaultBaseUrl;
+    const url = new URL(base);
+    if (
+      url.hostname === "remote.axeai.com" ||
+      url.hostname.endsWith(".remote.axeai.com")
+    ) {
+      return "https://app.axeai.com/dashboard";
+    }
     return `${base.replace(/\/$/, "")}/dashboard`;
   }
 
@@ -390,7 +397,7 @@ export class ConnectTunnel {
   private credentialRejected(statusCode: number): void {
     this.lastError =
       `the gate rejected this bb's credential (HTTP ${statusCode}) — ` +
-      "pairing was revoked; get a new code from the getbb.app dashboard and re-pair";
+      "pairing was revoked; get a new code from the app.axeai.com dashboard and re-pair";
     this.options.log.warn(this.lastError);
     this.credential = null;
     this.teardown();
@@ -557,12 +564,12 @@ export class ConnectTunnel {
   }
 }
 
-/** Host shown in transport errors — the connect apex, e.g. "getbb.app". */
+/** Host shown in transport errors — the connect apex, e.g. "app.axeai.com". */
 function connectApexHost(serverUrl: string): string {
   try {
     return new URL(deriveConnectBaseUrl(serverUrl)).host;
   } catch {
-    return "getbb.app";
+    return "app.axeai.com";
   }
 }
 

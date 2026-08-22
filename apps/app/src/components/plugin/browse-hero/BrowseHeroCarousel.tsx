@@ -17,12 +17,12 @@ const PLUGIN_RAIL: readonly IconName[] = [
 ];
 
 const PLUGIN_HERO_COPY: ShowcaseHeroCopy = {
-  ariaLabel: "What you can build with bb plugins",
-  headlineLead: "Turn bb into",
+  ariaLabel: "What you can build with Axe AI plugins",
+  headlineLead: "Turn Axe AI into",
   composingNoun: "whatever you need",
   description: PLUGINS_BROWSE_DESCRIPTION,
   tablistLabel: "Plugin examples",
-  frameTitlePrefix: "bb — ",
+  frameTitlePrefix: "Axe AI — ",
   frameBadge: "Plugin",
 };
 
@@ -47,7 +47,7 @@ interface BrowseHeroCarouselProps {
 
 /**
  * The Plugins Browse hero: the shared showcase engine dressed in plugin
- * content — app-surface archetypes, the "Turn bb into …" headline, and the
+ * content — app-surface archetypes, the "Turn Axe AI into …" headline, and the
  * create-plugin prompt prefix.
  */
 export function BrowseHeroCarousel({

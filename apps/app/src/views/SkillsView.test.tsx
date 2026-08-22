@@ -283,7 +283,7 @@ function NavigateButton({ to, label }: { to: string; label: string }) {
 }
 
 describe("SkillsOverview", () => {
-  it("defaults to BB skills and places BB Official skills first", () => {
+  it("defaults to BB skills and places Axe AI Official skills first", () => {
     const markup = render({
       skills: [
         makeSkill({ name: "claude-skill", provider: "claude-code" }),
@@ -302,14 +302,14 @@ describe("SkillsOverview", () => {
     });
     expect(markup).not.toContain("claude-skill");
     expect(markup).toContain("Review the current diff.");
-    expect(markup).toContain('aria-label="Filters: Provider: bb"');
+    expect(markup).toContain('aria-label="Filters: Provider: AxeAI"');
     expect(markup).not.toContain("Provider: 1 selected");
     expect(markup).toContain("Sort");
     // Browse and Library are top-nav destinations now; the page renders no
     // tab layer of its own.
     expect(markup).not.toContain('role="tab"');
-    expect(markup).toContain("BB Official");
-    expect(markup).toContain("New bb skill");
+    expect(markup).toContain("Axe AI Official");
+    expect(markup).toContain("New Axe AI skill");
     expect(markup).not.toContain('aria-label="Open zz-official-skill"');
     expect(markup.indexOf("zz-official-skill")).toBeLessThan(
       markup.indexOf("aa-user-skill"),
@@ -354,14 +354,14 @@ describe("SkillsOverview", () => {
     const typeTrigger = screen.getByRole("button", { name: /^Filters/ });
     fireEvent.focus(typeTrigger);
     expect((await screen.findByRole("tooltip")).textContent).toBe(
-      "Provider: bb",
+      "Provider: AxeAI",
     );
     fireEvent.blur(typeTrigger);
     fireEvent.pointerDown(typeTrigger);
     expect(screen.getByText("Type")).toBeTruthy();
     // The explicit "All" row is gone; an empty selection carries that meaning.
     expect(screen.queryByRole("menuitemcheckbox", { name: "All" })).toBeNull();
-    for (const name of ["BB Official", "Included in plugin", "User"]) {
+    for (const name of ["Axe AI Official", "Included in plugin", "User"]) {
       expect(
         screen
           .getByRole("menuitemcheckbox", { name })
@@ -375,7 +375,7 @@ describe("SkillsOverview", () => {
     expect(await screen.findByText("automations")).toBeTruthy();
     expect(
       screen.getByLabelText(
-        "automations is included with Automations (bb plugin)",
+        "automations is included with Automations (AxeAI plugin)",
       ).textContent,
     ).toBe("Included");
     expect(screen.queryByText("official-skill")).toBeNull();
@@ -430,7 +430,7 @@ describe("SkillsOverview", () => {
     fireEvent.pointerDown(trigger);
     // Provider defaults to `bb`, which would hide both fixtures before the
     // Type filter is reached — clear it so this test observes Type alone.
-    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "bb" }));
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "AxeAI" }));
     fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "User" }));
 
     // Both provider-scoped skills reach the User bucket; the builtin does not.
@@ -453,7 +453,7 @@ describe("SkillsOverview", () => {
     expect(screen.queryByText("codex-authored")).toBeNull();
   });
 
-  it("toggles BB Official independently from Included in plugin", async () => {
+  it("toggles Axe AI Official independently from Included in plugin", async () => {
     renderDom(
       <SkillsOverview
         providerDisplayNames={NO_PROVIDER_DISPLAY_NAMES}
@@ -490,7 +490,7 @@ describe("SkillsOverview", () => {
 
     // Adding the second source widens the selection rather than replacing it.
     fireEvent.click(
-      screen.getByRole("menuitemcheckbox", { name: "BB Official" }),
+      screen.getByRole("menuitemcheckbox", { name: "Axe AI Official" }),
     );
     expect(await screen.findByText("official-skill")).toBeTruthy();
     expect(screen.getByText("automations")).toBeTruthy();
@@ -500,7 +500,7 @@ describe("SkillsOverview", () => {
       screen.getByRole("menuitemcheckbox", { name: "Included in plugin" }),
     );
     fireEvent.click(
-      screen.getByRole("menuitemcheckbox", { name: "BB Official" }),
+      screen.getByRole("menuitemcheckbox", { name: "Axe AI Official" }),
     );
     expect(await screen.findByText("official-skill")).toBeTruthy();
     expect(screen.getByText("automations")).toBeTruthy();
@@ -663,7 +663,7 @@ describe("SkillsOverview", () => {
     ).not.toBeNull();
     expect(
       screen
-        .getByRole("menuitemcheckbox", { name: "bb" })
+        .getByRole("menuitemcheckbox", { name: "AxeAI" })
         .getAttribute("aria-disabled"),
     ).toBeNull();
   });
@@ -692,14 +692,16 @@ describe("SkillsOverview", () => {
     // Merging Provider into the grouped Filters menu replaced the trigger's
     // logo tooltip with the group summary; the logos moved onto the rows.
     expect((await screen.findByRole("tooltip")).textContent?.trim()).toBe(
-      "Provider: bb",
+      "Provider: AxeAI",
     );
     fireEvent.blur(providerTrigger);
 
     fireEvent.pointerDown(providerTrigger);
     expect(screen.getByText("Provider")).toBeTruthy();
     expect(
-      screen.getByRole("menuitemcheckbox", { name: "bb" }).querySelector("img"),
+      screen
+        .getByRole("menuitemcheckbox", { name: "AxeAI" })
+        .querySelector("svg"),
     ).not.toBeNull();
   });
 
@@ -727,7 +729,7 @@ describe("SkillsOverview", () => {
     });
 
     fireEvent.pointerDown(screen.getByRole("button", { name: /^Filters/ }));
-    const bbFilter = screen.getByRole("menuitemcheckbox", { name: "bb" });
+    const bbFilter = screen.getByRole("menuitemcheckbox", { name: "AxeAI" });
     expect(bbFilter.getAttribute("aria-checked")).toBe("true");
     expect(bbFilter.getAttribute("aria-disabled")).toBeNull();
 
@@ -758,7 +760,7 @@ describe("SkillsOverview", () => {
     );
 
     fireEvent.pointerDown(screen.getByRole("button", { name: /^Filters/ }));
-    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "bb" }));
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "AxeAI" }));
     fireEvent.click(
       screen.getByRole("menuitemcheckbox", { name: "Claude Code" }),
     );
@@ -871,7 +873,7 @@ describe("SkillsLibrary library detail routing", () => {
     renderLibrarySkillRoute();
 
     expect(screen.getByText("Loading skill")).toBeTruthy();
-    expect(screen.queryByText("New bb skill")).toBeNull();
+    expect(screen.queryByText("New Axe AI skill")).toBeNull();
   });
 
   it("shows a retryable detail error when the skill library fails to load", async () => {
@@ -883,7 +885,7 @@ describe("SkillsLibrary library detail routing", () => {
 
     expect(await screen.findByText("Couldn't load skill.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Retry" })).toBeTruthy();
-    expect(screen.queryByText("New bb skill")).toBeNull();
+    expect(screen.queryByText("New Axe AI skill")).toBeNull();
   });
 
   it("shows not found on an unknown library skill detail route", async () => {
@@ -895,7 +897,7 @@ describe("SkillsLibrary library detail routing", () => {
     // Skill detail-route states use the same detail-width treatment as the
     // plugin and automation routes rather than a list-shaped empty state.
     expect(notFound.closest("[data-resource-detail-state]")).not.toBeNull();
-    expect(screen.queryByText("New bb skill")).toBeNull();
+    expect(screen.queryByText("New Axe AI skill")).toBeNull();
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
@@ -944,7 +946,7 @@ describe("SkillsLibrary registry detail lifecycle", () => {
     );
 
     let forkButton = await screen.findByRole("button", {
-      name: "Fork Useful skill into a new bb skill",
+      name: "Fork Useful skill into a new Axe AI skill",
     });
     // Browse and Library are top-nav destinations; the page has no tab row.
     expect(screen.queryByRole("tab")).toBeNull();
@@ -966,7 +968,7 @@ describe("SkillsLibrary registry detail lifecycle", () => {
     ).toBeTruthy();
     fireEvent.click(screen.getByText("go-browse"));
     forkButton = await screen.findByRole("button", {
-      name: "Fork Useful skill into a new bb skill",
+      name: "Fork Useful skill into a new Axe AI skill",
     });
     expect(registryListRequests()).toHaveLength(1);
 
@@ -1300,11 +1302,11 @@ describe("RegistrySkillsBrowsePage", () => {
     expect(screen.getAllByText("by owner/repo").length).toBeGreaterThan(0);
     expect(
       screen.getByRole("button", {
-        name: "Fork Alpha into a new bb skill",
+        name: "Fork Alpha into a new Axe AI skill",
       }).textContent,
     ).toBe("");
     const zuluCreate = screen.getByRole("button", {
-      name: "Fork Zulu into a new bb skill",
+      name: "Fork Zulu into a new Axe AI skill",
     });
     fireEvent.click(zuluCreate);
     expect(onFork).toHaveBeenCalledWith(zulu);
@@ -1515,7 +1517,7 @@ describe("RegistrySkillDetailView reference creation", () => {
     const view = renderDom(<RegistrySkillDetailView {...props} />);
 
     const forkButton = screen.getByRole("button", {
-      name: "Fork Useful skill into a new bb skill",
+      name: "Fork Useful skill into a new Axe AI skill",
     });
     expect(forkButton.textContent).toContain("Fork");
     fireEvent.click(forkButton);
@@ -1536,7 +1538,7 @@ describe("RegistrySkillDetailView reference creation", () => {
     );
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Fork Useful skill into a new bb skill",
+        name: "Fork Useful skill into a new Axe AI skill",
       }),
     );
     expect(onFork).toHaveBeenCalledTimes(2);
@@ -1544,7 +1546,7 @@ describe("RegistrySkillDetailView reference creation", () => {
 });
 
 describe("SkillDetailDialogView", () => {
-  it("presents a built-in skill as BB Official without an actions menu", async () => {
+  it("presents a built-in skill as Axe AI Official without an actions menu", async () => {
     const skill = makeSkill({
       name: "bb-cli",
       provider: null,
@@ -1553,12 +1555,12 @@ describe("SkillDetailDialogView", () => {
     });
     renderSkillDetailDialog(skill);
 
-    const official = screen.getByLabelText("bb-cli is BB Official");
-    expect(official.textContent).toBe("BB Official");
+    const official = screen.getByLabelText("bb-cli is Axe AI Official");
+    expect(official.textContent).toBe("Axe AI Official");
     expect(screen.queryByRole("button", { name: "bb-cli actions" })).toBeNull();
     fireEvent.pointerMove(official);
     expect((await screen.findByRole("tooltip")).textContent).toBe(
-      "Ships with bb",
+      "Ships with Axe AI",
     );
   });
 
@@ -1584,7 +1586,7 @@ describe("SkillDetailDialogView", () => {
         manageable: false,
       }),
       accessibleLabel:
-        "plugin-notes is included with Skill catalog fixture (bb plugin)",
+        "plugin-notes is included with Skill catalog fixture (AxeAI plugin)",
       tooltipName: "Skill catalog fixture plugin.",
       providerIcon: "bb",
     },
@@ -1646,7 +1648,7 @@ describe("SkillDetailDialogView", () => {
       name: "Copy skill path: /home/u/.bb/skills/bb-skill",
     });
     expect(screen.getByText("~/.bb/skills/bb-skill")).toBeTruthy();
-    expect(screen.queryByText("BB Official", { exact: true })).toBeNull();
+    expect(screen.queryByText("Axe AI Official", { exact: true })).toBeNull();
     expect(screen.queryByText("Included", { exact: true })).toBeNull();
     expect(screen.queryByText("Imported", { exact: true })).toBeNull();
     expect(screen.queryByText("Editable", { exact: true })).toBeNull();

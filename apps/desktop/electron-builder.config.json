@@ -1,7 +1,7 @@
 {
-  "appId": "dev.bb.desktop",
-  "productName": "bb",
-  "artifactName": "${productName}-${version}-${arch}.${ext}",
+  "appId": "com.axeai.desktop",
+  "productName": "AxeAI",
+  "artifactName": "AxeAI-${version}-${arch}.${ext}",
   "afterPack": "scripts/prepare-native-modules.cjs",
   "asar": true,
   "asarUnpack": ["dist/bb-app-bridge.mjs", "node_modules/**"],
@@ -21,11 +21,17 @@
     "package.json",
     "!**/*.map"
   ],
+  "extraResources": [
+    { "from": "../../LICENSE", "to": "LICENSE.txt" },
+    { "from": "../../THIRD_PARTY_NOTICES.md", "to": "THIRD_PARTY_NOTICES.md" },
+    { "from": "../../AXEAI-EULA.md", "to": "AXEAI-EULA.md" },
+    { "from": "../../PRIVACY.md", "to": "PRIVACY.md" }
+  ],
   "publish": [
     {
       "channel": "latest",
       "provider": "generic",
-      "url": "https://github.com/get-bb/bb/releases/download/desktop-latest/"
+      "url": "https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/"
     }
   ],
   "mac": {
@@ -50,7 +56,7 @@
   },
   "linux": {
     "category": "Development",
-    "executableName": "bb",
+    "executableName": "axeai",
     "icon": "assets/icon.png",
     "target": [{ "target": "AppImage", "arch": ["x64"] }]
   },

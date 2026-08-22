@@ -7,12 +7,14 @@ import {
 
 /**
  * Publisher labels only BB may present. A marketplace names itself, so without
- * this a third-party manifest could set `displayName` to `BB Official` and
+ * this a third-party manifest could set `displayName` to `Axe AI Official` and
  * wear the badge that means "ships inside the app". The store falls back to the
  * marketplace's own name, which is unique and cannot be chosen freely.
  */
 const RESERVED_PUBLISHER_LABELS: ReadonlySet<string> = new Set([
   BUILTIN_PUBLISHER_LABEL,
+  "BB Official",
+  "Axe AI Community",
   "BB Community",
 ]);
 
@@ -68,7 +70,7 @@ export function marketplacePublisherLabels(
  *
  * Keyed on the source, not the provenance: a bundled plugin the user opted
  * into from the store is recorded as a catalog install of the bundled entry,
- * so reading provenance alone flipped its badge from `BB Official` to the
+ * so reading provenance alone flipped its badge from `Axe AI Official` to the
  * marketplace's name the moment it was installed. A plugin the user added from
  * a source has no publisher bb can vouch for, so it gets none.
  */

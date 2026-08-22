@@ -13,7 +13,7 @@ import { CURATED_MARKETPLACE_NAME } from "./marketplace-manifest.js";
 export const BUNDLED_CURATED_MARKETPLACE: MarketplaceManifest = {
   schemaVersion: 1,
   name: CURATED_MARKETPLACE_NAME,
-  displayName: "BB Community",
+  displayName: "Axe AI Community",
   description: "Plugins published to the BB registry and reviewed by the BB team.",
   plugins: [
     {

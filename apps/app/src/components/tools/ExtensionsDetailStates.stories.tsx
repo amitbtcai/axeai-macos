@@ -276,13 +276,13 @@ export function SkillDetailStates() {
       </State>
 
       <State
-        name="BB Official"
-        note="A skill that ships with bb uses the same publisher badge as a BB Official plugin. Its read-only behavior remains a separate permission fact."
+        name="Axe AI Official"
+        note="A skill that ships with bb uses the same publisher badge as a Axe AI Official plugin. Its read-only behavior remains a separate permission fact."
       >
         <Skill
           titleBadge={{
-            label: "BB Official",
-            tooltip: "Ships with bb",
+            label: "Axe AI Official",
+            tooltip: "Ships with Axe AI",
           }}
         />
       </State>
@@ -331,7 +331,7 @@ export function SkillDetailStates() {
         <Skill
           headerActions={
             <ResourceInstallControl
-              accessibleLabel="Fork writing-voice into a new bb skill"
+              accessibleLabel="Fork writing-voice into a new Axe AI skill"
               label="Fork"
               icon="Fork"
               onAction={noop}
@@ -551,7 +551,7 @@ const BUNDLED_PLUGIN: PluginListItem = {
   source: "builtin:github",
   rootDir: "/managed/plugins/github",
   provenance: "builtin",
-  sourceDisplay: "Ships with bb",
+  sourceDisplay: "Ships with Axe AI",
   capabilities: STATIC_CAPABILITIES,
 };
 
@@ -567,9 +567,9 @@ const UNINSTALLED_CATALOG_PLUGIN = {
   category: "Developer tools",
   source: "builtin:github",
   repositoryUrl: null,
-  marketplaceDisplayName: "BB Community",
+  marketplaceDisplayName: "Axe AI Community",
   publisherKey: "builtin",
-  publisherLabel: "BB Official",
+  publisherLabel: "Axe AI Official",
   official: true,
   author: null,
   installed: false,
@@ -696,7 +696,7 @@ function CatalogPlugin({
         initial={{
           entryId: entry.entryId,
           marketplace: "bb-community",
-          publisherLabel: "BB Community",
+          publisherLabel: "Axe AI Community",
           displayName: entry.displayName,
           icon: entry.icon,
           iconUrl: entry.iconUrl,
@@ -750,11 +750,11 @@ export function PluginDetailStates() {
     <PluginStoryQueryBoundary>
       <Story
         title="Plugin detail states"
-        description="An uninstalled BB Official plugin shows the catalog facts bb can verify and offers Install. Once installed, the page adds runtime capabilities, settings, services, and schedules when they apply."
+        description="An uninstalled Axe AI Official plugin shows the catalog facts bb can verify and offers Install. Once installed, the page adds runtime capabilities, settings, services, and schedules when they apply."
       >
         <State
           name="Before ownership"
-          note="An uninstalled BB Official plugin opens as a real detail page. Install is the primary header action; the full-trust confirmation is the commit step."
+          note="An uninstalled Axe AI Official plugin opens as a real detail page. Install is the primary header action; the full-trust confirmation is the commit step."
         >
           <CatalogPlugin />
         </State>
@@ -834,15 +834,15 @@ export function PluginDetailStates() {
         </State>
 
         <State
-          name="BB Official · catalog"
-          note="Installed from bb's catalog. It shares the BB Official badge with built-in plugins, while its install date and ownership menu preserve the lifecycle difference."
+          name="Axe AI Official · catalog"
+          note="Installed from bb's catalog. It shares the Axe AI Official badge with built-in plugins, while its install date and ownership menu preserve the lifecycle difference."
         >
           <Plugin plugin={CATALOG_PLUGIN} />
         </State>
 
         <State
-          name="BB Official · built-in"
-          note="Ships with bb. The badge matches catalog-installed official plugins; the missing install date and ownership menu show that it cannot be uninstalled separately."
+          name="Axe AI Official · built-in"
+          note="Ships with Axe AI. The badge matches catalog-installed official plugins; the missing install date and ownership menu show that it cannot be uninstalled separately."
         >
           <Plugin plugin={BUNDLED_PLUGIN} />
         </State>
@@ -1109,7 +1109,7 @@ const CATALOG_PLUGIN = {
   id: "github-official",
   provenance: "catalog",
   catalogEntryId: "github",
-  publisherLabel: "BB Community",
+  publisherLabel: "Axe AI Community",
 } satisfies PluginListItem;
 
 const pluginUninstallItems = [
@@ -1197,7 +1197,7 @@ export function ResourceControlStates() {
                 onAction={noop}
               />
             }
-            meaning="Canonical BB Official plugin acquisition action on both Browse and the pre-ownership detail page."
+            meaning="Canonical Axe AI Official plugin acquisition action on both Browse and the pre-ownership detail page."
           />
           <ControlRow
             state="Plugin · installing"
@@ -1214,7 +1214,7 @@ export function ResourceControlStates() {
             state="Skill · Fork"
             control={
               <ResourceInstallControl
-                accessibleLabel="Fork example skill into a new bb skill"
+                accessibleLabel="Fork example skill into a new Axe AI skill"
                 label="Fork"
                 icon="Fork"
                 onAction={noop}
@@ -1226,7 +1226,7 @@ export function ResourceControlStates() {
             state="Skill · forking"
             control={
               <ResourceInstallControl
-                accessibleLabel="Fork example skill into a new bb skill"
+                accessibleLabel="Fork example skill into a new Axe AI skill"
                 label="Fork"
                 icon="Fork"
                 pending
@@ -1243,19 +1243,19 @@ export function ResourceControlStates() {
           description="Badges appear only when provenance changes how the resource should be understood. Ordinary owned resources stay unlabelled in their detail-page stories."
         >
           <ControlRow
-            state="Plugin · BB Official catalog"
+            state="Plugin · Axe AI Official catalog"
             control={<PluginProvenancePill plugin={CATALOG_PLUGIN} />}
             meaning="Published by bb and installed from the catalog."
           />
           <ControlRow
-            state="Plugin · BB Official built-in"
+            state="Plugin · Axe AI Official built-in"
             control={<PluginProvenancePill plugin={BUNDLED_PLUGIN} />}
-            meaning="Ships with bb. The same badge communicates publisher; lifecycle differences remain in metadata and actions."
+            meaning="Ships with Axe AI. The same badge communicates publisher; lifecycle differences remain in metadata and actions."
           />
           <ControlRow
-            state="Skill · BB Official"
+            state="Skill · Axe AI Official"
             control={
-              <ProvenancePill label="BB Official" tooltip="Ships with bb" />
+              <ProvenancePill label="Axe AI Official" tooltip="Ships with Axe AI" />
             }
             meaning="A skill that ships with bb."
           />
@@ -1362,7 +1362,7 @@ export function ResourceControlStates() {
             meaning="Local sources can be edited, opened, submitted to the marketplace, or removed from bb without deleting the source directory."
           />
           <ControlRow
-            state="BB Official built-in actions"
+            state="Axe AI Official built-in actions"
             control={<NoControl>No ownership menu</NoControl>}
             meaning="Built-in plugins cannot be uninstalled or source-edited here."
           />
@@ -1396,7 +1396,7 @@ export function ResourceControlStates() {
             state="Fork · browse card"
             control={
               <ResourceInstallControl
-                accessibleLabel="Fork example skill into a new bb skill"
+                accessibleLabel="Fork example skill into a new Axe AI skill"
                 label="Fork"
                 icon="Fork"
                 presentation="icon"
@@ -1419,7 +1419,7 @@ export function ResourceControlStates() {
           <ControlRow
             state="Read-only actions"
             control={<NoControl>No ownership menu</NoControl>}
-            meaning="BB Official, Included, and Imported skills expose provenance without pretending they are mutable."
+            meaning="Axe AI Official, Included, and Imported skills expose provenance without pretending they are mutable."
           />
         </ControlTable>
 

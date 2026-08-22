@@ -11,7 +11,7 @@ import type { IconName } from "@bb/shared-ui/icon";
  */
 export interface ShowcaseArchetype {
   id: string;
-  /** Completes the headline lead, e.g. "Turn bb into …" / "Teach bb to …". */
+  /** Completes the headline lead, e.g. "Turn Axe AI into …" / "Teach bb to …". */
   noun: string;
   /** Chip, tab, and mini-window title. */
   title: string;

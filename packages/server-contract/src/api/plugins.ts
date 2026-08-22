@@ -175,7 +175,7 @@ export const installedPluginSchema = z.object({
   /** Marketplace that listed the entry; present only on catalog installs. */
   catalogMarketplaceName: z.string().optional(),
   /**
-   * Publisher badge: `BB Official` for a bundled plugin, the listing
+   * Publisher badge: `Axe AI Official` for a bundled plugin, the listing
    * marketplace's display name for a catalog install, and null for a plugin
    * the user added from a source, which has no publisher bb can vouch for.
    * Servers before bb-app 0.38.0 do not send it; a client that reads such a
@@ -409,7 +409,7 @@ export const pluginCatalogSearchResultSchema = z.object({
   publisherKey: z.string(),
   /**
    * Publisher badge for the entry: the listing marketplace's display name, or
-   * `BB Official` for plugins bundled with the app. It is separate from
+   * `Axe AI Official` for plugins bundled with the app. It is separate from
    * `marketplaceDisplayName` because bundled plugins are grouped under the
    * curated marketplace but are not published through it.
    */
