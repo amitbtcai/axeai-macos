@@ -208,6 +208,13 @@ function createElectronBuilderEnv(signingPlan) {
     ...process.env,
   };
 
+  if (signingPlan.mode !== "environment") {
+    for (const key of requiredSigningEnvironmentKeys) {
+      delete childEnv[key];
+    }
+    delete childEnv.CSC_NAME;
+  }
+
   childEnv.CSC_IDENTITY_AUTO_DISCOVERY =
     signingPlan.mode !== "disabled" && !signingPlan.identityName
       ? "true"
