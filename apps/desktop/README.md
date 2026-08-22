@@ -165,7 +165,8 @@ tag:
 macOS keeps the unsuffixed feed name because released macOS builds already
 request it. Linux artifacts are unsigned. Until Apple signing is configured,
 the workflow creates ad-hoc-signed macOS `.dmg` and `.zip` artifacts for
-internal testing but withholds them from public releases.
+stable releases and warns users that macOS may require manual approval in
+Privacy & Security.
 
 ## Nightly channel
 
@@ -255,8 +256,8 @@ Once those secrets are present, the next `Build Desktop` workflow run with
 `publish=true` and `release_channel=stable` signs the `.app`, notarizes it, and
 publishes the signed `.dmg` / `.zip` assets to `desktop-latest`. If no required
 signing secrets are configured, the workflow keeps ad-hoc-signed, unnotarized
-macOS builds as internal workflow artifacts and withholds them from public
-releases. If only some required signing secrets are set,
+macOS builds and publishes them with an unsigned-build warning. If only some
+required signing secrets are set,
 the workflow fails before packaging so a misconfigured release cannot silently
 produce unsigned or signed-but-not-notarized artifacts.
 

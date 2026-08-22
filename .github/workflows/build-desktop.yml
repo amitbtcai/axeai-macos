@@ -99,7 +99,7 @@ jobs:
 
           HAS_SIGNING_SECRETS="false"
           if [[ "${#PRESENT_SECRET_NAMES[@]}" -eq 0 ]]; then
-            echo "::warning::macOS signing/notarization secrets are not configured; building an ad-hoc-signed macOS workflow artifact for internal testing. Public release publication will withhold it."
+            echo "::warning::macOS signing/notarization secrets are not configured; building an ad-hoc-signed macOS artifact that stable releases publish with an unsigned-build warning."
           elif [[ "${#MISSING_SECRET_NAMES[@]}" -eq 0 ]]; then
             echo "macOS signing/notarization secrets are complete; signed and notarized artifacts will be produced."
             HAS_SIGNING_SECRETS="true"
@@ -234,11 +234,9 @@ jobs:
             SHOULD_PUBLISH="true"
           fi
 
-          PUBLISH_MACOS_BINARIES="false"
-          if [[ "$HAS_SIGNING_SECRETS" == "true" ]]; then
-            PUBLISH_MACOS_BINARIES="true"
-          elif [[ "$SHOULD_PUBLISH" == "true" ]]; then
-            echo "::warning::Apple Developer credentials are missing; publishing version feeds and Linux only, and withholding the unnotarized macOS binaries."
+          PUBLISH_MACOS_BINARIES="true"
+          if [[ "$HAS_SIGNING_SECRETS" != "true" && "$SHOULD_PUBLISH" == "true" ]]; then
+            echo "::warning::Apple Developer credentials are missing; publishing the ad-hoc-signed macOS build. Users will need to approve it in Privacy & Security."
           fi
 
           {
@@ -323,7 +321,7 @@ jobs:
           gh release create "$VERSION_TAG" "${RELEASE_ASSETS[@]}" \
             --target "$GITHUB_SHA" \
             --title "AxeAI Desktop ${VERSION}" \
-            --notes "AxeAI Desktop ${VERSION}. macOS builds may be unsigned until Apple Developer signing is configured." \
+            --notes "AxeAI Desktop ${VERSION}. The macOS build is ad-hoc signed until Apple Developer signing is configured and may require approval in Privacy & Security." \
             --latest
 
           git tag -f "$LATEST_TAG" "$GITHUB_SHA"
