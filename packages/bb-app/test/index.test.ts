@@ -569,9 +569,9 @@ describe("bb-app launcher", () => {
       homeDir: "/home/tester",
     });
 
-    expect(context.dataDir).toBe("/home/tester/.bb");
-    expect(context.configFile).toBe("/home/tester/.bb/config.json");
-    expect(context.envFile).toBe("/home/tester/.bb/env.json");
+    expect(context.dataDir).toBe("/home/tester/.axeai");
+    expect(context.configFile).toBe("/home/tester/.axeai/config.json");
+    expect(context.envFile).toBe("/home/tester/.axeai/env.json");
     expect(context.serverPort).toBe(38886);
     expect(context.daemonPort).toBe(38887);
     expect(context.serverUrl).toBe("http://127.0.0.1:38886");
