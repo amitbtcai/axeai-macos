@@ -185,6 +185,10 @@ function resolveElectronBuilderConfig(baseConfig, env) {
     executableName: releaseConfig.linuxExecutableName,
     icon: "assets/" + releaseConfig.iconFileName,
   };
+  config.win = {
+    ...config.win,
+    icon: releaseConfig.windowsIconPath,
+  };
   config.appId = releaseConfig.appId;
   config.artifactName = releaseConfig.artifactName;
   config.productName = releaseConfig.applicationName;

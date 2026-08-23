@@ -195,11 +195,65 @@ jobs:
             apps/desktop/release/desktop-version-linux.json
           if-no-files-found: error
 
+  windows:
+    name: Windows x64 desktop artifacts
+    runs-on: windows-2022
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Typecheck desktop and launcher
+        run: pnpm exec turbo run typecheck --filter=@bb/desktop --filter=bb-app --output-logs=new-only
+
+      - name: Build desktop
+        run: pnpm exec turbo run build --filter=@bb/desktop --output-logs=new-only
+
+      - name: Test desktop and launcher
+        run: pnpm exec turbo run test --filter=@bb/desktop --filter=bb-app --force --output-logs=new-only
+
+      - name: Package x64 NSIS installer
+        run: pnpm exec turbo run desktop:build:windows --filter=@bb/desktop --output-logs=new-only
+
+      - name: Smoke test packaged desktop app
+        run: pnpm exec turbo run smoke:packaged --filter=@bb/desktop --force --output-logs=new-only
+
+      - name: Generate desktop version feed
+        run: pnpm --dir apps/desktop run desktop:version-feed
+
+      - name: Upload desktop workflow artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: axeai-desktop-windows-x64
+          path: |
+            apps/desktop/release/*.exe
+            apps/desktop/release/*.blockmap
+            apps/desktop/release/latest.yml
+            apps/desktop/release/desktop-version-windows.json
+          if-no-files-found: error
+
   publish:
     name: Publish stable desktop release
     needs:
       - macos
       - linux
+      - windows
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -257,6 +311,13 @@ jobs:
           name: axeai-desktop-linux-x64
           path: release/linux
 
+      - name: Download Windows desktop artifacts
+        if: steps.release_plan.outputs.should_publish == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: axeai-desktop-windows-x64
+          path: release/windows
+
       - name: Publish stable desktop release feed
         if: steps.release_plan.outputs.should_publish == 'true'
         env:
@@ -270,6 +331,7 @@ jobs:
           LATEST_TAG="desktop-latest"
           MACOS_DIR="release/macos"
           LINUX_DIR="release/linux"
+          WINDOWS_DIR="release/windows"
 
           RELEASE_ASSETS=()
 
@@ -300,6 +362,10 @@ jobs:
           add_required_glob "$LINUX_DIR"/*.AppImage
           # AppImage embeds its block map, so a sidecar file is not guaranteed.
           add_optional_glob "$LINUX_DIR"/*.blockmap
+          add_required_glob "$WINDOWS_DIR/desktop-version-windows.json"
+          add_required_glob "$WINDOWS_DIR/latest.yml"
+          add_required_glob "$WINDOWS_DIR"/*.exe
+          add_required_glob "$WINDOWS_DIR"/*.blockmap
 
           if [[ "$PUBLISH_MACOS_BINARIES" == "true" ]]; then
             add_required_glob "$MACOS_DIR/latest-mac.yml"
@@ -363,10 +429,12 @@ jobs:
             echo
             echo "- arm64 macOS .dmg, .zip, latest-mac.yml, and desktop-version.json uploaded as workflow artifacts"
             echo "- x64 Linux .AppImage, latest-linux.yml, and desktop-version-linux.json uploaded as workflow artifacts"
+            echo "- x64 Windows .exe, latest.yml, and desktop-version-windows.json uploaded as workflow artifacts"
             echo "- version: ${VERSION}"
             echo "- prerelease version: ${IS_PRERELEASE}"
             echo "- stable release publication requested and allowed: ${SHOULD_PUBLISH}"
             echo "- macOS release binary upload enabled: ${PUBLISH_MACOS_BINARIES}"
             echo "- macOS feed URL: https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/desktop-version.json"
             echo "- Linux feed URL: https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/desktop-version-linux.json"
+            echo "- Windows feed URL: https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/desktop-version-windows.json"
           } >> "$GITHUB_STEP_SUMMARY"

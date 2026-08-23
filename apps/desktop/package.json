@@ -1,11 +1,12 @@
 {
   "name": "@bb/desktop",
-  "version": "0.39.0",
+  "version": "0.39.1",
   "private": true,
-  "description": "AxeAI desktop app for macOS and Linux",
+  "description": "AxeAI desktop app for macOS, Windows, and Linux",
   "main": "dist/main.js",
   "os": [
     "darwin",
+    "win32",
     "linux"
   ],
   "scripts": {
@@ -14,12 +15,15 @@
     "generate:icons": "node scripts/generate-app-icons.mjs",
     "desktop:build": "pnpm run build && node scripts/run-electron-builder.mjs --mac --arm64 --publish always",
     "desktop:build:linux": "pnpm run build && node scripts/run-electron-builder.mjs --linux --x64 --publish never",
+    "desktop:build:windows": "pnpm run build && node scripts/run-electron-builder.mjs --win --x64 --publish never",
     "desktop:version-feed": "tsx scripts/generate-version-feed.mts",
     "dev": "pnpm run prepare-runtime && pnpm run build && node --conditions=source --import tsx scripts/run-electron-dev.mjs",
     "dist": "pnpm run prepare-runtime && pnpm run desktop:build",
     "dist:linux": "pnpm run prepare-runtime && pnpm run desktop:build:linux",
+    "dist:windows": "pnpm run prepare-runtime && pnpm run desktop:build:windows",
     "package": "pnpm run prepare-runtime && pnpm run build && node scripts/run-electron-builder.mjs --mac --dir --arm64",
     "package:linux": "pnpm run prepare-runtime && pnpm run build && node scripts/run-electron-builder.mjs --linux --dir --x64",
+    "package:windows": "pnpm run prepare-runtime && pnpm run build && node scripts/run-electron-builder.mjs --win --dir --x64",
     "prepare-runtime": "pnpm exec turbo run build --filter=bb-app --output-logs=new-only",
     "smoke:packaged": "node scripts/smoke-packaged-app.mjs",
     "start": "pnpm run package && node scripts/run-packaged-app.mjs",

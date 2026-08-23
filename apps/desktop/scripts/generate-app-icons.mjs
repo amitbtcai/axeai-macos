@@ -8,6 +8,9 @@ const desktopDirectory = join(dirname(fileURLToPath(import.meta.url)), "..");
 const source = join(desktopDirectory, "assets/icon-source.png");
 const png = join(desktopDirectory, "assets/icon.png");
 const developmentPng = join(desktopDirectory, "assets/icon-dev.png");
+const windowsIcon = join(desktopDirectory, "assets/icon.ico");
+const nightlyPng = join(desktopDirectory, "assets/icon-nightly.png");
+const nightlyWindowsIcon = join(desktopDirectory, "assets/icon-nightly.ico");
 const icns = join(desktopDirectory, "assets/icon.icns");
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "axeai-icon-"));
 const iconset = join(temporaryDirectory, "icon.iconset");
@@ -29,14 +32,35 @@ try {
   execFileSync("mkdir", ["-p", iconset]);
   execFileSync("magick", [
     source,
-    "-resize", "1024x1024",
+    "-resize",
+    "1024x1024",
     "-strip",
-    "-define", "png:exclude-chunks=date,time",
+    "-define",
+    "png:exclude-chunks=date,time",
     png,
   ]);
   copyFileSync(png, developmentPng);
+  execFileSync("magick", [
+    png,
+    "-define",
+    "icon:auto-resize=256,128,64,48,32,16",
+    windowsIcon,
+  ]);
+  execFileSync("magick", [
+    nightlyPng,
+    "-define",
+    "icon:auto-resize=256,128,64,48,32,16",
+    nightlyWindowsIcon,
+  ]);
   for (const [size, fileName] of variants) {
-    execFileSync("sips", ["-z", String(size), String(size), png, "--out", join(iconset, fileName)]);
+    execFileSync("sips", [
+      "-z",
+      String(size),
+      String(size),
+      png,
+      "--out",
+      join(iconset, fileName),
+    ]);
   }
   execFileSync("iconutil", ["-c", "icns", iconset, "-o", icns]);
 } finally {

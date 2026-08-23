@@ -1,6 +1,6 @@
 # @bb/desktop
 
-macOS and Linux Electron shell for AxeAI. The desktop app loads the existing bb
+macOS, Windows, and Linux Electron shell for AxeAI. The desktop app loads the existing bb
 web UI and uses the packaged `bb-app` launcher for server and host-daemon
 lifecycle.
 
@@ -151,19 +151,20 @@ release; use `scripts/bump-version.mjs` so both files move together.
 The desktop release tag uses the locked version: `desktop-v<version>` for
 immutable releases and `desktop-latest` for the moving pointer.
 
-`build-desktop.yml` builds macOS and Linux in parallel jobs, then publishes
-both from one job. The moving release resets all of its assets on each publish,
+`build-desktop.yml` builds macOS, Windows, and Linux in parallel jobs, then publishes
+all three from one job. The moving release resets all of its assets on each publish,
 so a single publisher is what keeps one platform from deleting the other's
 binaries. Each platform has its own update feed file inside the same release
 tag:
 
-| Platform | Artifacts              | electron-updater metadata | Version feed                 |
-| -------- | ---------------------- | ------------------------- | ---------------------------- |
-| macOS    | `.dmg`, `.zip` (arm64) | `latest-mac.yml`          | `desktop-version.json`       |
-| Linux    | `.AppImage` (x64)      | `latest-linux.yml`        | `desktop-version-linux.json` |
+| Platform | Artifacts              | electron-updater metadata | Version feed                   |
+| -------- | ---------------------- | ------------------------- | ------------------------------ |
+| macOS    | `.dmg`, `.zip` (arm64) | `latest-mac.yml`          | `desktop-version.json`         |
+| Windows  | `.exe` (x64, NSIS)     | `latest.yml`              | `desktop-version-windows.json` |
+| Linux    | `.AppImage` (x64)      | `latest-linux.yml`        | `desktop-version-linux.json`   |
 
 macOS keeps the unsuffixed feed name because released macOS builds already
-request it. Linux artifacts are unsigned. Until Apple signing is configured,
+request it. Windows and Linux artifacts are unsigned. Until Apple signing is configured,
 the workflow creates ad-hoc-signed macOS `.dmg` and `.zip` artifacts for
 stable releases and warns users that macOS may require manual approval in
 Privacy & Security.

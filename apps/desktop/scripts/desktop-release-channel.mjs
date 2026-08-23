@@ -21,9 +21,12 @@ export function resolveDesktopBuildPlatform(nodePlatform) {
   if (nodePlatform === "linux") {
     return "linux";
   }
+  if (nodePlatform === "win32") {
+    return "windows";
+  }
 
   throw new Error(
-    `Desktop builds support darwin and linux only, got ${nodePlatform}.`,
+    `Desktop builds support darwin, win32, and linux only, got ${nodePlatform}.`,
   );
 }
 
@@ -38,10 +41,12 @@ export function createDesktopReleaseConfig(channel) {
       // installed at once without one shadowing the other on PATH.
       linuxExecutableName: "axeai-nightly",
       macIconPath: "assets/icon-nightly.icns",
+      windowsIconPath: "assets/icon-nightly.ico",
       releaseTag: "desktop-nightly",
       updateMetadataFileNames: {
         linux: "nightly-linux.yml",
         macos: "nightly-mac.yml",
+        windows: "nightly.yml",
       },
     };
   }
@@ -53,10 +58,12 @@ export function createDesktopReleaseConfig(channel) {
     iconFileName: "icon.png",
     linuxExecutableName: "axeai",
     macIconPath: "assets/icon.icns",
+    windowsIconPath: "assets/icon.ico",
     releaseTag: "desktop-latest",
     updateMetadataFileNames: {
       linux: "latest-linux.yml",
       macos: "latest-mac.yml",
+      windows: "latest.yml",
     },
   };
 }

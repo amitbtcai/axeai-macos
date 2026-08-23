@@ -79,6 +79,20 @@ const linuxConfigSchema = z
   })
   .passthrough();
 
+const windowsConfigSchema = z
+  .object({
+    icon: z.string().min(1),
+    target: z.tuple([
+      z
+        .object({
+          arch: z.tuple([z.literal("x64")]),
+          target: z.literal("nsis"),
+        })
+        .passthrough(),
+    ]),
+  })
+  .passthrough();
+
 const electronBuilderFileSetSchema = z
   .object({
     filter: z.array(z.string().min(1)),
@@ -104,6 +118,7 @@ const electronBuilderConfigSchema = z
     files: z.array(electronBuilderFilePatternSchema),
     linux: linuxConfigSchema,
     mac: macConfigSchema,
+    win: windowsConfigSchema,
     npmRebuild: z.literal(false),
     appId: z.string().min(1),
     artifactName: z.string().min(1),
@@ -530,6 +545,20 @@ describe("electron-builder signing config", () => {
     ).resolves.toBeUndefined();
   });
 
+  it("packages a Windows NSIS installer for x64", async () => {
+    const configText = await readFile(
+      resolve(desktopPackageRoot, "electron-builder.config.json"),
+      "utf8",
+    );
+    const config = electronBuilderConfigSchema.parse(JSON.parse(configText));
+
+    expect(config.win.target).toEqual([{ arch: ["x64"], target: "nsis" }]);
+    expect(config.win.icon).toBe("assets/icon.ico");
+    await expect(
+      access(resolve(desktopPackageRoot, config.win.icon)),
+    ).resolves.toBeUndefined();
+  });
+
   it("grants audio input to the signed app and helper processes", async () => {
     const configText = await readFile(
       resolve(desktopPackageRoot, "electron-builder.config.json"),
@@ -578,11 +607,15 @@ describe("electron-builder signing config", () => {
     // PATH, and the two channels are meant to be installed side by side.
     expect(config.linux.executableName).toBe("axeai-nightly");
     expect(config.mac.icon).toBe("assets/icon-nightly.icns");
+    expect(config.win.icon).toBe("assets/icon-nightly.ico");
     await expect(
       access(resolve(desktopPackageRoot, config.mac.icon)),
     ).resolves.toBeUndefined();
     await expect(
       access(resolve(desktopPackageRoot, "assets/icon-nightly.png")),
+    ).resolves.toBeUndefined();
+    await expect(
+      access(resolve(desktopPackageRoot, config.win.icon)),
     ).resolves.toBeUndefined();
     expect(config.publish[0]).toEqual({
       channel: "nightly",
