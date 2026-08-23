@@ -79,7 +79,7 @@ function AxeAiLogo() {
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label="Axe AI"
-      className="h-[30px] w-auto shrink-0 text-[#060AE6]"
+      className="h-8 w-auto shrink-0 text-[#060AE6]"
     >
       <g transform="scale(0.761905)" color="currentColor">
         <path d="M97.1923 0.128124L196.375 164.224C196.545 164.505 196.159 164.786 195.947 164.536L97.1036 47.7897C96.9985 47.6655 96.8084 47.6646 96.7021 47.7878L68.7241 80.2122C68.5317 80.4351 68.1757 80.2248 68.2748 79.9469L96.7167 0.176713C96.792 -0.0344117 97.0765 -0.0634694 97.1923 0.128124Z" fill="currentColor" />
@@ -99,10 +99,10 @@ function AxeAiLogo() {
 
 function BrandRow() {
   return (
-    <div className="mb-[18px] flex items-center gap-2.5">
+    <div className="mb-[18px] flex flex-col items-start gap-1.5">
       <AxeAiLogo />
-      <div className="leading-tight">
-        <b className="block text-sm font-semibold">AxeAI Remote Access</b>
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 leading-tight">
+        <b className="text-sm font-semibold">Remote Access</b>
         <span className="text-xs text-muted-foreground">
           Your AxeAI workspace, reachable anywhere
         </span>
@@ -447,10 +447,12 @@ function SignInView({
   return (
     <Shell>
       <WebCard>
-        <h3 className="text-[17px] font-semibold tracking-tight">Sign in</h3>
+        <h3 className="text-[17px] font-semibold tracking-tight">
+          Access your AxeAI anywhere
+        </h3>
         <p className="mt-1 mb-4 text-sm text-muted-foreground">
-          Give your AxeAI app a private URL and open it from any browser. Your
-          code and data never leave your machine.
+          Create a private URL for your Mac, then open and control AxeAI from
+          any browser. Your files and commands stay on your machine.
         </p>
         {emailPasswordEnabled ? (
           <>
@@ -547,7 +549,7 @@ function SignInView({
           Continue with GitHub
         </Button>
         <p className="mt-3 text-center text-xs text-subtle-foreground">
-          Up to {MAX_PER_ACCOUNT} servers per account
+          Private by default · Up to {MAX_PER_ACCOUNT} AxeAI apps
         </p>
       </WebCard>
     </Shell>

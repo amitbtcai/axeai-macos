@@ -1026,8 +1026,10 @@ describe("gate worker share hosts", () => {
     );
     expect(res.status).toBe(401);
     const html = await res.text();
-    expect(html).toContain("Sign in");
+    expect(html).toContain("Continue securely");
     expect(html).toContain("sawyer");
+    expect(html).toContain('rel="icon" type="image/svg+xml"');
+    expect(html).toContain("Remote Access");
     expect(captured).toHaveLength(0);
   });
 

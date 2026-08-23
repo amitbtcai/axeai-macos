@@ -151,13 +151,14 @@ describe("favicon rendering", () => {
       ({ badge }: { badge: "none" | "unread" }) => module.useFaviconBadge(badge),
       { initialProps },
     );
-    await waitFor(() => expect(FakeImage.created).toBe(2));
+    await waitFor(() => expect(FakeImage.created).toBe(1));
 
     rerender({ badge: "none" });
     rerender({ badge: "unread" });
     await new Promise((resolve) => setTimeout(resolve, 0));
-    // 16px and 32px glyphs were decoded once; the second badge does not refetch.
-    expect(FakeImage.created).toBe(2);
+    // Both default-size links share the canonical SVG, decoded once; the
+    // second badge does not refetch it.
+    expect(FakeImage.created).toBe(1);
     unmount();
   });
 

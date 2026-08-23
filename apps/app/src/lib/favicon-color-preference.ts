@@ -329,7 +329,12 @@ async function applyFaviconState(state: FaviconRenderState): Promise<void> {
   const suffix = getFaviconVariantSuffix();
   const links = await Promise.all(
     FAVICON_SIZES.map(async (size): Promise<RenderedFaviconLink> => {
-      const baseHref = `/favicon-${size}x${size}${suffix}.png`;
+      // The canonical AxeAI favicon is the default on every web origin. Keep
+      // the monochrome PNGs only as sources for explicit user-selected tints.
+      const baseHref =
+        state.colorPreference === defaultFaviconColor
+          ? "/favicon.svg"
+          : `/favicon-${size}x${size}${suffix}.png`;
       const href = await createFaviconHref({
         badge: state.badge,
         baseHref,

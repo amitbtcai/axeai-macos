@@ -21,16 +21,16 @@
     <title>AxeAI</title>
     <link
       rel="icon"
-      type="image/png"
+      type="image/svg+xml"
       sizes="32x32"
-      href="/favicon-32x32.png"
+      href="/favicon.svg"
       id="favicon-32"
     />
     <link
       rel="icon"
-      type="image/png"
+      type="image/svg+xml"
       sizes="16x16"
-      href="/favicon-16x16.png"
+      href="/favicon.svg"
       id="favicon-16"
     />
     <link
@@ -48,19 +48,6 @@
     <script>
       (function () {
         var dev = "%MODE%" === "development";
-        function setFavicon(dark) {
-          var s = dev ? "-dev" : dark ? "-dark" : "";
-          document.getElementById("favicon-32").href =
-            "/favicon-32x32" + s + ".png";
-          document.getElementById("favicon-16").href =
-            "/favicon-16x16" + s + ".png";
-        }
-        var mq = window.matchMedia("(prefers-color-scheme: dark)");
-        setFavicon(mq.matches);
-        if (!dev)
-          mq.addEventListener("change", function (e) {
-            setFavicon(e.matches);
-          });
         function getFaviconColorSuffix() {
           try {
             var color = localStorage.getItem("bb.faviconColor");
@@ -74,6 +61,28 @@
           }
         }
         var faviconColorSuffix = getFaviconColorSuffix();
+        function setFavicon(dark) {
+          if (!dev && faviconColorSuffix === "") {
+            document.getElementById("favicon-32").href = "/favicon.svg";
+            document.getElementById("favicon-16").href = "/favicon.svg";
+            document.getElementById("favicon-32").type = "image/svg+xml";
+            document.getElementById("favicon-16").type = "image/svg+xml";
+            return;
+          }
+          var s = dev ? "-dev" : dark ? "-dark" : "";
+          document.getElementById("favicon-32").href =
+            "/favicon-32x32" + s + ".png";
+          document.getElementById("favicon-16").href =
+            "/favicon-16x16" + s + ".png";
+          document.getElementById("favicon-32").type = "image/png";
+          document.getElementById("favicon-16").type = "image/png";
+        }
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        setFavicon(mq.matches);
+        if (!dev)
+          mq.addEventListener("change", function (e) {
+            setFavicon(e.matches);
+          });
         document.getElementById("app-manifest").href =
           "/manifest" + faviconColorSuffix + ".webmanifest";
         document.getElementById("apple-touch-icon").href =

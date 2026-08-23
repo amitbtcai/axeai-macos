@@ -16,7 +16,9 @@ import {
 } from "@/lib/bb-desktop";
 import { useOptionalPaneContext } from "./thread-detail/PaneContext";
 
-const ROOT_COMPOSE_MAX_WIDTH_CLASS = "max-w-[980px]";
+// Match the thread timeline/composer measure so opening a thread does not make
+// the primary work surface jump from a wide home layout to a narrow chat.
+const ROOT_COMPOSE_MAX_WIDTH_CLASS = "max-w-[760px]";
 
 // Where root compose pins its right-panel toggle in the viewport corner (see
 // rootPanelToggle in RootComposeView, which passes its selected position here).

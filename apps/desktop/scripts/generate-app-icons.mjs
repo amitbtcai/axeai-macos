@@ -1,11 +1,17 @@
 import { execFileSync } from "node:child_process";
-import { copyFileSync, mkdtempSync, rmSync } from "node:fs";
+import {
+  copyFileSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const desktopDirectory = join(dirname(fileURLToPath(import.meta.url)), "..");
-const source = join(desktopDirectory, "assets/icon-source.png");
+const source = join(desktopDirectory, "assets/icon.svg");
 const png = join(desktopDirectory, "assets/icon.png");
 const developmentPng = join(desktopDirectory, "assets/icon-dev.png");
 const windowsIcon = join(desktopDirectory, "assets/icon.ico");
@@ -14,6 +20,7 @@ const nightlyWindowsIcon = join(desktopDirectory, "assets/icon-nightly.ico");
 const icns = join(desktopDirectory, "assets/icon.icns");
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "axeai-icon-"));
 const iconset = join(temporaryDirectory, "icon.iconset");
+const renderedSource = join(temporaryDirectory, "icon-render.svg");
 
 const variants = [
   [16, "icon_16x16.png"],
@@ -30,10 +37,26 @@ const variants = [
 
 try {
   execFileSync("mkdir", ["-p", iconset]);
+  writeFileSync(
+    renderedSource,
+    readFileSync(source, "utf8").replaceAll("currentColor", "#FFFFFF"),
+  );
   execFileSync("magick", [
-    source,
-    "-resize",
+    "-size",
     "1024x1024",
+    "xc:#060AE6",
+    "(",
+    "-background",
+    "none",
+    renderedSource,
+    "-resize",
+    "700x700",
+    ")",
+    "-gravity",
+    "center",
+    "-composite",
+    "-alpha",
+    "off",
     "-strip",
     "-define",
     "png:exclude-chunks=date,time",

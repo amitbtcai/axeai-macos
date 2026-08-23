@@ -20,7 +20,7 @@ import {
   verifyDesktopSessionCookie,
 } from "./servers.js";
 import { serveWithCache } from "./cache.js";
-import { AXEAI_LOGO_SVG } from "./axeai-icon.js";
+import { AXEAI_FAVICON_SVG, AXEAI_LOGO_SVG } from "./axeai-icon.js";
 import { handleAssignMachineLabel } from "./machine-label.js";
 import {
   publicConnectOrigin,
@@ -55,8 +55,8 @@ function text(body: string, status: number): Response {
   });
 }
 
-// Matches the bb dashboard's visual language (Inter, --canvas/--ink tokens,
-// dark primary button, bb logo) since this plain worker can't bundle React.
+// Matches the AxeAI dashboard's visual language (Inter, --canvas/--ink tokens,
+// dark primary button, AxeAI logo) since this plain worker can't bundle React.
 export function dashboardSignInUrl(appUrl: string, returnTo: string): string {
   const url = new URL("/dashboard", appUrl);
   url.searchParams.set("returnTo", returnTo);
@@ -65,8 +65,8 @@ export function dashboardSignInUrl(appUrl: string, returnTo: string): string {
 
 // Shared gate-page shell. The 401 sign-in and 503 offline pages render through
 // one template so they can never drift apart the way the dashboard and gate
-// once did. Matches the bb dashboard's visual language (Inter, --canvas/--ink
-// tokens derived from two anchors, dark-mode media query, inlined bb icon,
+// once did. Matches the AxeAI dashboard's visual language (Inter, --canvas/--ink
+// tokens derived from two anchors, dark-mode media query, inlined AxeAI logo,
 // centered card) since this plain worker can't bundle React.
 const GATE_STYLE = `
   :root{--canvas:oklch(1 0 0);--ink:oklch(0.3211 0 0);
@@ -82,10 +82,11 @@ const GATE_STYLE = `
   body{margin:0;min-height:100dvh;display:flex;align-items:center;justify-content:center;
     background:var(--canvas);color:var(--ink);
     font:15px/1.6 "Inter",-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-  .wrap{width:100%;max-width:420px;padding:24px}
-  .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
-  .brand svg{width:124px;height:auto;flex-shrink:0;color:#060AE6}
-  .brand b{font-weight:600;font-size:15px;letter-spacing:-.01em}
+  .wrap{width:100%;max-width:430px;padding:24px}
+  .brand{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-bottom:18px}
+  .brand svg{width:148px;height:auto;color:#060AE6}
+  .brand-copy{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+  .brand b{font-weight:600;font-size:14px;letter-spacing:-.01em}
   .brand span{color:var(--muted);font-size:13px}
   .card{border:1px solid var(--border);background:var(--card);border-radius:12px;padding:22px 24px}
   h1{margin:0 0 4px;font-size:18px;font-weight:600;letter-spacing:-.01em}
@@ -112,16 +113,18 @@ function gatePage(
     metaRefreshSeconds !== undefined
       ? `<meta http-equiv="refresh" content="${metaRefreshSeconds}">`
       : "";
+  const favicon = `data:image/svg+xml,${encodeURIComponent(AXEAI_FAVICON_SVG)}`;
   return new Response(
     `<!doctype html><html lang="en"><head><meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1">
      ${refresh}<title>AxeAI Remote Access</title>
+     <link rel="icon" type="image/svg+xml" href="${favicon}">
      <link rel="preconnect" href="https://fonts.googleapis.com">
      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
      <style>${GATE_STYLE}</style></head>
      <body><div class="wrap">
-       <div class="brand">${AXEAI_LOGO_SVG}<div><b>AxeAI Remote Access</b><br><span>Your AxeAI workspace, reachable anywhere</span></div></div>
+       <div class="brand">${AXEAI_LOGO_SVG}<div class="brand-copy"><b>Remote Access</b><span>Your AxeAI workspace, reachable anywhere</span></div></div>
        <div class="card">${cardBody}</div>
      </div></body></html>`,
     { status, headers: { "content-type": "text/html; charset=utf-8" } },
@@ -164,9 +167,9 @@ function signInPage(label: string, appUrl: string, returnTo: string): Response {
   const host = new URL(appUrl).host;
   const signInUrl = dashboardSignInUrl(appUrl, returnTo);
   return gatePage(
-    `<h1>This is <code>${escapeHtml(label)}</code>'s AxeAI workspace</h1>
-     <p>Sign in with the account that owns this server to open it.</p>
-     <a class="btn primary" href="${signInUrl}">Sign in at ${escapeHtml(host)}</a>`,
+    `<h1>Open <code>${escapeHtml(label)}</code>'s AxeAI workspace</h1>
+     <p>Continue with the AxeAI account that owns this private workspace.</p>
+     <a class="btn primary" href="${signInUrl}">Continue securely at ${escapeHtml(host)}</a>`,
     401,
   );
 }
@@ -180,8 +183,8 @@ export function offlinePage(
   lastSeenAt: Date | null,
   kind: "server" | "machine",
 ): Response {
-  // A machine label fronts a daemon's port shares, not a bb app — the copy
-  // names the machine so "your bb" never claims a laptop that only shares.
+  // A machine label fronts a daemon's port shares, not an AxeAI app — the copy
+  // names the machine so "your AxeAI" never claims a laptop that only shares.
   const heading =
     kind === "machine"
       ? "This machine is offline"
@@ -206,7 +209,7 @@ export function offlinePage(
   );
 }
 
-/** A machine label has no bb app of its own; only nested port shares proxy. */
+/** A machine label has no AxeAI app of its own; only nested port shares proxy. */
 function machinePage(
   label: string,
   accountHandle: string,
