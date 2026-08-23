@@ -73,15 +73,13 @@ type ServerState = Extract<
 
 function BrandRow() {
   return (
-    <div className="mb-[18px] flex items-center gap-2.5">
-      <span
-        role="img"
-        aria-label="AxeAI"
-        className="axeai-mark h-[30px] w-[35px]"
-      />
+    <div className="mb-6 flex items-center justify-center gap-3 text-center">
+      <span role="img" aria-label="AxeAI" className="axeai-mark h-8 w-[38px]" />
       <div className="leading-tight">
-        <b className="block text-sm font-semibold">AxeAI Remote Access</b>
-        <span className="text-xs text-muted-foreground">
+        <b className="block text-base font-medium tracking-[-0.025em]">
+          AxeAI Remote Access
+        </b>
+        <span className="mt-0.5 block text-xs text-muted-foreground">
           Your AxeAI workspace, reachable anywhere
         </span>
       </div>
@@ -109,7 +107,7 @@ function Shell({
   return (
     <main
       className={cn(
-        "mx-auto flex min-h-dvh w-full flex-col px-6 pb-24",
+        "mx-auto flex min-h-dvh w-full flex-col px-5 pb-20 sm:px-8",
         top ? "justify-start pt-14" : "justify-center pt-16",
       )}
     >
@@ -132,7 +130,7 @@ function WebCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card p-5 sm:p-[22px]",
+        "rounded-2xl bg-card p-5 ring-1 ring-border/70 sm:p-6",
         className,
       )}
     >
@@ -425,8 +423,8 @@ function SignInView({
   return (
     <Shell>
       <WebCard>
-        <h3 className="text-[17px] font-semibold tracking-tight">Sign in</h3>
-        <p className="mt-1 mb-4 text-sm text-muted-foreground">
+        <h3 className="text-2xl font-normal tracking-[-0.035em]">Sign in</h3>
+        <p className="mt-2 mb-5 text-sm leading-6 text-muted-foreground">
           Give your AxeAI app a private URL and control it from any browser.
           Your code and data stay on your machine.
         </p>
@@ -517,14 +515,14 @@ function SignInView({
           </>
         ) : null}
         <Button
-          className="w-full justify-center py-[11px]"
+          className="h-12 w-full justify-center rounded-2xl px-4 text-sm font-medium"
           type="button"
           onClick={() => void signInWithGithub(returnTo)}
         >
           <GithubMark />
           Continue with GitHub
         </Button>
-        <p className="mt-3 text-center text-xs text-subtle-foreground">
+        <p className="mt-4 text-center text-[11px] text-subtle-foreground">
           Up to {MAX_PER_ACCOUNT} servers per account
         </p>
       </WebCard>
