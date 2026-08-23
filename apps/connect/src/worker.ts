@@ -20,7 +20,7 @@ import {
   verifyDesktopSessionCookie,
 } from "./servers.js";
 import { serveWithCache } from "./cache.js";
-import { BB_ICON_DATA_URI } from "./bb-icon.js";
+import { AXEAI_ICON_DATA_URI } from "./axeai-icon.js";
 import { handleAssignMachineLabel } from "./machine-label.js";
 import {
   publicConnectOrigin,
@@ -115,13 +115,13 @@ function gatePage(
   return new Response(
     `<!doctype html><html lang="en"><head><meta charset="utf-8">
      <meta name="viewport" content="width=device-width, initial-scale=1">
-     ${refresh}<title>bb connect</title>
+     ${refresh}<title>AxeAI Remote Access</title>
      <link rel="preconnect" href="https://fonts.googleapis.com">
      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
      <style>${GATE_STYLE}</style></head>
      <body><div class="wrap">
-       <div class="brand"><img src="${BB_ICON_DATA_URI}" alt="bb"><div><b>bb connect</b><br><span>Your bb, reachable anywhere</span></div></div>
+       <div class="brand"><img src="${AXEAI_ICON_DATA_URI}" alt="AxeAI"><div><b>AxeAI Remote Access</b><br><span>Your AxeAI workspace, reachable anywhere</span></div></div>
        <div class="card">${cardBody}</div>
      </div></body></html>`,
     { status, headers: { "content-type": "text/html; charset=utf-8" } },
@@ -164,7 +164,7 @@ function signInPage(label: string, appUrl: string, returnTo: string): Response {
   const host = new URL(appUrl).host;
   const signInUrl = dashboardSignInUrl(appUrl, returnTo);
   return gatePage(
-    `<h1>This is <code>${escapeHtml(label)}</code>'s bb</h1>
+    `<h1>This is <code>${escapeHtml(label)}</code>'s AxeAI workspace</h1>
      <p>Sign in with the account that owns this server to open it.</p>
      <a class="btn primary" href="${signInUrl}">Sign in at ${escapeHtml(host)}</a>`,
     401,
@@ -183,7 +183,9 @@ export function offlinePage(
   // A machine label fronts a daemon's port shares, not a bb app — the copy
   // names the machine so "your bb" never claims a laptop that only shares.
   const heading =
-    kind === "machine" ? "This machine is offline" : "Your bb is offline";
+    kind === "machine"
+      ? "This machine is offline"
+      : "Your AxeAI workspace is offline";
   const lastSeen = lastSeenAt
     ? kind === "machine"
       ? `This machine was last seen ${relativeTime(lastSeenAt)}. `
@@ -191,8 +193,8 @@ export function offlinePage(
     : "";
   const note =
     kind === "machine"
-      ? "Usually this means the machine is asleep or bb isn't running on it."
-      : "Usually this means the machine is asleep or bb isn't running.";
+      ? "Usually this means the machine is asleep or AxeAI isn't running on it."
+      : "Usually this means the machine is asleep or AxeAI isn't running.";
   return gatePage(
     `<div class="glyph"><svg viewBox="0 0 16 16" fill="none" stroke-width="1.5"><path d="M1.5 6.2a9.5 9.5 0 0 1 13 0M3.8 8.7a6 6 0 0 1 8.4 0M6.1 11.2a2.6 2.6 0 0 1 3.8 0" stroke-linecap="round"/><path d="M2 2l12 12" stroke-linecap="round"/><circle cx="8" cy="13.6" r="0.9" fill="currentColor" stroke="none"/></svg></div>
      <h1>${heading}</h1>
@@ -216,7 +218,7 @@ function machinePage(
   return gatePage(
     `<h1><code>${escapeHtml(label)}</code> is a machine</h1>
      <p>This machine is on <code>${escapeHtml(accountHandle)}</code>'s account. Its shares appear at <code>${escapeHtml(label)}--&lt;port&gt;.${escapeHtml(baseHost)}</code>.</p>
-     <a class="btn primary" href="${escapeHtml(appOrigin)}">Open the bb app at ${escapeHtml(appHost)}</a>`,
+     <a class="btn primary" href="${escapeHtml(appOrigin)}">Open the AxeAI app at ${escapeHtml(appHost)}</a>`,
     200,
   );
 }

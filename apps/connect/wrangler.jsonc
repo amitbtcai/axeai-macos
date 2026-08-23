@@ -27,7 +27,10 @@
   // Production: every <handle>.remote.axeai.com subdomain hits the AxeAI gate.
   // app.axeai.com is the account/dashboard surface; remote.axeai.com also
   // serves the pairing API used by generated connect commands.
-  "vars": { "BASE_DOMAIN": "remote.axeai.com" },
+  "vars": {
+    "BASE_DOMAIN": "remote.axeai.com",
+    "ACCOUNT_APP_URL": "https://app.axeai.com"
+  },
   "d1_databases": [
     {
       "binding": "DB",

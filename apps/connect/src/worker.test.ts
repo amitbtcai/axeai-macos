@@ -1229,7 +1229,7 @@ describe("gate offline page", () => {
     expect(res.status).toBe(503);
     expect(res.headers.get("content-type")).toContain("text/html");
     const html = await res.text();
-    expect(html).toContain("Your bb is offline");
+    expect(html).toContain("Your AxeAI workspace is offline");
     expect(html).toContain("Last seen 5 minutes ago");
     expect(html).toContain('http-equiv="refresh"');
   });
@@ -1245,7 +1245,7 @@ describe("gate offline page", () => {
       ctx,
     );
     const html = await res.text();
-    expect(html).toContain("Your bb is offline");
+    expect(html).toContain("Your AxeAI workspace is offline");
     expect(html).not.toContain("Last seen");
   });
 
@@ -1265,7 +1265,7 @@ describe("gate offline page", () => {
     const html = await res.text();
     expect(html).toContain("This machine is offline");
     expect(html).toContain("This machine was last seen 5 minutes ago");
-    expect(html).not.toContain("Your bb is offline");
+    expect(html).not.toContain("Your AxeAI workspace is offline");
   });
 
   it("keeps the plain 503 for non-navigation requests (API/assets/fetch)", async () => {
