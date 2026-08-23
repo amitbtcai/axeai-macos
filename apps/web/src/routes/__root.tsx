@@ -13,35 +13,19 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "bb" },
+      { title: "AxeAI" },
     ],
     links: [
       {
         rel: "icon",
-        type: "image/png",
-        sizes: "32x32",
-        href: "/favicon-32x32.png",
+        type: "image/svg+xml",
+        href: "/favicon.svg",
         media: "(prefers-color-scheme: light)",
       },
       {
         rel: "icon",
-        type: "image/png",
-        sizes: "32x32",
-        href: "/favicon-32x32-dark.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        rel: "icon",
-        type: "image/png",
-        sizes: "16x16",
-        href: "/favicon-16x16.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        rel: "icon",
-        type: "image/png",
-        sizes: "16x16",
-        href: "/favicon-16x16-dark.png",
+        type: "image/svg+xml",
+        href: "/favicon-dark.svg",
         media: "(prefers-color-scheme: dark)",
       },
       {

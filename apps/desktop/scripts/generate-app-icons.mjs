@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,6 +10,7 @@ const png = join(desktopDirectory, "assets/icon.png");
 const icns = join(desktopDirectory, "assets/icon.icns");
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "axeai-icon-"));
 const iconset = join(temporaryDirectory, "icon.iconset");
+const renderedSource = join(temporaryDirectory, "icon-render.svg");
 
 const variants = [
   [16, "icon_16x16.png"],
@@ -26,7 +27,17 @@ const variants = [
 
 try {
   execFileSync("mkdir", ["-p", iconset]);
-  execFileSync("sips", ["-s", "format", "png", source, "--out", png]);
+  writeFileSync(
+    renderedSource,
+    readFileSync(source, "utf8").replaceAll("currentColor", "#000000"),
+  );
+  execFileSync("magick", [
+    "-background", "none", renderedSource,
+    "-resize", "900x900",
+    "-gravity", "center",
+    "-extent", "1024x1024",
+    png,
+  ]);
   for (const [size, fileName] of variants) {
     execFileSync("sips", ["-z", String(size), String(size), png, "--out", join(iconset, fileName)]);
   }
