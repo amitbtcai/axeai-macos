@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.39.2
+
+Correct AxeAI branding across the desktop app and Remote Access.
+
+### Fixes and polish
+
+- The macOS app icon now fills the standard icon mask without an unintended outer border.
+- AxeAI uses the canonical favicon across the desktop webview, account dashboard, and every Remote Access subdomain.
+- Remote Access sign-in and offline screens use the full AxeAI wordmark with clearer account and privacy copy.
+- The new-thread composer now uses the same content width as an open thread, so the workspace no longer jumps between layouts.
+
 ## 0.39.0
 
 Faster large threads, child threads across projects, and a long list of fixes.

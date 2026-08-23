@@ -29,6 +29,10 @@ type ReleaseMeta = {
 };
 
 export const RELEASE_META: Record<string, ReleaseMeta> = {
+  "0.39.2": {
+    date: "August 23, 2026",
+    headline: "AxeAI branding and Remote Access polish",
+  },
   "0.39.0": {
     date: "August 19, 2026",
     headline: "Faster large threads and a long list of fixes",
