@@ -20,7 +20,7 @@ import {
   verifyDesktopSessionCookie,
 } from "./servers.js";
 import { serveWithCache } from "./cache.js";
-import { AXEAI_ICON_DATA_URI } from "./axeai-icon.js";
+import { AXEAI_LOGO_SVG } from "./axeai-icon.js";
 import { handleAssignMachineLabel } from "./machine-label.js";
 import {
   publicConnectOrigin,
@@ -84,7 +84,7 @@ const GATE_STYLE = `
     font:15px/1.6 "Inter",-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
   .wrap{width:100%;max-width:420px;padding:24px}
   .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
-  .brand img{width:28px;height:28px}
+  .brand svg{width:124px;height:auto;flex-shrink:0;color:#060AE6}
   .brand b{font-weight:600;font-size:15px;letter-spacing:-.01em}
   .brand span{color:var(--muted);font-size:13px}
   .card{border:1px solid var(--border);background:var(--card);border-radius:12px;padding:22px 24px}
@@ -121,7 +121,7 @@ function gatePage(
      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
      <style>${GATE_STYLE}</style></head>
      <body><div class="wrap">
-       <div class="brand"><img src="${AXEAI_ICON_DATA_URI}" alt="AxeAI"><div><b>AxeAI Remote Access</b><br><span>Your AxeAI workspace, reachable anywhere</span></div></div>
+       <div class="brand">${AXEAI_LOGO_SVG}<div><b>AxeAI Remote Access</b><br><span>Your AxeAI workspace, reachable anywhere</span></div></div>
        <div class="card">${cardBody}</div>
      </div></body></html>`,
     { status, headers: { "content-type": "text/html; charset=utf-8" } },
