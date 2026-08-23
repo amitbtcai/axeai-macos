@@ -1386,7 +1386,7 @@ describe("connect plugin", () => {
     });
     // Dashboard URL is sourced from the status payload (the apex when
     // unpaired), never a frontend literal.
-    expect(status.dashboardUrl).toBe("https://getbb.app/dashboard");
+    expect(status.dashboardUrl).toBe("https://app.axeai.com/dashboard");
     expect(status.nextRetryAt).toBeNull();
     expect(harness.needsConfigurationMessages).toEqual([]);
   });
@@ -2407,7 +2407,8 @@ describe("connect CLI", () => {
     const { harness } = await loadCli();
     const result = await harness.runCli([]);
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("getbb.app");
+    expect(result.stdout).toContain("app.axeai.com");
+    expect(result.stdout).toContain("remote.axeai.com");
     expect(result.stdout).toContain("bb connect status");
     expect(result.stdout).toContain("bb connect expose");
   });
@@ -2477,14 +2478,14 @@ describe("connect CLI", () => {
     const { harness } = await loadCli();
     const result = await harness.runCli(["expose", "8000"]);
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain("not connected to getbb.app");
+    expect(result.stderr).toContain("not connected to app.axeai.com");
   });
 
   it("servers when unpaired errors clearly", async () => {
     const { harness } = await loadCli();
     const result = await harness.runCli(["servers"]);
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain("not connected to getbb.app");
+    expect(result.stderr).toContain("not connected to app.axeai.com");
   });
 
   it("servers lists account servers as a table or json", async () => {
@@ -2559,7 +2560,7 @@ describe("connect CLI", () => {
     const { harness } = await loadCli();
     const result = await harness.runCli(["machine-code"]);
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain("not connected to getbb.app");
+    expect(result.stderr).toContain("not connected to app.axeai.com");
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

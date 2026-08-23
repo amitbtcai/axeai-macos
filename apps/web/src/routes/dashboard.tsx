@@ -56,7 +56,7 @@ function validateDashboardSearch(
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
-    meta: [{ title: "AxeAI Remote Access" }],
+    meta: [{ title: "bb connect" }],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   validateSearch: validateDashboardSearch,
@@ -71,42 +71,20 @@ type ServerState = Extract<
 
 /* ── layout shell ─────────────────────────────────────────────────── */
 
-function AxeAiLockup({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 714 128"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="Axe AI"
-      className={className}
-    >
-      <g transform="scale(0.761905)" color="currentColor">
-        <path d="M97.1923 0.128124L196.375 164.224C196.545 164.505 196.159 164.786 195.947 164.536L97.1036 47.7897C96.9985 47.6655 96.8084 47.6646 96.7021 47.7878L68.7241 80.2122C68.5317 80.4351 68.1757 80.2248 68.2748 79.9469L96.7167 0.176713C96.792 -0.0344117 97.0765 -0.0634694 97.1923 0.128124Z" fill="currentColor" />
-        <path d="M196.128 167.965L0.265052 168C-0.0615031 168 -0.0989738 167.521 0.223566 167.469L153.138 143.075C153.305 143.049 153.404 142.874 153.344 142.716L138.868 104.828C138.762 104.553 139.113 104.334 139.311 104.552L196.324 167.518C196.479 167.69 196.358 167.965 196.128 167.965Z" fill="currentColor" />
-        <path d="M0.0463391 165.242L94.1125 0.500409C94.2762 0.213784 94.7089 0.423656 94.5886 0.731324L38.778 143.501C38.7144 143.663 38.8206 143.842 38.9929 143.863L83.2019 149.225C83.5024 149.262 83.517 149.695 83.2197 149.752L0.325476 165.638C0.102957 165.68 -0.066612 165.44 0.0463391 165.242Z" fill="currentColor" />
-      </g>
-      <g transform="translate(190 0)" color="currentColor">
-        <path d="M118.551 128H101.977L88.3284 92.5091H30.0278L16.3788 128H0L50.1113 0H68.6349L118.551 128ZM35.6823 77.9636H82.6738L59.0806 14.9333L35.6823 77.9636Z" fill="currentColor" />
-        <path d="M224.94 128H207.001L172.099 75.2485L137.002 128H118.868L163.91 62.8364L122.768 0H141.096L173.659 49.8424L206.611 0H223.575L181.848 62.0606L224.94 128Z" fill="currentColor" />
-        <path d="M246.308 128V0H336.586V14.5455H261.907V55.8545H320.012V70.4H261.907V113.455H339.511V128H246.308Z" fill="currentColor" />
-        <path d="M487.316 128H470.742L457.093 92.5091H398.792L385.143 128H368.764L418.876 0H437.399L487.316 128ZM404.447 77.9636H451.438L427.845 14.9333L404.447 77.9636Z" fill="currentColor" />
-        <path d="M523.223 0V128H507.625V0H523.223Z" fill="currentColor" />
-      </g>
-    </svg>
-  );
-}
-
 function BrandRow() {
   return (
-    <div className="mb-6 flex flex-col items-center justify-center gap-2.5 text-center">
-      <AxeAiLockup className="h-7 w-auto text-[#060AE6]" />
+    <div className="mb-[18px] flex items-center gap-2.5">
+      {/* One element; styles.css picks the asset off html.dark, so only the
+          variant in use is downloaded (see .bb-mark). */}
+      <span
+        role="img"
+        aria-label="bb"
+        className="bb-mark h-[30px] w-[30px] rounded-lg"
+      />
       <div className="leading-tight">
-        <b className="block text-base font-medium tracking-[-0.025em]">
-          AxeAI Remote Access
-        </b>
-        <span className="mt-0.5 block text-xs text-muted-foreground">
-          Your AxeAI workspace, reachable anywhere
+        <b className="block text-sm font-semibold">bb connect</b>
+        <span className="text-xs text-muted-foreground">
+          Your bb, reachable anywhere
         </span>
       </div>
     </div>
@@ -133,7 +111,7 @@ function Shell({
   return (
     <main
       className={cn(
-        "mx-auto flex min-h-dvh w-full flex-col px-5 pb-20 sm:px-8",
+        "mx-auto flex min-h-dvh w-full flex-col px-6 pb-24",
         top ? "justify-start pt-14" : "justify-center pt-16",
       )}
     >
@@ -156,7 +134,7 @@ function WebCard({
   return (
     <div
       className={cn(
-        "rounded-2xl bg-card p-5 ring-1 ring-border/70 sm:p-6",
+        "rounded-xl border border-border bg-card p-5 sm:p-[22px]",
         className,
       )}
     >
@@ -309,7 +287,7 @@ function claimErrorCopy(err: string, max: number): string {
     case "already-claimed":
       return "You've already claimed an address on this account.";
     case "server-limit":
-      return `You've reached the limit of ${max} AxeAI workspaces. Disconnect one to add another.`;
+      return `You've reached the limit of ${max} bbs. Disconnect one to add another.`;
     case "taken":
       return "That address is already taken. Pick another.";
     case "no-handle":
@@ -449,10 +427,10 @@ function SignInView({
   return (
     <Shell>
       <WebCard>
-        <h3 className="text-2xl font-normal tracking-[-0.035em]">Sign in</h3>
-        <p className="mt-2 mb-5 text-sm leading-6 text-muted-foreground">
-          Give your AxeAI app a private URL and control it from any browser.
-          Your code and data stay on your machine.
+        <h3 className="text-[17px] font-semibold tracking-tight">Sign in</h3>
+        <p className="mt-1 mb-4 text-sm text-muted-foreground">
+          Give your bb a private URL and open it from any browser. Your code and
+          data never leave your machine.
         </p>
         {emailPasswordEnabled ? (
           <>
@@ -541,14 +519,14 @@ function SignInView({
           </>
         ) : null}
         <Button
-          className="h-12 w-full justify-center rounded-2xl px-4 text-sm font-medium"
+          className="w-full justify-center py-[11px]"
           type="button"
           onClick={() => void signInWithGithub(returnTo)}
         >
           <GithubMark />
           Continue with GitHub
         </Button>
-        <p className="mt-4 text-center text-[11px] text-subtle-foreground">
+        <p className="mt-3 text-center text-xs text-subtle-foreground">
           Up to {MAX_PER_ACCOUNT} servers per account
         </p>
       </WebCard>
@@ -562,7 +540,7 @@ function ClaimField({
   serverUrlTemplate,
   initial = "",
   autoFocus,
-  previewLead = "Your AxeAI app will live at",
+  previewLead = "Your bb will live at",
   buildSubmitLabel,
   onClaim,
   onCancel,
@@ -643,7 +621,7 @@ function ClaimField({
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && void submit()}
           className="min-w-0 flex-1 bg-transparent px-3 py-2.5 font-mono text-sm outline-none placeholder:text-subtle-foreground"
-          placeholder="your-axeai"
+          placeholder="your-bb"
           aria-label="Address"
         />
         <span className="pr-3 font-mono text-sm text-subtle-foreground">
@@ -682,7 +660,7 @@ function ClaimView({ serverUrlTemplate }: { serverUrlTemplate: string }) {
           Pick your address
         </h3>
         <p className="mt-1 mb-4 text-sm text-muted-foreground">
-          This becomes your AxeAI app&rsquo;s permanent URL. Lowercase letters,
+          This becomes your bb&rsquo;s permanent URL. Lowercase letters,
           numbers, and dashes.
         </p>
         <ClaimField
@@ -751,7 +729,7 @@ function SetupCodePanel({
       <p className="mt-2.5 text-xs text-subtle-foreground">
         Paste in{" "}
         <span className="font-medium text-foreground">Plugins → connect</span>{" "}
-        in your AxeAI app{" · "}
+        on your bb{" · "}
         <button
           className="text-foreground underline underline-offset-2 hover:text-muted-foreground"
           onClick={() => setShowCli((v) => !v)}
@@ -796,7 +774,7 @@ function RepairCodeBlock({ serverId }: { serverId: string }) {
     <div>
       <BigCode code={code?.code ?? "····–····"} disabled={!code} />
       <p className="mt-2.5 text-xs text-subtle-foreground">
-        Re-pairing replaces this AxeAI app&rsquo;s credential. Paste in{" "}
+        Re-pairing replaces this bb&rsquo;s credential. Paste in{" "}
         <span className="font-medium text-foreground">Plugins → connect</span>
         {code ? ` · expires in ${minutes(code.expiresInMs)} min` : ""}
       </p>
@@ -833,7 +811,7 @@ function ConfirmServerAction({
   return (
     <Overlay onClose={onCancel}>
       <h4 className="mb-1.5 text-[15px] font-semibold">
-        {removing ? "Remove this address?" : "Disconnect your AxeAI app?"}
+        {removing ? "Remove this address?" : "Disconnect your bb?"}
       </h4>
       <p className="mb-4 text-sm text-muted-foreground">
         <b className="font-semibold text-foreground">
@@ -841,7 +819,7 @@ function ConfirmServerAction({
         </b>{" "}
         {removing
           ? "is freed up and can be claimed again. It was never paired, so nothing stops working."
-          : "stops working on all devices immediately. AxeAI keeps running locally; re-pairing needs a new connect code."}
+          : "stops working on all devices immediately. Your bb keeps running locally; re-pairing needs a new connect code."}
       </p>
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={onCancel} disabled={busy}>
@@ -1089,12 +1067,10 @@ function ConnectAnotherDialog({
   if (atCap && !server) {
     return (
       <Overlay onClose={onClose}>
-        <h4 className="mb-1.5 text-[15px] font-semibold">
-          Connect another AxeAI app
-        </h4>
+        <h4 className="mb-1.5 text-[15px] font-semibold">Connect another bb</h4>
         <p className="mb-4 text-sm text-muted-foreground">
-          You&rsquo;ve reached the limit of {state.maxServers} AxeAI apps on
-          this account. Disconnect one to add another.
+          You&rsquo;ve reached the limit of {state.maxServers} bbs on this
+          account. Disconnect one to add another.
         </p>
         <div className="flex justify-end">
           <Button variant="outline" onClick={onClose}>
@@ -1110,17 +1086,17 @@ function ConnectAnotherDialog({
       {!server ? (
         <>
           <h4 className="mb-1.5 text-[15px] font-semibold">
-            Connect another AxeAI app
+            Connect another bb
           </h4>
           <p className="mb-3 text-sm text-muted-foreground">
-            Pick its address — every AxeAI app gets its own URL.
+            Pick its address — every bb gets its own URL.
           </p>
           <ClaimField
             layout="dialog"
             autoFocus
             serverUrlTemplate={state.serverUrlTemplate}
             initial={`${state.handle}-desktop`}
-            previewLead="This AxeAI app will live at"
+            previewLead="This bb will live at"
             buildSubmitLabel={(l) => `Claim ${l || "…"}`}
             onCancel={onClose}
             onClaim={async (label) => {
@@ -1136,9 +1112,7 @@ function ConnectAnotherDialog({
         </>
       ) : (
         <>
-          <h4 className="mb-1.5 text-[15px] font-semibold">
-            Pair the new AxeAI app
-          </h4>
+          <h4 className="mb-1.5 text-[15px] font-semibold">Pair the new bb</h4>
           <p className="mb-2.5 text-sm text-muted-foreground">
             <code className="font-mono text-xs text-foreground">
               {server.serverUrl.replace(/^https?:\/\//u, "")}
@@ -1169,7 +1143,7 @@ function AccountFooter({ state }: { state: ServerState }) {
     : undefined;
   const cap =
     state.servers.length >= 2
-      ? ` · ${state.servers.length} of ${state.maxServers} AxeAI apps`
+      ? ` · ${state.servers.length} of ${state.maxServers} bbs`
       : "";
   return (
     <div className="mt-3.5 flex items-center justify-between text-xs">
@@ -1255,14 +1229,14 @@ function AccountDashboard({ state }: { state: ServerState }) {
       <div className="rounded-xl border border-border bg-card p-2 shadow-sm">
         <div className="flex items-center px-1.5 pb-1.5 pl-3 pt-1.5">
           <h3 className="flex-1 text-[17px] font-semibold tracking-tight">
-            Your AxeAI apps
+            Your bbs
           </h3>
           <button
             className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-surface-recessed hover:text-foreground"
             onClick={() => setConnectOpen(true)}
           >
             <HugeiconsIcon icon={PlusSignIcon} className="size-3" />
-            Add an AxeAI app
+            Add a bb
           </button>
         </div>
         {state.servers.map((s: ServerSummary) => (
@@ -1279,14 +1253,14 @@ function AccountDashboard({ state }: { state: ServerState }) {
               className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-surface-recessed hover:text-foreground"
               href={`${manageServer.serverUrl}/settings/machines`}
             >
-              Manage machines in AxeAI
+              Manage machines in bb
               <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-3" />
             </a>
           ) : null}
         </div>
         {state.machines.length === 0 ? (
           <p className="px-3 pb-2 text-xs text-subtle-foreground">
-            Add machines from AxeAI Settings → Machines.
+            Add machines from bb Settings → Machines.
           </p>
         ) : (
           state.machines.map((machine: MachineSummary) => {
