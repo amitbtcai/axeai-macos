@@ -129,14 +129,14 @@ truncation markers are preserved.
 
 Remote access (bb connect):
 
-  Expose this bb server at <handle>.getbb.app so you can reach it from any
-  browser. Claim a handle at https://getbb.app, copy the connect command it
+  Expose this bb server at <handle>.remote.axeai.com so you can reach it from any
+  browser. Claim a handle at https://app.axeai.com, copy the connect command it
   generates, then run it here to
   pair:
 
-  bb connect --code <code> --server https://<handle>.getbb.app
+  bb connect --code <code> --server https://<handle>.remote.axeai.com
     --code <code>          One-time pairing code from the dashboard
-    --server <url>         https://<handle>.getbb.app (from the dashboard)
+    --server <url>         https://<handle>.remote.axeai.com (from the dashboard)
 
   Pairing returns immediately: the bb SERVER redeems the code, stores the
   credential, and holds the tunnel itself — so it stays up as long as bb is
@@ -161,10 +161,10 @@ Remote access (bb connect):
   `bb connect expose <port>` resolves the thread environment's host; outside a
   thread it defaults to the server host. `--host <name-or-id>` overrides that
   choice for expose, unexpose, and shares. Server-host URLs use
-  `https://<server-label>--<port>.getbb.app`; machine-host URLs use
-  `https://<machine-label>--<port>.getbb.app` and proxy directly through that
+  `https://<server-label>--<port>.remote.axeai.com`; machine-host URLs use
+  `https://<machine-label>--<port>.remote.axeai.com` and proxy directly through that
   machine's daemon. Access is owner-session-gated — only viewers signed into
-  the owner's getbb.app account can open the URL; it is not a public internet
+  the owner's app.axeai.com account can open the URL; it is not a public internet
   link. Agents should run expose from the thread that started the server, share
   the returned URL, and unexpose from the same thread when it stops.
   `bb connect status` shows all shares with host + URL. `shares --json` returns
@@ -177,7 +177,7 @@ Remote access (bb connect):
   `bb connect machine-code` prints the same code, server URL, apex, and expiry
   (`--json` for `{code, serverUrl, apex, expiresAt}`). The phone scans or
   types the code and enrolls as a connect machine on the account with its own
-  revocable credential (it appears in the getbb.app dashboard machine list).
+  revocable credential (it appears in the app.axeai.com dashboard machine list).
   Codes last 10 minutes and work once; an account-machine-limit failure says
   so and points at the dashboard to revoke an unused device.
 

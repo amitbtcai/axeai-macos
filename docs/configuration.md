@@ -621,9 +621,9 @@ persistently restores undimmed splits.
 
 ## bb connect
 
-`bb connect --code <code> --server https://<handle>.getbb.app` pairs this bb
-server for browser access at `<handle>.getbb.app` (claim a handle and copy the
-command at https://getbb.app). Remote access is owned by the builtin
+`bb connect --code <code> --server https://<handle>.remote.axeai.com` pairs this bb
+server for browser access at `<handle>.remote.axeai.com` (claim a handle and copy the
+command at https://app.axeai.com). Remote access is owned by the builtin
 **connect plugin** (`plugins/connect/`): pairing redeems the code and stores
 the durable credential in the plugin's kv storage (in `bb.db`), and the
 plugin's background service holds the connect tunnel — dialing the gate,
@@ -637,11 +637,11 @@ proxying relayed requests to the server's own loopback (which serves the SPA
   `bb connect off` disconnects and clears the pairing. After pairing,
   `bb connect expose <port>` run from a thread shares that thread environment's
   enrolled host. Server-host URLs remain
-  `https://<server-label>--<port>.getbb.app`; other machines use
-  `https://<machine-label>--<port>.getbb.app` and proxy directly through the
+  `https://<server-label>--<port>.remote.axeai.com`; other machines use
+  `https://<machine-label>--<port>.remote.axeai.com` and proxy directly through the
   owning daemon. Outside a thread the command defaults to the server host;
   `--host <name-or-id>` overrides host resolution. Access requires the owner's
-  getbb.app session (not a public link). `bb connect unexpose <port>` and
+  app.axeai.com session (not a public link). `bb connect unexpose <port>` and
   `bb connect shares` use the same host resolution and accept the same
   `--host` override. Their JSON rows include `hostId`, `hostName`, `port`, and
   `url`; `shares --json` also includes the resolved `host`. A machine without
@@ -657,7 +657,7 @@ ports).
 ### Pairing the bb mobile app
 
 The bb mobile app reaches a paired bb through the same connect route. It
-enrolls as a connect **machine** — its own credential on the getbb.app account,
+enrolls as a connect **machine** — its own credential on the app.axeai.com account,
 separate from the server's pairing secret and individually revocable — so
 pairing starts from the bb, not from the phone. Both pairing surfaces sit
 behind the `mobileApp` experiment (Settings → Experiments → **Mobile app**, or
@@ -672,7 +672,7 @@ so a toggle applies without a plugin reload:
   `{code, serverUrl, apex, expiresAt}` (the QR encodes that JSON).
 
 Scan or type the code in the mobile app. The code lasts 10 minutes and works
-once. The phone then appears in the getbb.app dashboard machine list, where you
+once. The phone then appears in the app.axeai.com dashboard machine list, where you
 can revoke it; every enrollment takes one of the account's machine slots
 (desktop apps, remote execution machines, and phones all count), so a
 machine-limit error asks you to revoke an unused device first. Both surfaces
