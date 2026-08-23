@@ -70,6 +70,20 @@ describe("requestForTunnelDo", () => {
     expect(out.headers.get(GATE_AUTH_HEADER)).toBe("session");
     expect(out.headers.get(GATE_MACHINE_ID_HEADER)).toBeNull();
   });
+
+  it("never forwards Remote Access authentication cookies to the local app", () => {
+    const req = new Request("https://sawyer.getbb.app/", {
+      headers: {
+        cookie:
+          "app-theme=dark; __Secure-better-auth.session_token=secret; __Secure-bb-connect.desktop_session=desktop",
+      },
+    });
+    const out = requestForTunnelDo(req, null, "session", [
+      "__Secure-better-auth.session_token",
+      "__Secure-bb-connect.desktop_session",
+    ]);
+    expect(out.headers.get("cookie")).toBe("app-theme=dark");
+  });
 });
 
 describe("cache namespace", () => {

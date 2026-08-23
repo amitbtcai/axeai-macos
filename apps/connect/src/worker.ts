@@ -234,6 +234,7 @@ export function requestForTunnelDo(
   request: Request,
   target: string | null,
   authKind?: "machine" | "session",
+  authCookieNames: readonly string[] = [],
 ): Request {
   const headers = new Headers(request.headers);
   headers.delete(TUNNEL_TARGET_HEADER);
@@ -241,6 +242,23 @@ export function requestForTunnelDo(
   headers.delete(GATE_AUTH_HEADER);
   headers.delete(GATE_MACHINE_ID_HEADER);
   stripCloudDevHeader(headers);
+  const cookieHeader = headers.get("cookie");
+  if (cookieHeader && authCookieNames.length > 0) {
+    const blockedNames = new Set(authCookieNames);
+    const remainingCookies = cookieHeader
+      .split(";")
+      .map((cookie) => cookie.trim())
+      .filter((cookie) => {
+        const separator = cookie.indexOf("=");
+        const name = separator < 0 ? cookie : cookie.slice(0, separator);
+        return !blockedNames.has(name);
+      });
+    if (remainingCookies.length > 0) {
+      headers.set("cookie", remainingCookies.join("; "));
+    } else {
+      headers.delete("cookie");
+    }
+  }
   if (target !== null) {
     headers.set(TUNNEL_TARGET_HEADER, target);
   }
@@ -479,7 +497,10 @@ export default {
       return text("bb connect: not your server\n", 403);
     }
 
-    const doRequest = requestForTunnelDo(request, target, "session");
+    const doRequest = requestForTunnelDo(request, target, "session", [
+      runtime.sessionCookieName,
+      runtime.desktopSessionCookieName,
+    ]);
 
     // WebSocket upgrades (bb's /ws, terminals) can't be cached — proxy directly.
     if (request.headers.get("upgrade")?.toLowerCase() === "websocket") {

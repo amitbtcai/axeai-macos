@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { drizzle } from "drizzle-orm/d1";
+import { genericOAuth } from "better-auth/plugins";
 import { account, session, user, verification } from "@bb/connect-db";
 import type { Env } from "./env.js";
 import { resolveDevEmailPasswordEnabled } from "./local-auth.js";
@@ -8,8 +9,9 @@ import { resolveDevEmailPasswordEnabled } from "./local-auth.js";
 export type Auth = ReturnType<typeof createAuth>;
 
 /**
- * better-auth bound to the Cloud D1 via drizzle. Production uses GitHub;
- * local Cloud additionally enables email/password credentials.
+ * Better Auth bound to Cloud D1 for application sessions. Production identity
+ * comes from the canonical AxeAI OIDC provider; local Cloud additionally
+ * enables email/password credentials.
  * Cookies are scoped to the shared parent of APP_URL and BASE_DOMAIN so a
  * dashboard on app.axeai.com can authenticate the gate on remote.axeai.com.
  */
@@ -17,6 +19,9 @@ export function createAuth(env: Env) {
   const db = drizzle(env.DB);
   const appUrl = new URL(env.APP_URL);
   const devEmailPasswordEnabled = resolveDevEmailPasswordEnabled(env);
+  const axeaiIssuer = (env.AXEAI_AUTH_ISSUER ?? "https://axeai.com/api/auth")
+    .replace(/\/$/u, "");
+  const axeaiClientId = env.AXEAI_AUTH_CLIENT_ID ?? "axeai-remote-web";
   const subdomainOrigin = `${appUrl.protocol}//*.${env.BASE_DOMAIN}${
     appUrl.port ? `:${appUrl.port}` : ""
   }`;
@@ -55,14 +60,27 @@ export function createAuth(env: Env) {
         githubLogin: { type: "string", required: false, input: false },
       },
     },
-    socialProviders: {
-      github: {
-        clientId: env.GITHUB_CLIENT_ID,
-        clientSecret: env.GITHUB_CLIENT_SECRET,
-        overrideUserInfoOnSignIn: true,
-        mapProfileToUser: (profile) => ({ githubLogin: profile.login }),
+    account: {
+      accountLinking: {
+        enabled: true,
+        trustedProviders: ["axeai"],
+        updateUserInfoOnLink: true,
       },
     },
+    plugins: [
+      genericOAuth({
+        config: [{
+          providerId: "axeai",
+          discoveryUrl: `${axeaiIssuer}/.well-known/openid-configuration`,
+          issuer: axeaiIssuer,
+          requireIssuerValidation: true,
+          clientId: axeaiClientId,
+          redirectURI: `${env.APP_URL}/api/auth/oauth2/callback/axeai`,
+          scopes: ["openid", "profile", "email"],
+          pkce: true,
+        }],
+      }),
+    ],
     advanced: {
       crossSubDomainCookies: { enabled: true, domain: `.${cookieDomain}` },
     },

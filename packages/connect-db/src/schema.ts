@@ -1,14 +1,15 @@
 // bb connect cloud schema (Cloudflare D1, SQLite dialect).
 //
 // Two groups of tables:
-//   1. better-auth core tables (user/session/account/verification) — shaped to
-//      better-auth's default drizzle sqlite schema so the drizzle adapter binds
-//      to them in M1. Do not rename columns without regenerating auth config.
+//   1. better-auth application tables (user/session/account/verification) —
+//      Remote Access keeps local sessions and an account mapping to the
+//      canonical AxeAI OIDC subject. It is not an independent identity source.
+//      Do not rename columns without regenerating auth config.
 //   2. bb-connect product tables (profile/server/connect_code).
 //
-// The cloud stores identity + routing ONLY — never threads, code, or terminal
-// output. If a column here would hold product data, it is in the wrong
-// database.
+// The cloud stores Remote Access sessions + routing ONLY — never threads, code,
+// or terminal output. If a column here would hold product data, it is in the
+// wrong database.
 
 import { sql } from "drizzle-orm";
 import {

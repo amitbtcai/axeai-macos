@@ -9,8 +9,8 @@
 // Deploy staging: pnpm --filter @bb/web build && pnpm --filter @bb/web exec wrangler deploy
 // Deploy prod:    CLOUDFLARE_ENV=production pnpm --filter @bb/web build
 //                 && pnpm --filter @bb/web exec wrangler deploy
-// Secrets (per worker): wrangler secret put [--name bb-web] GITHUB_CLIENT_ID /
-//   GITHUB_CLIENT_SECRET / BETTER_AUTH_SECRET / LANDING_POSTHOG_KEY / RESEND_API_KEY
+// Secrets (per worker): wrangler secret put [--name bb-web] BETTER_AUTH_SECRET /
+//   LANDING_POSTHOG_KEY / RESEND_API_KEY
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "bb-web-staging",
@@ -28,8 +28,6 @@
   },
   "secrets": {
     "required": [
-      "GITHUB_CLIENT_ID",
-      "GITHUB_CLIENT_SECRET",
       "BETTER_AUTH_SECRET",
     ],
   },
@@ -77,14 +75,14 @@
       ],
       "secrets": {
         "required": [
-          "GITHUB_CLIENT_ID",
-          "GITHUB_CLIENT_SECRET",
           "BETTER_AUTH_SECRET",
         ],
       },
       "vars": {
         "BASE_DOMAIN": "remote.axeai.com",
         "APP_URL": "https://app.axeai.com",
+        "AXEAI_AUTH_ISSUER": "https://axeai.com/api/auth",
+        "AXEAI_AUTH_CLIENT_ID": "axeai-remote-web",
         "RESEND_AUDIENCE_ID": "299db4ee-f3db-476d-9847-0bf4344d9c44",
       },
       "d1_databases": [

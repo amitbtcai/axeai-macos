@@ -133,13 +133,14 @@ function PrivacyRoute() {
           <p>When you sign in to bb connect, we store:</p>
           <ul>
             <li>
-              Your GitHub account details: name, email address, GitHub login,
-              and avatar URL.
+              Your canonical AxeAI account identifier, name, email address, and
+              avatar URL.
             </li>
             <li>
-              The access tokens that keep you signed in to GitHub, and your bb
-              sign-in sessions. A session record includes the IP address and the
-              browser user agent that created it.
+              Your limited Remote Access sign-in sessions. A session record
+              includes the IP address and browser user agent that created it.
+              Remote Access does not store your Google, Apple, GitHub, or wallet
+              provider tokens.
             </li>
             <li>
               Your handle, and a record of each machine and server you enroll:

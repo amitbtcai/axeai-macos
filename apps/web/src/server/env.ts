@@ -7,8 +7,8 @@ export interface Env {
   APP_URL: string;
   CONNECT_SERVER_URL_TEMPLATE?: string;
   DEV_EMAIL_PASSWORD_AUTH?: string;
-  GITHUB_CLIENT_ID: string;
-  GITHUB_CLIENT_SECRET: string;
+  AXEAI_AUTH_ISSUER?: string;
+  AXEAI_AUTH_CLIENT_ID?: string;
   BETTER_AUTH_SECRET: string;
   /**
    * Marketing-page endpoints (see src/landing/endpoints.ts). Unset on forks

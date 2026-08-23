@@ -22,8 +22,6 @@ describe("resolveCloudDevViteSettings", () => {
         BETTER_AUTH_SECRET: "shared-local-secret",
         CONNECT_SERVER_URL_TEMPLATE: "http://{label}.bb.localhost:42745",
         DEV_EMAIL_PASSWORD_AUTH: "true",
-        GITHUB_CLIENT_ID: "local-cloud-dev-unused",
-        GITHUB_CLIENT_SECRET: "local-cloud-dev-unused",
       },
     });
   });

@@ -25,8 +25,6 @@ export function resolveCloudDevViteSettings(
       BETTER_AUTH_SECRET: betterAuthSecret,
       CONNECT_SERVER_URL_TEMPLATE: serverUrlTemplate,
       DEV_EMAIL_PASSWORD_AUTH: "true",
-      GITHUB_CLIENT_ID: "local-cloud-dev-unused",
-      GITHUB_CLIENT_SECRET: "local-cloud-dev-unused",
     },
   };
 }
