@@ -80,6 +80,14 @@ interface InvalidConfigCommandCase {
   value: string;
 }
 
+function expectPrivateFilePermissions(path: string): void {
+  const stats = statSync(path);
+  expect(stats.isFile()).toBe(true);
+  if (process.platform !== "win32") {
+    expect(stats.mode & 0o777).toBe(0o600);
+  }
+}
+
 interface StartupOnlyManagedEnvCase {
   key: string;
   value: string;
@@ -563,41 +571,49 @@ describe("bb-app launcher", () => {
   });
 
   it("resolves production defaults for npx startup", () => {
+    const packageRoot = resolve("/repo/packages/bb-app");
+    const homeDir = resolve("/home/tester");
     const context = resolveBbAppStartContext({
-      entrypointUrl: pathToFileURL("/repo/packages/bb-app/dist/bb-app.js").href,
+      entrypointUrl: pathToFileURL(join(packageRoot, "dist", "bb-app.js")).href,
       env: {},
-      homeDir: "/home/tester",
+      homeDir,
     });
 
-    expect(context.dataDir).toBe("/home/tester/.axeai");
-    expect(context.configFile).toBe("/home/tester/.axeai/config.json");
-    expect(context.envFile).toBe("/home/tester/.axeai/env.json");
+    expect(context.dataDir).toBe(join(homeDir, ".axeai"));
+    expect(context.configFile).toBe(join(homeDir, ".axeai", "config.json"));
+    expect(context.envFile).toBe(join(homeDir, ".axeai", "env.json"));
     expect(context.serverPort).toBe(38886);
     expect(context.daemonPort).toBe(38887);
     expect(context.serverUrl).toBe("http://127.0.0.1:38886");
     expect(context.serverEntry).toBe(
-      "/repo/packages/bb-app/server/dist/index.js",
+      join(packageRoot, "server", "dist", "index.js"),
     );
     expect(context.daemonEntry).toBe(
-      "/repo/packages/bb-app/host-daemon/dist/daemon-bundle.mjs",
+      join(packageRoot, "host-daemon", "dist", "daemon-bundle.mjs"),
     );
     expect(context.appVersion).toBe("0.0.0-dev");
   });
 
   it("uses workspace build outputs when run from a source checkout", () => {
+    const repoRoot = resolve("/repo");
+    const packageRoot = join(repoRoot, "packages", "bb-app");
     const context = resolveBbAppStartContext({
-      entrypointUrl: pathToFileURL("/repo/packages/bb-app/src/launcher.ts")
+      entrypointUrl: pathToFileURL(join(packageRoot, "src", "launcher.ts"))
         .href,
       env: {},
-      homeDir: "/home/tester",
+      homeDir: resolve("/home/tester"),
     });
 
-    expect(context.packageRoot).toBe("/repo/packages/bb-app");
-    expect(context.appDistDir).toBe("/repo/apps/app/dist");
-    expect(context.serverEntry).toBe("/repo/apps/server/dist/index.js");
-    expect(context.daemonBundleDir).toBe("/repo/apps/host-daemon/dist");
+    expect(context.packageRoot).toBe(packageRoot);
+    expect(context.appDistDir).toBe(join(repoRoot, "apps", "app", "dist"));
+    expect(context.serverEntry).toBe(
+      join(repoRoot, "apps", "server", "dist", "index.js"),
+    );
+    expect(context.daemonBundleDir).toBe(
+      join(repoRoot, "apps", "host-daemon", "dist"),
+    );
     expect(context.daemonEntry).toBe(
-      "/repo/apps/host-daemon/dist/daemon-bundle.mjs",
+      join(repoRoot, "apps", "host-daemon", "dist", "daemon-bundle.mjs"),
     );
   });
 
@@ -624,9 +640,8 @@ describe("bb-app launcher", () => {
       BB_SERVER_PORT: "48886",
     };
 
-    expect(resolveDataDir({ env, homeDir: "/home/tester" })).toBe(
-      "/home/tester/custom-bb",
-    );
+    const homeDir = resolve("/home/tester");
+    expect(resolveDataDir({ env, homeDir })).toBe(join(homeDir, "custom-bb"));
     expect(
       resolvePortFromEnv({ defaultPort: 1, env, name: "BB_SERVER_PORT" }),
     ).toBe(48886);
@@ -1126,8 +1141,8 @@ describe("bb-app launcher", () => {
         },
       },
     );
-    expect(statSync(join(dataDir, "config.json")).mode & 0o777).toBe(0o600);
-    expect(statSync(join(dataDir, "env.json")).mode & 0o777).toBe(0o600);
+    expectPrivateFilePermissions(join(dataDir, "config.json"));
+    expectPrivateFilePermissions(join(dataDir, "env.json"));
   });
 
   it("stores client SSH targets from the client command", async () => {
@@ -1165,7 +1180,7 @@ describe("bb-app launcher", () => {
           },
         },
       });
-      expect(statSync(join(dataDir, "client.json")).mode & 0o777).toBe(0o600);
+      expectPrivateFilePermissions(join(dataDir, "client.json"));
 
       await runBbApp([
         "--data-dir",
@@ -1439,7 +1454,7 @@ describe("bb-app launcher", () => {
         },
       },
     );
-    expect(statSync(join(dataDir, "env.json")).mode & 0o777).toBe(0o600);
+    expectPrivateFilePermissions(join(dataDir, "env.json"));
   });
 
   it("rejects invalid server bind hosts before writing managed env", async () => {
