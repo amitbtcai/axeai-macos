@@ -1030,6 +1030,7 @@ describe("gate worker share hosts", () => {
     expect(html).toContain("sawyer");
     expect(html).toContain('rel="icon" type="image/svg+xml"');
     expect(html).toContain("Remote Access");
+    expect(html).not.toContain("color:#060AE6");
     expect(captured).toHaveLength(0);
   });
 

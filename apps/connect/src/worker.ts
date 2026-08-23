@@ -84,7 +84,7 @@ const GATE_STYLE = `
     font:15px/1.6 "Inter",-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
   .wrap{width:100%;max-width:430px;padding:24px}
   .brand{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-bottom:18px}
-  .brand svg{width:148px;height:auto;color:#060AE6}
+  .brand svg{width:148px;height:auto}
   .brand-copy{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
   .brand b{font-weight:600;font-size:14px;letter-spacing:-.01em}
   .brand span{color:var(--muted);font-size:13px}

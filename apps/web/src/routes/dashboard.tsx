@@ -79,7 +79,7 @@ function AxeAiLogo() {
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label="Axe AI"
-      className="h-8 w-auto shrink-0 text-[#060AE6]"
+      className="h-8 w-auto shrink-0"
     >
       <g transform="scale(0.761905)" color="currentColor">
         <path d="M97.1923 0.128124L196.375 164.224C196.545 164.505 196.159 164.786 195.947 164.536L97.1036 47.7897C96.9985 47.6655 96.8084 47.6646 96.7021 47.7878L68.7241 80.2122C68.5317 80.4351 68.1757 80.2248 68.2748 79.9469L96.7167 0.176713C96.792 -0.0344117 97.0765 -0.0634694 97.1923 0.128124Z" fill="currentColor" />
