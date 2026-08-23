@@ -76,7 +76,7 @@ describe("connect settings section", () => {
     expect(link.target).toBe("_blank");
     fireEvent.click(link);
     expect(slot.navigateCalls).toEqual([]);
-    slot.getByText("you.bb.localhost:42745");
+    slot.getByText("your-handle.remote.axeai.com");
     slot.getByText(/your bb\.localhost:42745 dashboard/);
   });
 

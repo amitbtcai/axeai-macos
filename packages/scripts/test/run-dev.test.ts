@@ -133,9 +133,7 @@ describe("run-dev", () => {
     expect(env.BB_SERVER_URL).toBe(config.serverUrl);
     expect(env.BB_HOST_DAEMON_PORT).toBe(String(config.ports.hostDaemonPort));
     expect(env.BB_DEV_APP_PORT).toBe(String(config.ports.appPort));
-    expect(env.BB_DEV_CONNECT_BASE_URL).toBe(
-      `http://bb.localhost:${config.ports.cloudPort}`,
-    );
+    expect(env.BB_DEV_CONNECT_BASE_URL).toBeUndefined();
   });
 
   it("inherits parent bb skills for managed worktree dev apps", () => {

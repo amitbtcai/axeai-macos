@@ -144,10 +144,9 @@ Remote access (bb connect):
   Without an installed bb, pair via npm:
   `npx -p bb-app@latest bb connect --code <code> --server <url>`.
 
-  In a source checkout, `pnpm dev` automatically points the unpaired Connect
-  settings and code-only pairing at that worktree's local Cloud origin through
-  `BB_DEV_CONNECT_BASE_URL`. Explicit `--server` and `--base-url` targets still
-  win, so the dev bb can also pair with getbb.app.
+  Source checkouts use AxeAI's production Connect service by default. Set
+  `BB_DEV_CONNECT_BASE_URL` explicitly when testing a worktree-local Cloud.
+  Explicit `--server` and `--base-url` targets still win.
 
   bb connect status                       Show the server's connect status
   bb connect off                          Disconnect and forget the pairing

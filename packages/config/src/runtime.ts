@@ -329,7 +329,6 @@ export function toDevProcessEnv(args: DevProcessEnvArgs): NodeJS.ProcessEnv {
     ...env,
     BB_DATA_DIR: args.config.dataDir,
     BB_DEV_APP_PORT: String(args.config.ports.appPort),
-    BB_DEV_CONNECT_BASE_URL: `http://bb.localhost:${args.config.ports.cloudPort}`,
     BB_HOST_DAEMON_PORT: String(args.config.ports.hostDaemonPort),
     BB_INHERITED_SKILLS_ROOTS: inheritedSkillsRootPaths.join(delimiter),
     BB_SERVER_PORT: String(args.config.ports.serverPort),

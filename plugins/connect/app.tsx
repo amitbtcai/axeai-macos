@@ -1090,7 +1090,7 @@ function NotPairedContent({
       <p className="text-sm text-muted-foreground">
         Pairing gives Axe AI a private URL like{" "}
         <span className="rounded bg-surface-recessed px-1.5 py-0.5 font-mono text-xs text-foreground">
-          you.{dashboardHost}
+          your-handle.remote.axeai.com
         </span>
         . Your code and data stay on this machine.
       </p>
