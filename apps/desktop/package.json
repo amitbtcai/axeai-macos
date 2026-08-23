@@ -11,6 +11,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "clean": "rimraf dist release",
+    "generate:icons": "node scripts/generate-app-icons.mjs",
     "desktop:build": "pnpm run build && node scripts/run-electron-builder.mjs --mac --arm64 --publish always",
     "desktop:build:linux": "pnpm run build && node scripts/run-electron-builder.mjs --linux --x64 --publish never",
     "desktop:version-feed": "tsx scripts/generate-version-feed.mts",
