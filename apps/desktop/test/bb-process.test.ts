@@ -124,42 +124,45 @@ describe("bb app process", () => {
     });
   });
 
-  it("escalates to SIGKILL when the bridge ignores SIGTERM", async () => {
-    const script = await createTempScript({
-      contents: `
+  it.skipIf(process.platform === "win32")(
+    "escalates to SIGKILL when the bridge ignores SIGTERM",
+    async () => {
+      const script = await createTempScript({
+        contents: `
 process.on("SIGTERM", () => {
   process.stdout.write("ignored SIGTERM\\n");
 });
 process.stdout.write("ready\\n");
 setInterval(() => undefined, 1000);
 `,
-    });
-    const processEntry = startBbAppProcess({
-      bridgePath: script.path,
-      cwd: script.root,
-      env: process.env,
-      logLineLimit: 20,
-      runtime: {
-        executablePath: process.execPath,
-        mode: "node",
-      },
-    });
-    processes.push(processEntry);
-    await waitForLog({
-      process: processEntry,
-      text: "ready",
-      timeoutMs: 1_000,
-    });
+      });
+      const processEntry = startBbAppProcess({
+        bridgePath: script.path,
+        cwd: script.root,
+        env: process.env,
+        logLineLimit: 20,
+        runtime: {
+          executablePath: process.execPath,
+          mode: "node",
+        },
+      });
+      processes.push(processEntry);
+      await waitForLog({
+        process: processEntry,
+        text: "ready",
+        timeoutMs: 1_000,
+      });
 
-    await processEntry.stop({
-      killSignal: "SIGKILL",
-      killTimeoutMs: 1_000,
-      signal: "SIGTERM",
-      timeoutMs: 50,
-    });
+      await processEntry.stop({
+        killSignal: "SIGKILL",
+        killTimeoutMs: 1_000,
+        signal: "SIGTERM",
+        timeoutMs: 50,
+      });
 
-    const exit = await processEntry.exit;
-    expect(processEntry.logs.text()).toContain("ignored SIGTERM");
-    expect(exit.signal).toBe("SIGKILL");
-  });
+      const exit = await processEntry.exit;
+      expect(processEntry.logs.text()).toContain("ignored SIGTERM");
+      expect(exit.signal).toBe("SIGKILL");
+    },
+  );
 });
