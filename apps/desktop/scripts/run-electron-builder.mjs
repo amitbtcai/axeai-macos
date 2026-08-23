@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -9,6 +10,7 @@ import {
 } from "./desktop-release-channel.mjs";
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
 const desktopPackageRoot = resolve(scriptDirectory, "..");
 const baseConfigPath = resolve(
   desktopPackageRoot,
@@ -18,12 +20,7 @@ const generatedConfigPath = resolve(
   desktopPackageRoot,
   ".electron-builder.generated.json",
 );
-const electronBuilderBin = resolve(
-  desktopPackageRoot,
-  "node_modules",
-  ".bin",
-  "electron-builder",
-);
+const electronBuilderCli = require.resolve("electron-builder/out/cli/cli.js");
 
 const codeSigningKeys = ["CSC_LINK", "CSC_KEY_PASSWORD"];
 const notarizationKeys = [
@@ -242,8 +239,8 @@ async function removeGeneratedConfig() {
 
 async function runElectronBuilder(args, signingPlan) {
   const child = spawn(
-    electronBuilderBin,
-    ["--config", generatedConfigPath, ...args],
+    process.execPath,
+    [electronBuilderCli, "--config", generatedConfigPath, ...args],
     {
       cwd: desktopPackageRoot,
       env: createElectronBuilderEnv(signingPlan),
@@ -281,13 +278,10 @@ async function main() {
     return;
   }
 
-  if (
-    electronBuilderArgs.includes("--linux") &&
-    !electronBuilderArgs.includes("--mac")
-  ) {
-    console.log("macOS signing is not applicable for Linux-only builds.");
-  } else {
+  if (electronBuilderArgs.includes("--mac")) {
     logSigningPlan(signingPlan);
+  } else {
+    console.log("macOS signing is not applicable for this build target.");
   }
   await mkdir(dirname(generatedConfigPath), { recursive: true });
   await writeGeneratedConfig(config);
