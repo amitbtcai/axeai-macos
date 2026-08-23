@@ -32,7 +32,7 @@
     {
       "binding": "DB",
       "database_name": "axeai-connect-prod",
-      "database_id": "AXEAI_CONNECT_PROD_D1_ID",
+      "database_id": "3dc5b12b-a004-4e12-9f5d-621b5e50493c",
       // Shared schema lives in connect-db; CI runs `wrangler d1 migrations
       // apply DB --remote` from this config before every deploy (the
       // d1_migrations tracking tables were seeded with the hand-applied

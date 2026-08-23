@@ -29,7 +29,7 @@ try {
   execFileSync("mkdir", ["-p", iconset]);
   writeFileSync(
     renderedSource,
-    readFileSync(source, "utf8").replaceAll("currentColor", "#000000"),
+    readFileSync(source, "utf8").replaceAll("currentColor", "#060AE6"),
   );
   execFileSync("magick", [
     "-background", "none", renderedSource,

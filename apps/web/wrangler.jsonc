@@ -31,8 +31,6 @@
       "GITHUB_CLIENT_ID",
       "GITHUB_CLIENT_SECRET",
       "BETTER_AUTH_SECRET",
-      "LANDING_POSTHOG_KEY",
-      "RESEND_API_KEY",
     ],
   },
   "d1_databases": [
@@ -74,7 +72,7 @@
       // cutover. Never leave this to inheritance — a prod deploy would steal
       // vibecodethis.site from bb-web-staging.
       "routes": [
-        { "pattern": "app.axeai.com", "custom_domain": true },
+        { "pattern": "app.axeai.com/*", "zone_name": "axeai.com" },
         { "pattern": "remote.axeai.com", "custom_domain": true }
       ],
       "secrets": {
@@ -82,8 +80,6 @@
           "GITHUB_CLIENT_ID",
           "GITHUB_CLIENT_SECRET",
           "BETTER_AUTH_SECRET",
-          "LANDING_POSTHOG_KEY",
-          "RESEND_API_KEY",
         ],
       },
       "vars": {
@@ -95,7 +91,7 @@
         {
           "binding": "DB",
           "database_name": "axeai-connect-prod",
-          "database_id": "AXEAI_CONNECT_PROD_D1_ID",
+          "database_id": "3dc5b12b-a004-4e12-9f5d-621b5e50493c",
         },
       ],
       "durable_objects": {
@@ -107,12 +103,6 @@
           },
         ],
       },
-      "r2_buckets": [
-        {
-          "binding": "MARKETPLACE",
-          "bucket_name": "bb-marketplace",
-        },
-      ],
     },
   },
 }

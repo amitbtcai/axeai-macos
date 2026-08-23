@@ -12,15 +12,9 @@ body {
   font-family: var(--font-sans);
 }
 
-/* The bb mark, matching landing.css: two assets, one element, so the browser
-   only fetches the variant the winning declaration names. */
-.bb-mark {
+.axeai-mark {
   display: block;
   flex-shrink: 0;
-  background-image: url("./assets/bb-icon.png");
+  background-image: url("./assets/axeai-mark.svg");
   background-size: 100% 100%;
-}
-
-.dark .bb-mark {
-  background-image: url("./assets/bb-icon-dark.png");
 }
