@@ -10,6 +10,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { dirname, isAbsolute, join, resolve } from "node:path";
+import { isPathWithinRoot } from "./path-boundary.js";
 import { createPluginArtifactMeta } from "./plugin-artifact-meta.js";
 import { isRecord, validatePluginBuildManifest } from "./plugin-manifest.js";
 import {
@@ -238,7 +239,7 @@ async function readPluginHostConfig(rootDir: string): Promise<{
     throw new Error(`manifest bb.host must be relative, got "${host}"`);
   }
   const hostEntry = resolve(rootDir, host);
-  if (hostEntry !== rootDir && !hostEntry.startsWith(rootDir + "/")) {
+  if (!isPathWithinRoot(rootDir, hostEntry)) {
     throw new Error(`manifest bb.host escapes the plugin directory: "${host}"`);
   }
   try {

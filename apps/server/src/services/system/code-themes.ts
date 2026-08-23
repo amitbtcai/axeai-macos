@@ -10,6 +10,7 @@ import {
   type DeclaredCodeThemeSlot,
   type UiCodeThemeDeclaration,
 } from "@bb/domain";
+import { isPathWithinRoot } from "../lib/path-boundary.js";
 
 const THEME_MANIFEST_FILE_NAME = "theme.json";
 const CONVENTION_CODE_THEME_FILES = {
@@ -31,7 +32,7 @@ function resolveWithinRoot(
     throw new Error(`${label} must be relative, got "${entry}"`);
   }
   const resolved = resolve(rootDir, entry);
-  if (resolved !== rootDir && !resolved.startsWith(rootDir + "/")) {
+  if (!isPathWithinRoot(rootDir, resolved)) {
     throw new Error(`${label} escapes the theme directory: "${entry}"`);
   }
   return resolved;
@@ -146,7 +147,10 @@ export function readPluginThemeCodeTheme(
         file,
       };
     }
-  } else if (declaration?.dark !== undefined && !isCodeThemeFilePath(declaration.dark)) {
+  } else if (
+    declaration?.dark !== undefined &&
+    !isCodeThemeFilePath(declaration.dark)
+  ) {
     const name = codeThemeNameSchema.safeParse(declaration.dark);
     if (name.success) declared.dark = { name: name.data };
   }

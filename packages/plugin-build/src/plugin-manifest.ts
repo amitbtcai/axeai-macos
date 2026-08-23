@@ -6,6 +6,7 @@ import {
   type PluginPackageJson,
 } from "@bb/domain";
 import { assertValidPluginCompactIconSvg } from "./svg-asset.js";
+import { isPathWithinRoot } from "./path-boundary.js";
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -20,7 +21,7 @@ function resolveManifestPath(
     throw new Error(`manifest ${label} must be relative, got "${entry}"`);
   }
   const resolved = resolve(rootDir, entry);
-  if (resolved !== rootDir && !resolved.startsWith(rootDir + "/")) {
+  if (!isPathWithinRoot(rootDir, resolved)) {
     throw new Error(
       `manifest ${label} escapes the plugin directory: "${entry}"`,
     );
@@ -72,7 +73,7 @@ export async function validatePluginBuildManifest(
       realpath(rootDir),
       realpath(assetPath),
     ]);
-    if (realAsset !== realRoot && !realAsset.startsWith(realRoot + "/")) {
+    if (!isPathWithinRoot(realRoot, realAsset)) {
       throw new Error(
         `manifest ${label} escapes the plugin directory through a symlink`,
       );

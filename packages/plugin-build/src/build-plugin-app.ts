@@ -10,6 +10,7 @@ import {
 } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, extname, isAbsolute, join, resolve } from "node:path";
+import { isPathWithinRoot } from "./path-boundary.js";
 import { derivePluginId } from "@bb/domain";
 import type { Metafile, Plugin } from "esbuild";
 import {
@@ -419,7 +420,7 @@ async function readPluginAppConfig(rootDir: string): Promise<PluginAppConfig> {
     throw new Error(`manifest bb.app must be relative, got "${app}"`);
   }
   const appEntry = resolve(rootDir, app);
-  if (appEntry !== rootDir && !appEntry.startsWith(rootDir + "/")) {
+  if (!isPathWithinRoot(rootDir, appEntry)) {
     throw new Error(`manifest bb.app escapes the plugin directory: "${app}"`);
   }
   try {

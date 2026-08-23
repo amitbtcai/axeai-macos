@@ -10,6 +10,7 @@ import {
 } from "@bb/domain";
 import { resolvePluginCodeThemePath } from "../system/code-themes.js";
 import { assertValidPluginCompactIconSvg } from "@bb/plugin-build";
+import { isPathWithinRoot } from "../lib/path-boundary.js";
 
 export interface PluginManifest {
   /** Sanitized plugin id derived from the package name. */
@@ -73,7 +74,7 @@ function resolveEntry(rootDir: string, entry: string, label: string): string {
     throw new Error(`manifest ${label} must be relative, got "${entry}"`);
   }
   const resolved = resolve(rootDir, entry);
-  if (resolved !== rootDir && !resolved.startsWith(rootDir + "/")) {
+  if (!isPathWithinRoot(rootDir, resolved)) {
     throw new Error(
       `manifest ${label} escapes the plugin directory: "${entry}"`,
     );
@@ -215,7 +216,7 @@ export async function readPluginManifest(
       realpath(rootDir),
       realpath(assetPath),
     ]);
-    if (realAsset !== realRoot && !realAsset.startsWith(realRoot + "/")) {
+    if (!isPathWithinRoot(realRoot, realAsset)) {
       throw new Error(
         `manifest ${label} escapes the plugin directory through a symlink`,
       );
