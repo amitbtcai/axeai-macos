@@ -93,10 +93,10 @@ try {
     "png:exclude-chunks=date,time",
     renderedMacosSource,
   ]);
-  // macOS applies its rounded mask and optical inset when it loads the packaged
-  // ICNS from the bundle. Electron's development-only dock.setIcon override
-  // skips that pipeline, so bake both into the runtime PNG. The 100px inset
-  // matches the apparent size of the production icon in a 1024px Dock tile.
+  // macOS displays the artwork embedded in an ICNS without adding the optical
+  // inset used by Apple's own icons. Bake the same rounded 100px inset into
+  // both the packaged ICNS and Electron's development Dock icon so they remain
+  // visually identical.
   execFileSync("magick", [
     renderedMacosSource,
     "(",
@@ -123,7 +123,7 @@ try {
       "-z",
       String(size),
       String(size),
-      renderedMacosSource,
+      macosRuntimePng,
       "--out",
       join(iconset, fileName),
     ]);

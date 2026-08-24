@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.39.5
+
+Corrected macOS app icon sizing.
+
+### Fixes and polish
+
+- The packaged AxeAI icon now uses the same balanced inset and rounded shape as the development app, so both appear at the same optical size in the Dock.
+
 ## 0.39.4
 
 More consistent providers, model controls, and AxeAI desktop chrome.
