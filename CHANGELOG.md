@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.39.3
+
+AxeAI models now handle desktop sign-in before starting a coding session.
+
+### Fixes and polish
+
+- The AxeAI provider detects missing and expired credentials before model loading or thread creation instead of returning a raw backend authentication error.
+- AxeAI agent login records the credential expiration supplied by the backend.
+- The website macOS download now resolves from AxeAI's latest desktop release feed.
+
 ## 0.39.2
 
 Correct AxeAI branding across the desktop app and Remote Access.

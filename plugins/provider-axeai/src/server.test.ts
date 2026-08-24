@@ -10,32 +10,33 @@ describe("AxeAI provider plugin", () => {
   it("registers one provider, scoped media tools, and the AxeAI CLI", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () =>
-        new Response(
-          JSON.stringify({
-            data: [
-              {
-                id: "coding-model",
-                name: "Coding model",
-                modality: "text",
-                agentCompatible: true,
-                capabilities: { reasoning: true, vision: false, tools: true },
-                pricing: { display: "Test" },
-              },
-              {
-                id: "image-model",
-                name: "Image model",
-                modality: "image",
-              },
-              {
-                id: "video-model",
-                name: "Video model",
-                modality: "video",
-              },
-            ],
-          }),
-          { status: 200, headers: { "content-type": "application/json" } },
-        ),
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              data: [
+                {
+                  id: "coding-model",
+                  name: "Coding model",
+                  modality: "text",
+                  agentCompatible: true,
+                  capabilities: { reasoning: true, vision: false, tools: true },
+                  pricing: { display: "Test" },
+                },
+                {
+                  id: "image-model",
+                  name: "Image model",
+                  modality: "image",
+                },
+                {
+                  id: "video-model",
+                  name: "Video model",
+                  modality: "video",
+                },
+              ],
+            }),
+            { status: 200, headers: { "content-type": "application/json" } },
+          ),
       ),
     );
     const host = createFakePluginHost({ pluginId: "provider-axeai" });
@@ -44,18 +45,33 @@ describe("AxeAI provider plugin", () => {
 
     expect(host.harness.registrations.providerRegistrations).toHaveLength(1);
     expect(host.harness.registrations.providerRegistrations[0]).toEqual(
-      expect.objectContaining({ id: "axeai", displayName: "AxeAI" }),
+      expect.objectContaining({
+        id: "axeai",
+        displayName: "AxeAI",
+        capabilities: expect.objectContaining({
+          experimental_providerHealth: true,
+        }),
+      }),
     );
-    expect(host.harness.registrations.agentTools.map((tool) => tool.name)).toEqual([
-      "axeai_generate_image",
-      "axeai_generate_video",
-    ]);
+    expect(
+      host.harness.registrations.agentTools.map((tool) => tool.name),
+    ).toEqual(["axeai_generate_image", "axeai_generate_video"]);
     expect(host.harness.registrations.cli?.name).toBe("axeai");
 
     const configure = host.harness.registrations.agentConfigurationProvider!;
     const context = {
-      thread: { id: "thread", title: null, parentThreadId: null, sourceThreadId: null },
-      project: { id: "project", kind: "standard", name: "Project", gitRemoteUrl: null },
+      thread: {
+        id: "thread",
+        title: null,
+        parentThreadId: null,
+        sourceThreadId: null,
+      },
+      project: {
+        id: "project",
+        kind: "standard",
+        name: "Project",
+        gitRemoteUrl: null,
+      },
       environment: {
         id: "environment",
         name: null,

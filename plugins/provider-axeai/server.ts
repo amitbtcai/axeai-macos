@@ -32,9 +32,10 @@ function mediaToolParameters(
     type: "object",
     properties: {
       prompt: { type: "string", minLength: 3 },
-      model: modelIds.length > 0
-        ? { type: "string", enum: modelIds }
-        : { type: "string", minLength: 1 },
+      model:
+        modelIds.length > 0
+          ? { type: "string", enum: modelIds }
+          : { type: "string", minLength: 1 },
       ...(includeWait ? { wait: { type: "boolean", default: true } } : {}),
     },
     required: ["prompt"],
@@ -85,7 +86,7 @@ export default async function plugin(bb: BbPluginApi): Promise<void> {
       },
     },
     capabilities: {
-      experimental_providerHealth: false,
+      experimental_providerHealth: true,
       experimental_providerUsage: false,
       experimental_providerInstallation: false,
       supportsServiceTier: false,
@@ -104,13 +105,15 @@ export default async function plugin(bb: BbPluginApi): Promise<void> {
     name: "axeai_generate_image",
     description: "Generate an image with an AxeAI image model.",
     parameters: imageInput,
-    execute: (input, context) => generateImage({ ...input, signal: context.signal }),
+    execute: (input, context) =>
+      generateImage({ ...input, signal: context.signal }),
   });
   bb.agents.registerTool({
     name: "axeai_generate_video",
     description: "Generate a video with an AxeAI text-to-video model.",
     parameters: videoInput,
-    execute: (input, context) => generateVideo({ ...input, signal: context.signal }),
+    execute: (input, context) =>
+      generateVideo({ ...input, signal: context.signal }),
   });
   bb.agents.configure((context) => ({
     tools:
@@ -135,7 +138,11 @@ export default async function plugin(bb: BbPluginApi): Promise<void> {
     commands: [
       { name: "login", summary: "AxeAI login", usage: "bb axeai login" },
       { name: "logout", summary: "AxeAI logout", usage: "bb axeai logout" },
-      { name: "status", summary: "AxeAI login status", usage: "bb axeai status" },
+      {
+        name: "status",
+        summary: "AxeAI login status",
+        usage: "bb axeai status",
+      },
       { name: "models", summary: "AxeAI models", usage: "bb axeai models" },
     ],
     async run(argv, context) {
@@ -149,7 +156,9 @@ export default async function plugin(bb: BbPluginApi): Promise<void> {
         case "status":
           return {
             exitCode: 0,
-            stdout: (await readAxeToken()) ? "AxeAI login complete.\n" : "AxeAI login required.\n",
+            stdout: (await readAxeToken())
+              ? "AxeAI login complete.\n"
+              : "AxeAI login required.\n",
           };
         case "models":
           return {
@@ -159,7 +168,8 @@ export default async function plugin(bb: BbPluginApi): Promise<void> {
         default:
           return {
             exitCode: 1,
-            stderr: "bb axeai login\nbb axeai logout\nbb axeai status\nbb axeai models\n",
+            stderr:
+              "bb axeai login\nbb axeai logout\nbb axeai status\nbb axeai models\n",
           };
       }
     },

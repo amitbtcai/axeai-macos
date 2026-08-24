@@ -13,6 +13,15 @@ describe("marketing download redirect", () => {
     vi.restoreAllMocks();
   });
 
+  it("reads desktop releases from the AxeAI repository", () => {
+    expect(DOWNLOAD_MACOS_VERSION_FEED_URL).toBe(
+      "https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/desktop-version.json",
+    );
+    expect(DOWNLOAD_MACOS_FALLBACK_URL).toBe(
+      "https://github.com/amitbtcai/axeai-macos/releases/tag/desktop-latest",
+    );
+  });
+
   it("redirects macOS downloads to the current dmg asset", async () => {
     const fetchMock = vi.fn(async () => {
       return new Response(

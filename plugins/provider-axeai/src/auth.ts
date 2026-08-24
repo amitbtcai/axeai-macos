@@ -19,6 +19,7 @@ const callbackSchema = z.object({
 });
 const exchangeSchema = z.object({
   refreshToken: z.string().regex(/^axe_refresh_[A-Za-z0-9_-]{43}$/),
+  refreshExpiresAt: z.coerce.date(),
 });
 const authFileSchema = z.record(
   z.string(),
@@ -34,13 +35,18 @@ export function createPkceChallenge(verifier: string): string {
 }
 
 export function openCodeAuthFilePath(env = process.env): string {
-  const dataRoot = env.XDG_DATA_HOME?.trim() || path.join(os.homedir(), ".local", "share");
+  const dataRoot =
+    env.XDG_DATA_HOME?.trim() || path.join(os.homedir(), ".local", "share");
   return path.join(dataRoot, "opencode", "auth.json");
 }
 
-async function readAuthFile(filePath = openCodeAuthFilePath()): Promise<Record<string, unknown>> {
+async function readAuthFile(
+  filePath = openCodeAuthFilePath(),
+): Promise<Record<string, unknown>> {
   try {
-    const parsed = authFileSchema.safeParse(JSON.parse(await readFile(filePath, "utf8")));
+    const parsed = authFileSchema.safeParse(
+      JSON.parse(await readFile(filePath, "utf8")),
+    );
     return parsed.success ? parsed.data : {};
   } catch {
     return {};
@@ -64,18 +70,54 @@ async function writeAuthFile(
   }
 }
 
-export async function readAxeToken(): Promise<string | null> {
-  const auth = await readAuthFile();
-  const entry = auth[AXEAI_OPENCODE_PROVIDER_ID];
-  const parsed = z.object({ type: z.literal("api"), key: z.string().min(1) }).safeParse(entry);
-  return parsed.success ? parsed.data.key : null;
+export interface AxeCredential {
+  token: string;
+  expiresAt: Date | null;
 }
 
-export async function storeAxeToken(token: string): Promise<void> {
+export async function readAxeCredential(): Promise<AxeCredential | null> {
+  const auth = await readAuthFile();
+  const entry = auth[AXEAI_OPENCODE_PROVIDER_ID];
+  const parsed = z
+    .object({
+      type: z.literal("api"),
+      key: z.string().min(1),
+      expiresAt: z.coerce.date().optional(),
+    })
+    .safeParse(entry);
+  return parsed.success
+    ? { token: parsed.data.key, expiresAt: parsed.data.expiresAt ?? null }
+    : null;
+}
+
+export async function readAxeToken(): Promise<string | null> {
+  const credential = await readAxeCredential();
+  return credential === null || axeCredentialIsExpired(credential)
+    ? null
+    : credential.token;
+}
+
+export function axeCredentialIsExpired(credential: AxeCredential): boolean {
+  return (
+    credential.expiresAt !== null &&
+    credential.expiresAt.getTime() <= Date.now()
+  );
+}
+
+export async function storeAxeToken(
+  token: string,
+  expiresAt?: Date,
+): Promise<void> {
   const auth = await readAuthFile();
   await writeAuthFile({
     ...auth,
-    [AXEAI_OPENCODE_PROVIDER_ID]: { type: "api", key: token },
+    [AXEAI_OPENCODE_PROVIDER_ID]: {
+      type: "api",
+      key: token,
+      ...(expiresAt === undefined
+        ? {}
+        : { expiresAt: expiresAt.toISOString() }),
+    },
   });
 }
 
@@ -128,7 +170,9 @@ function waitForCallback(signal?: AbortSignal): Promise<{
         state: requestUrl.searchParams.get("state"),
       });
       if (!parsed.success || parsed.data.state !== state) {
-        response.writeHead(400, { "content-type": "text/plain; charset=utf-8" });
+        response.writeHead(400, {
+          "content-type": "text/plain; charset=utf-8",
+        });
         response.end("Invalid AxeAI login.");
         finish(new Error("Invalid AxeAI login callback."));
         return;
@@ -176,5 +220,5 @@ export async function loginToAxeAI(signal?: AbortSignal): Promise<void> {
   if (!response.ok) throw new Error("AxeAI login exchange failed.");
   const parsed = exchangeSchema.safeParse(await response.json());
   if (!parsed.success) throw new Error("AxeAI login exchange failed.");
-  await storeAxeToken(parsed.data.refreshToken);
+  await storeAxeToken(parsed.data.refreshToken, parsed.data.refreshExpiresAt);
 }
