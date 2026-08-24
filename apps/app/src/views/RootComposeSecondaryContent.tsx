@@ -6,6 +6,7 @@ import { PluginHomepageSections } from "@/components/plugin/PluginHomepageSectio
 import { usePluginComposerHost } from "@/components/plugin/plugin-composer-host";
 import { SecondaryPanelLayout } from "@/components/secondary-panel/SecondaryPanelLayout";
 import { LazyThreadSecondaryPanel } from "@/components/secondary-panel/lazySecondaryPanelComponents";
+import { CHAT_PAGE_MAX_WIDTH_CLASS } from "@/components/thread/chat-page-measure";
 import { PAGE_SHELL_CONTENT_STYLE } from "@/components/ui/page-shell-content-style.js";
 import {
   CHROME_ROW_HEIGHT_CLASS,
@@ -15,10 +16,6 @@ import {
   shouldUseMacosDesktopChrome,
 } from "@/lib/bb-desktop";
 import { useOptionalPaneContext } from "./thread-detail/PaneContext";
-
-// Match the thread timeline/composer measure so opening a thread does not make
-// the primary work surface jump from a wide home layout to a narrow chat.
-const ROOT_COMPOSE_MAX_WIDTH_CLASS = "max-w-[760px]";
 
 // Where root compose pins its right-panel toggle in the viewport corner (see
 // rootPanelToggle in RootComposeView, which passes its selected position here).
@@ -129,7 +126,7 @@ export function RootComposeSecondaryContent({
         <div
           className={cn(
             "mx-auto flex w-full flex-col px-4 pb-4 pt-2",
-            ROOT_COMPOSE_MAX_WIDTH_CLASS,
+            CHAT_PAGE_MAX_WIDTH_CLASS,
             contentClassName,
           )}
           style={PAGE_SHELL_CONTENT_STYLE}

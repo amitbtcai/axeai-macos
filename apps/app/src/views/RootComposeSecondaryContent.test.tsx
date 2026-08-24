@@ -4,6 +4,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CompactViewportOverrideProvider } from "@bb/shared-ui/hooks/use-compact-viewport";
+import { CHAT_PAGE_MAX_WIDTH_CLASS } from "@/components/thread/chat-page-measure";
 import {
   PaneContext,
   type PaneContextValue,
@@ -237,6 +238,17 @@ afterEach(() => {
 });
 
 describe("RootComposeSecondaryContent desktop layout", () => {
+  it("uses the shared primary chat measure", () => {
+    renderRootCompose({
+      isCompactViewport: false,
+      isSecondaryPanelOpen: false,
+    });
+
+    expect(
+      screen.getByTestId("root-compose-content").parentElement?.className,
+    ).toContain(CHAT_PAGE_MAX_WIDTH_CLASS);
+  });
+
   it("always offers a new tab from the new-thread right panel", async () => {
     renderRootCompose({
       isCompactViewport: false,

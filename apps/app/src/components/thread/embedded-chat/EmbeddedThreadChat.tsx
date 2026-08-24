@@ -16,6 +16,7 @@ import type { PromptMentionLinkResolver } from "@/components/promptbox/editor/pr
 import { cn } from "@bb/shared-ui/lib/utils";
 import { BottomAnchoredScrollBody } from "@/components/ui/bottom-anchored-scroll-body";
 import { PageShell } from "@/components/ui/page-shell.js";
+import { CHAT_PAGE_MAX_WIDTH_CLASS } from "../chat-page-measure";
 import {
   FollowUpPromptBox,
   type FollowUpComposerProps,
@@ -203,6 +204,7 @@ function EmbeddedThreadChatHostedFooter({
     >
       <PageShell
         key={surface.threadId}
+        maxWidthClassName={CHAT_PAGE_MAX_WIDTH_CLASS}
         scrollBehavior="bottom-anchor"
         scrollAnchorThreadId={surface.threadId}
         shellClassName="!mx-0 !mt-0 md:!mx-0 md:!mt-0"
@@ -1154,7 +1156,8 @@ function EmbeddedThreadChatWithComposer({
     </div>
   );
 
-  const maxWidthClassName = measure === "page" ? "max-w-[760px]" : "max-w-none";
+  const maxWidthClassName =
+    measure === "page" ? CHAT_PAGE_MAX_WIDTH_CLASS : "max-w-none";
   const timelineBody = (
     <ThreadTimelinePanelContent
       isTurnSubmitting={isTurnSubmitting}

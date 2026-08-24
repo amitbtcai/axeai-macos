@@ -2,6 +2,7 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
+import { CHAT_PAGE_MAX_WIDTH_CLASS } from "@/components/thread/chat-page-measure";
 import type { ThreadTimelineSurfaceProps } from "@/components/thread/timeline/ThreadTimelineSurface";
 
 vi.mock("@/components/thread/timeline/ThreadTimelineSurface", () => ({
@@ -34,7 +35,7 @@ const { ThreadTimelinePane } = await import("./ThreadTimelinePane");
 afterEach(cleanup);
 
 it("forwards pane callbacks to the timeline and conversation outline", () => {
-  render(
+  const { container } = render(
     <ThreadTimelinePane
       activeThinking={null}
       canSpawnChild={false}
@@ -62,6 +63,11 @@ it("forwards pane callbacks to the timeline and conversation outline", () => {
   expect(screen.getByTestId("plugin-panel-opener").textContent).toBe(
     "available",
   );
+  expect(
+    Array.from(container.querySelectorAll("div")).some((element) =>
+      element.classList.contains(CHAT_PAGE_MAX_WIDTH_CLASS),
+    ),
+  ).toBe(true);
   expect(screen.getByTestId("navigation-target").textContent).toBe("none");
   fireEvent.click(screen.getByRole("button", { name: "Jump to row" }));
   expect(screen.getByTestId("navigation-target").textContent).toBe(

@@ -1,4 +1,5 @@
 import { HEADER_SEAM_CLASS } from "@/components/layout/AppPageHeader";
+import { CHAT_PAGE_MAX_WIDTH_CLASS } from "@/components/thread/chat-page-measure";
 import { CHROME_ROW_CLASS } from "@/lib/bb-desktop";
 import { Skeleton } from "@bb/shared-ui/skeleton";
 import { cn } from "@bb/shared-ui/lib/utils";
@@ -39,7 +40,12 @@ export function RouteLoadingSkeleton() {
         <Skeleton className="h-4 w-40 max-w-[50%]" />
       </div>
       <div className="min-h-0 flex-1" />
-      <div className="mx-auto w-full max-w-[760px] shrink-0 px-4 pb-4">
+      <div
+        className={cn(
+          "mx-auto w-full shrink-0 px-4 pb-4",
+          CHAT_PAGE_MAX_WIDTH_CLASS,
+        )}
+      >
         <Skeleton className="h-24 w-full rounded-xl" />
       </div>
     </div>
