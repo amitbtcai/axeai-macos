@@ -8,8 +8,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { Profiler, startTransition, type ReactNode } from "react";
-import { flushSync } from "react-dom";
+import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   resetPluginSlotStoreForTest,
@@ -19,6 +18,10 @@ import {
   FollowUpPromptBox,
   type FollowUpSubmitMode,
 } from "@/components/promptbox/FollowUpPromptBox";
+import {
+  PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT,
+  PRIMARY_COMPOSER_PROMPT_BOX_CLASS,
+} from "@/components/promptbox/primary-composer-presentation";
 
 const mocks = vi.hoisted(() => {
   const values = {
@@ -31,7 +34,6 @@ const mocks = vi.hoisted(() => {
   };
   return Object.assign(values, {});
 });
-let resizeObserverCallback: ResizeObserverCallback | null = null;
 
 vi.mock("@/components/ui/bottom-anchored-scroll-body.js", () => ({
   useBottomAnchoredScroll: () => ({
@@ -64,6 +66,8 @@ vi.mock("@/components/promptbox/PromptBoxInternal", () => ({
     onCollapse,
     heightAnimationKey,
     minHeight,
+    className,
+    editorLayout,
     voice,
   }: {
     footerStart?: ReactNode;
@@ -85,6 +89,8 @@ vi.mock("@/components/promptbox/PromptBoxInternal", () => ({
     onCollapse?: () => void;
     heightAnimationKey?: string | number;
     minHeight?: number;
+    className?: string;
+    editorLayout?: string;
     voice?: { state: "idle" | "recording" | "transcribing" | "error" };
   }) => (
     <div
@@ -92,6 +98,8 @@ vi.mock("@/components/promptbox/PromptBoxInternal", () => ({
       data-compact={compact?.isCompact}
       data-height-animation-key={heightAnimationKey}
       data-min-height={minHeight}
+      data-class-name={className}
+      data-editor-layout={editorLayout}
       data-voice-state={voice?.state}
       data-plugin-customizations-suppressed={
         suppressPluginComposerCustomizations ? "true" : "false"
@@ -274,130 +282,22 @@ beforeEach(() => {
   mocks.isCompactViewport = false;
   mocks.isPointerCoarse = false;
   mocks.voiceState = "idle";
-  resizeObserverCallback = null;
-  vi.stubGlobal(
-    "ResizeObserver",
-    class {
-      constructor(callback: ResizeObserverCallback) {
-        resizeObserverCallback = callback;
-      }
-      observe() {}
-      disconnect() {}
-      unobserve() {}
-    },
-  );
 });
 
 describe("FollowUpPromptBox", () => {
-  it("does not commit an unchanged measurement while a height update is pending", () => {
-    const onRender = vi.fn();
-    render(
-      <Profiler id="follow-up-prompt-box" onRender={onRender}>
-        <FollowUpPromptBox
-          {...createFollowUpPromptBoxProps({ kind: "ready" })}
-          stack={<div data-testid="measured-stack">Stack</div>}
-        />
-      </Profiler>,
-    );
-    const stackElement = screen.getByTestId("measured-stack").parentElement;
-    if (!stackElement) throw new Error("Expected measured composer stack");
-    Object.defineProperty(stackElement, "offsetHeight", {
-      configurable: true,
-      value: 24,
-    });
-    let commitsAfterSynchronousSignal = -1;
-    const resizeEntries = [
-      {
-        target: stackElement,
-        borderBoxSize: [{ blockSize: 24 }],
-        contentRect: { height: 999 },
-      } as unknown as ResizeObserverEntry,
-    ];
-
-    act(() => {
-      startTransition(() => {
-        resizeObserverCallback?.(resizeEntries, {} as ResizeObserver);
-      });
-      flushSync(() => {
-        resizeObserverCallback?.(resizeEntries, {} as ResizeObserver);
-      });
-      commitsAfterSynchronousSignal = onRender.mock.calls.length;
-    });
-
-    expect(commitsAfterSynchronousSignal).toBe(1);
-    expect(onRender).toHaveBeenCalledTimes(2);
-    expect(onRender.mock.calls[0]?.[1]).toBe("mount");
-    expect(onRender.mock.calls[1]?.[1]).toBe("update");
-    expect(screen.getByTestId("prompt-box").dataset.minHeight).toBe("76");
-  });
-
-  it("includes expanding plugin banners in measured stack compensation", () => {
-    setPluginSlotRegistrations("measured-banner", {
-      homepageSections: [],
-      settingsSections: [],
-      navPanels: [],
-      threadPanelActions: [],
-      composerCustomizations: [
-        {
-          id: "measured",
-          banners: [
-            {
-              id: "banner",
-              component: () => <div>Expandable plugin banner</div>,
-            },
-          ],
-        },
-      ],
-      pendingInteractions: [],
-      sidebarFooterActions: [],
-      fileOpeners: [],
-      messageDirectives: [],
-    });
-    const draft = { text: "Follow up", mentions: [], attachments: [] };
-    const props = createFollowUpPromptBoxProps({ kind: "ready" });
+  it("uses the shared primary composer presentation", () => {
     render(
       <FollowUpPromptBox
-        {...props}
-        stack={<></>}
-        pluginComposerHost={{
-          scope: { kind: "thread", threadId: "thr_test" },
-          textEffectKey: "thread:thr_test",
-          getCurrent: () => draft,
-          subscribeDraft: () => () => {},
-          setDraft: vi.fn(),
-          focus: vi.fn(),
-        }}
-        pluginComposerScope={{ kind: "thread", threadId: "thr_test" }}
+        {...createFollowUpPromptBoxProps({ kind: "ready" })}
       />,
     );
-    expect(screen.getByText("Expandable plugin banner")).toBeTruthy();
+
     const promptBox = screen.getByTestId("prompt-box");
-    const initialMinHeight = Number(promptBox.getAttribute("data-min-height"));
-    const stackElement = screen
-      .getByText("Expandable plugin banner")
-      .closest("[data-bb-plugin-root]")?.parentElement;
-    if (!stackElement) throw new Error("Expected measured composer stack");
-    Object.defineProperty(stackElement, "offsetHeight", {
-      configurable: true,
-      value: 24,
-    });
-
-    act(() => {
-      resizeObserverCallback?.(
-        [
-          {
-            target: stackElement,
-            borderBoxSize: [{ blockSize: 24 }],
-            contentRect: { height: 999 },
-          } as unknown as ResizeObserverEntry,
-        ],
-        {} as ResizeObserver,
-      );
-      resizeObserverCallback?.([], {} as ResizeObserver);
-    });
-
-    expect(initialMinHeight).toBe(100);
-    expect(promptBox.getAttribute("data-min-height")).toBe("76");
+    expect(promptBox.dataset.minHeight).toBe(
+      String(PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT),
+    );
+    expect(promptBox.dataset.className).toBe(PRIMARY_COMPOSER_PROMPT_BOX_CLASS);
+    expect(promptBox.dataset.editorLayout).toBe("root-compose");
   });
 
   it("renders plugin banners above native stack content", () => {
@@ -1115,10 +1015,10 @@ describe("FollowUpPromptBox", () => {
     props.environmentSummary = <span>Local environment</span>;
     render(<FollowUpPromptBox {...props} />);
 
-    const footer = document.querySelector("[data-follow-up-composer-footer]");
-    expect(footer?.classList.contains("select-none")).toBe(true);
+    const context = document.querySelector("[data-follow-up-composer-context]");
+    expect(context?.classList.contains("select-none")).toBe(true);
     expect(screen.getByText("Local environment").closest(".select-none")).toBe(
-      footer,
+      context,
     );
   });
 
@@ -1144,7 +1044,7 @@ describe("FollowUpPromptBox", () => {
 
       expect(screen.getByTestId("prompt-box").dataset.voiceState).toBe(state);
       expect(
-        document.querySelector("[data-follow-up-composer-footer]"),
+        document.querySelector("[data-follow-up-composer-context]"),
       ).toBeTruthy();
       expect(screen.getByText("Local environment")).toBeTruthy();
     },

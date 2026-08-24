@@ -3,14 +3,12 @@ import {
   memo,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type ComponentProps,
   type FocusEvent as ReactFocusEvent,
   type ReactNode,
-  type RefObject,
 } from "react";
 import type {
   PromptTextMention,
@@ -41,6 +39,11 @@ import {
   type TypeaheadConfig,
 } from "@/components/promptbox/PromptBoxInternal";
 import { usePromptVoice } from "@/components/promptbox/usePromptVoice";
+import {
+  PRIMARY_COMPOSER_CONTEXT_ROW_CLASS,
+  PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT,
+  PRIMARY_COMPOSER_PROMPT_BOX_CLASS,
+} from "@/components/promptbox/primary-composer-presentation";
 import { PermissionModePicker } from "@/components/pickers/PermissionModePicker";
 import {
   ExecutionControls,
@@ -53,7 +56,6 @@ import { usePointerCoarse } from "@bb/shared-ui/hooks/use-pointer-coarse";
 import { ThreadTimelineScrollToBottomButton } from "@/views/thread-detail/ThreadTimelineScrollToBottomButton";
 import { useOptionalPaneContext } from "@/views/thread-detail/PaneContext";
 import { ThreadContextWindowIndicator } from "@/components/thread/timeline";
-import { THREAD_PROMPT_CONTEXT_BANNER_ROW_HEIGHT } from "@/components/promptbox/banner/ThreadPromptContextBanner";
 import {
   isPlanModePrompt,
   permissionDisplayForActivePromptMode,
@@ -109,16 +111,6 @@ function PromptBoxWithScrollAnchor({
   );
 }
 
-// Elastic compensation: when nothing is stacked above the textarea, the
-// textarea defaults to FOLLOW_UP_PROMPT_BOX_ELASTIC_TARGET_HEIGHT so the
-// prompt area is already at "with-banner" height on first paint. As the stack
-// (context banner + queued messages) grows, the textarea min-height shrinks
-// by the same amount — total prompt-area height stays constant and the
-// thread timeline does not shift when the context banner mounts.
-const FOLLOW_UP_PROMPT_BOX_DEFAULT_MIN_HEIGHT = 68;
-const FOLLOW_UP_PROMPT_BOX_ELASTIC_TARGET_HEIGHT =
-  FOLLOW_UP_PROMPT_BOX_DEFAULT_MIN_HEIGHT +
-  THREAD_PROMPT_CONTEXT_BANNER_ROW_HEIGHT;
 const OPEN_COMPOSER_OVERLAY_TRIGGER_SELECTOR =
   '[aria-haspopup][aria-expanded="true"]';
 const MOBILE_KEYBOARD_VIEWPORT_MIN_DELTA_PX = 80;
@@ -609,12 +601,6 @@ function FollowUpPromptBoxWithComposer({
   // toggle/cycle) cannot open a popover anchored to a hidden trigger.
   const executionControlsDisabled =
     (executionReadOnly ?? readOnly ?? false) || hasPendingInteraction;
-  const footerStart = useMemo(
-    () => (
-      <ExecutionControls {...execution} disabled={executionControlsDisabled} />
-    ),
-    [execution, executionControlsDisabled],
-  );
   const selectedProviderPlanModeCopy = execution.provider.options?.find(
     (option) => option.value === execution.provider.selectedId,
   )?.planModeCopy;
@@ -667,50 +653,19 @@ function FollowUpPromptBoxWithComposer({
       permissionPickerDisabled,
     ],
   );
-  const stackRef = useRef<HTMLDivElement>(null);
-  const lastStackHeightRef = useRef(0);
-  const [stackHeight, setStackHeight] = useState(0);
-  const applyStackHeight = useCallback((measured: number) => {
-    if (lastStackHeightRef.current === measured) return;
-    lastStackHeightRef.current = measured;
-    setStackHeight(measured);
-  }, []);
-
-  // Take one initial border-box measurement before paint. Later measurements
-  // use ResizeObserver's supplied border-box size, which avoids a synchronous
-  // offsetHeight read after each timeline or composer render.
-  useLayoutEffect(() => {
-    const element = stackRef.current;
-    if (element) {
-      applyStackHeight(element.offsetHeight);
-    }
-  }, [applyStackHeight]);
-
-  useEffect(() => {
-    const element = stackRef.current;
-    if (!element || typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries.find((candidate) => candidate.target === element);
-      if (!entry) return;
-      const borderBoxSize = Array.isArray(entry.borderBoxSize)
-        ? entry.borderBoxSize[0]
-        : entry.borderBoxSize;
-      applyStackHeight(borderBoxSize?.blockSize ?? entry.contentRect.height);
-    });
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [applyStackHeight]);
-  // The elastic pre-size keeps the prompt area's total height constant as the
-  // stack (context banner + queued messages) mounts/unmounts so the timeline
-  // doesn't shift. Callers that need the main-thread prompt height should pass
-  // an empty stack instead of null.
-  const elasticTextareaMinHeight =
-    stack === null
-      ? FOLLOW_UP_PROMPT_BOX_DEFAULT_MIN_HEIGHT
-      : Math.max(
-          FOLLOW_UP_PROMPT_BOX_DEFAULT_MIN_HEIGHT,
-          FOLLOW_UP_PROMPT_BOX_ELASTIC_TARGET_HEIGHT - stackHeight,
-        );
+  const footerStart = useMemo(
+    () => (
+      <>
+        {permissionControl}
+        <span className="min-w-2 flex-1" aria-hidden />
+        <ExecutionControls
+          {...execution}
+          disabled={executionControlsDisabled}
+        />
+      </>
+    ),
+    [execution, executionControlsDisabled, permissionControl],
+  );
 
   const composerElement = (
     <div
@@ -724,11 +679,24 @@ function FollowUpPromptBoxWithComposer({
       onBlurCapture={scheduleCollapseAfterFocusLoss}
       onFocusCapture={handleComposerFocus}
     >
+      {!isPromptBoxCompact ? (
+        <div
+          data-follow-up-composer-context=""
+          className={PRIMARY_COMPOSER_CONTEXT_ROW_CLASS}
+        >
+          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+            {environmentSummary}
+          </div>
+          {contextWindowUsage ? (
+            <ThreadContextWindowIndicator usage={contextWindowUsage} />
+          ) : null}
+        </div>
+      ) : null}
       <PromptBoxWithScrollAnchor
         id={id}
         promptBoxRef={promptBoxRef}
         voice={voice}
-        minHeight={elasticTextareaMinHeight}
+        minHeight={PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT}
         value={composer.message}
         mentionRanges={composer.mentionRanges}
         onChange={composer.onChangeMessage}
@@ -783,26 +751,11 @@ function FollowUpPromptBoxWithComposer({
           suppressPluginComposerCustomizations
         }
         compact={compactConfig}
-        editorLayout="thread"
+        editorLayout="root-compose"
+        className={PRIMARY_COMPOSER_PROMPT_BOX_CLASS}
         onCollapse={isCompactViewport ? undefined : collapseWidePromptBox}
         footerStart={footerStart}
       />
-      {!isPromptBoxCompact ? (
-        <div
-          data-follow-up-composer-footer=""
-          className="mt-1 flex min-h-6 max-h-6 select-none items-center justify-between gap-2 overflow-hidden pl-[15px] pr-3.5 opacity-100 transition-[max-height,min-height,margin-top,opacity] duration-[180ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
-        >
-          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
-            {environmentSummary}
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {permissionControl}
-            {contextWindowUsage ? (
-              <ThreadContextWindowIndicator usage={contextWindowUsage} />
-            ) : null}
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 
@@ -818,7 +771,6 @@ function FollowUpPromptBoxWithComposer({
           pendingInteraction={pendingInteraction}
           showScrollToBottomButton={showScrollToBottomButton}
           stack={stack}
-          stackRef={stackRef}
         />
       }
     />
@@ -833,7 +785,6 @@ interface DefaultFollowUpComposerProps {
   pendingInteraction?: ReactNode;
   showScrollToBottomButton: boolean;
   stack: ReactNode | null;
-  stackRef: RefObject<HTMLDivElement | null>;
 }
 
 /** BB's presentation for a host-owned follow-up Composer controller. */
@@ -845,7 +796,6 @@ function DefaultFollowUpComposer({
   pendingInteraction = null,
   showScrollToBottomButton,
   stack,
-  stackRef,
 }: DefaultFollowUpComposerProps) {
   return (
     <>
@@ -858,7 +808,7 @@ function DefaultFollowUpComposer({
         data-promptbox-shell=""
         className="space-y-2"
       >
-        <div ref={stackRef} className="grid gap-2">
+        <div className="grid gap-2">
           {hasPluginComposerScope ? (
             <ComposerBannersSlot>{stack}</ComposerBannersSlot>
           ) : (

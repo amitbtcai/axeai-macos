@@ -35,6 +35,11 @@ import {
   type TypeaheadConfig,
 } from "@/components/promptbox/PromptBoxInternal";
 import { usePromptVoice } from "@/components/promptbox/usePromptVoice";
+import {
+  PRIMARY_COMPOSER_CONTEXT_ROW_CLASS,
+  PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT,
+  PRIMARY_COMPOSER_PROMPT_BOX_CLASS,
+} from "@/components/promptbox/primary-composer-presentation";
 import { useOptionalPaneContext } from "@/views/thread-detail/PaneContext";
 import {
   BranchPicker,
@@ -69,7 +74,6 @@ import {
   permissionDisplayForPromptMode,
 } from "@bb/client-core";
 
-const NEW_THREAD_PROMPT_BOX_MIN_HEIGHT = 56;
 const DEFAULT_NEW_THREAD_COMPOSER_SCOPE = {
   kind: "new-thread",
   projectId: null,
@@ -390,7 +394,7 @@ const DefaultNewThreadComposer = memo(function DefaultNewThreadComposer({
           {modeConfig.banner}
         </ComposerBannersSlot>
       </div>
-      <div className="mb-1 flex min-h-8 select-none items-center gap-1 px-2">
+      <div className={PRIMARY_COMPOSER_CONTEXT_ROW_CLASS}>
         {project ? (
           <ProjectSelector
             projects={project.projects}
@@ -437,8 +441,8 @@ const DefaultNewThreadComposer = memo(function DefaultNewThreadComposer({
         }}
         autoFocus={autoFocus}
         editorLayout="root-compose"
-        minHeight={NEW_THREAD_PROMPT_BOX_MIN_HEIGHT}
-        className="rounded-[22px] border-0 bg-secondary shadow-lift"
+        minHeight={PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT}
+        className={PRIMARY_COMPOSER_PROMPT_BOX_CLASS}
         placeholder={placeholder}
         header={modeConfig.header}
         footerStart={
