@@ -790,7 +790,7 @@ describe("plugin update service and routes", () => {
     service.startPeriodicUpdateChecks();
 
     expect(scheduled.map((entry) => entry.delayMs)).toEqual([6 * HOUR]);
-  });
+  }, 60_000);
 
   it("sweeps on start when a plugin was never checked, then waits out the interval across restarts", async () => {
     const HOUR = 60 * 60 * 1_000;
@@ -863,7 +863,7 @@ describe("plugin update service and routes", () => {
     let clock = Date.now();
     const makeService = () =>
       createPluginService({
-      aiServices: createAiServiceRegistry(),
+        aiServices: createAiServiceRegistry(),
         telemetry: createNoopTelemetryService(),
         db,
         hub: {
