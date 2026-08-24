@@ -12,7 +12,6 @@ import { fileURLToPath } from "node:url";
 
 const desktopDirectory = join(dirname(fileURLToPath(import.meta.url)), "..");
 const source = join(desktopDirectory, "assets/icon.svg");
-const macosSource = join(desktopDirectory, "assets/icon-source.png");
 const png = join(desktopDirectory, "assets/icon.png");
 const developmentPng = join(desktopDirectory, "assets/icon-dev.png");
 const windowsIcon = join(desktopDirectory, "assets/icon.ico");
@@ -77,21 +76,25 @@ try {
     "icon:auto-resize=256,128,64,48,32,16",
     nightlyWindowsIcon,
   ]);
-  // macOS app icons are expected to include transparent optical padding.
-  // A full-bleed 1024px square renders visibly taller than native peers in
-  // Finder, Launchpad, and the Dock. The canonical borderless source at 980px
-  // produces an 846px visible height, matching Linear's icon on the same
-  // 1024px canvas while preserving the AxeAI mark's proportions.
+  // Keep the full-bleed blue macOS background unchanged. Only reduce the
+  // white AxeAI SVG's vertical scale so the mark feels less tall without
+  // shrinking the app icon itself.
   execFileSync("magick", [
-    macosSource,
-    "-resize",
-    "980x980",
-    "-gravity",
-    "center",
+    "-size",
+    "1024x1024",
+    "xc:#060AE6",
+    "(",
     "-background",
     "none",
-    "-extent",
-    "1024x1024",
+    renderedSource,
+    "-resize",
+    "700x630!",
+    ")",
+    "-gravity",
+    "center",
+    "-composite",
+    "-alpha",
+    "off",
     "-strip",
     "-define",
     "png:exclude-chunks=date,time",
