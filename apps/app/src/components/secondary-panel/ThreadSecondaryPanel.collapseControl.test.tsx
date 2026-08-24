@@ -563,8 +563,13 @@ describe("ThreadSecondaryPanel full-screen control", () => {
     const hideControl = view.getByRole("button", {
       name: "Hide right panel",
     });
+    const logo = view.getByRole("link", { name: "Visit Axe AI website" });
     expect(
       fullScreenControl.compareDocumentPosition(hideControl) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).not.toBe(0);
+    expect(
+      logo.compareDocumentPosition(hideControl) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).not.toBe(0);
   });

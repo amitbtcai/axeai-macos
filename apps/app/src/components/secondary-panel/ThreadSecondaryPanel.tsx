@@ -100,6 +100,7 @@ import {
 } from "./SidebarSplitContainer";
 import { SIDEBAR_FIXED_INFO_TAB_ID } from "./sidebarSplitLayout";
 import type { GitDiffTabStatus } from "./gitDiffTabEligibility";
+import { AxeAiChromeLogo } from "@/components/ui/axeai-logo";
 export type {
   SecondaryPanelPaneRenderContext,
   SecondaryPanelRenderableTab,
@@ -822,7 +823,18 @@ export function ThreadSecondaryPanel({
                   usesPaneArrangementControl,
                 })}
                 {renderAsDrawer || inlinePanelToggle === "button" ? (
-                  renderHidePanelButton()
+                  <>
+                    {!renderAsDrawer ? (
+                      <AxeAiChromeLogo
+                        className={
+                          usesDesktopChrome
+                            ? MACOS_WINDOW_NO_DRAG_CLASS
+                            : undefined
+                        }
+                      />
+                    ) : null}
+                    {renderHidePanelButton()}
+                  </>
                 ) : inlinePanelToggle === "reserved" ? (
                   <div
                     aria-hidden

@@ -40,13 +40,14 @@ describe("desktop app paths", () => {
 
     expect(
       resolveDesktopIconPath({
+        developmentIconFileName: "icon.icns",
         packagedIconFileName: "icon-nightly.png",
         paths,
       }),
     ).toBe(join(paths.appPath, "assets", "icon-nightly.png"));
   });
 
-  it("keeps the development icon independent of the release channel", () => {
+  it("uses the production macOS icon during development", () => {
     const paths: DesktopPathContext = {
       appPath: "/checkout/apps/desktop",
       isPackaged: false,
@@ -55,9 +56,26 @@ describe("desktop app paths", () => {
 
     expect(
       resolveDesktopIconPath({
+        developmentIconFileName: "icon-macos-runtime.png",
         packagedIconFileName: "icon-nightly.png",
         paths,
       }),
-    ).toBe(join(paths.appPath, "assets", "icon-dev.png"));
+    ).toBe(join(paths.appPath, "assets", "icon-macos-runtime.png"));
+  });
+
+  it("supports the production PNG during non-macOS development", () => {
+    const paths: DesktopPathContext = {
+      appPath: "/checkout/apps/desktop",
+      isPackaged: false,
+      resourcesPath: "/checkout/apps/desktop",
+    };
+
+    expect(
+      resolveDesktopIconPath({
+        developmentIconFileName: "icon.png",
+        packagedIconFileName: "icon-nightly.png",
+        paths,
+      }),
+    ).toBe(join(paths.appPath, "assets", "icon.png"));
   });
 });

@@ -1,6 +1,5 @@
 import { useState, type ComponentProps, type ReactNode } from "react";
 import { Skeleton } from "@bb/shared-ui/skeleton";
-import { COARSE_POINTER_HEADER_ICON_BUTTON_CLASS } from "@bb/shared-ui/coarse-pointer-sizing";
 import { cn } from "@bb/shared-ui/lib/utils";
 import { PluginHomepageSections } from "@/components/plugin/PluginHomepageSections";
 import { usePluginComposerHost } from "@/components/plugin/plugin-composer-host";
@@ -32,13 +31,19 @@ import { useOptionalPaneContext } from "./thread-detail/PaneContext";
 // The insets are 0 everywhere else, so desktop and Safari keep the same
 // offsets.
 //
-// The top offset centers the toggle on the same axis as the pinned sidebar
+// The top offset centers the logo-and-toggle group on the same axis as the pinned sidebar
 // trigger, which CHROME_ROW_CLASS box-centers in a 48px row (center = 24px).
-// The button box is 28px normally and 36px under a coarse pointer, so the
-// offset has to change with it: 24 - 28/2 = 10px, and 24 - 36/2 = 6px. A single
-// offset lines up in one pointer mode and sits 4px low in the other.
+// The group is 32px tall normally and 36px under a coarse pointer, so the
+// offset has to change with it: 24 - 32/2 = 8px, and 24 - 36/2 = 6px.
 export const ROOT_COMPOSE_PINNED_PANEL_TOGGLE_POSITION_CLASS =
-  "right-[calc(1rem+env(safe-area-inset-right))] top-[calc(0.625rem+env(safe-area-inset-top))] max-md:pointer-coarse:top-[calc(0.375rem+env(safe-area-inset-top))]";
+  "right-[calc(1rem+env(safe-area-inset-right))] top-[calc(0.5rem+env(safe-area-inset-top))] max-md:pointer-coarse:top-[calc(0.375rem+env(safe-area-inset-top))]";
+
+// The drag-strip cutout must cover both interactive controls: the 64px logo,
+// its 8px right margin, 12px gap, and 28px/36px panel button. Electron resolves the later drag strip
+// over earlier no-drag descendants, so cutting out only the panel button would
+// make the website link unclickable in the macOS title bar.
+export const ROOT_COMPOSE_PINNED_CHROME_CUTOUT_CLASS =
+  "h-8 w-[112px] max-md:pointer-coarse:h-9 max-md:pointer-coarse:w-[120px]";
 
 type RootSecondaryPanelProps = Omit<
   ComponentProps<typeof LazyThreadSecondaryPanel>,
@@ -115,7 +120,7 @@ export function RootComposeSecondaryContent({
               className={cn(
                 "absolute",
                 ROOT_COMPOSE_PINNED_PANEL_TOGGLE_POSITION_CLASS,
-                COARSE_POINTER_HEADER_ICON_BUTTON_CLASS,
+                ROOT_COMPOSE_PINNED_CHROME_CUTOUT_CLASS,
                 MACOS_APP_REGION_NO_DRAG_CLASS,
               )}
             />

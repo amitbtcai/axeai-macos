@@ -239,6 +239,7 @@ describe("desktop window factory", () => {
         },
       ],
       icon: undefined,
+      initialBackgroundColor: "#151515",
       isMac: true,
       isQuitting() {
         return false;
@@ -261,6 +262,7 @@ describe("desktop window factory", () => {
     expect(firstWindow).not.toBe(secondWindow);
     expect(createdWindows).toHaveLength(2);
     expect(createdWindows[0]?.options.frame).toBe(false);
+    expect(createdWindows[0]?.options.backgroundColor).toBe("#151515");
     expect(createdWindows[0]?.options.minHeight).toBe(MIN_WINDOW_HEIGHT);
     expect(createdWindows[0]?.options.minWidth).toBe(MIN_WINDOW_WIDTH);
     expect(createdWindows[0]?.options.titleBarStyle).toBe("hiddenInset");
@@ -334,6 +336,7 @@ describe("desktop window factory", () => {
         },
       ],
       icon: undefined,
+      initialBackgroundColor: "#151515",
       isMac: true,
       isQuitting() {
         return false;
@@ -392,6 +395,7 @@ describe("desktop window factory", () => {
         },
       ],
       icon: undefined,
+      initialBackgroundColor: "#151515",
       isMac: true,
       isQuitting() {
         return false;
@@ -447,6 +451,7 @@ describe("desktop window factory", () => {
         },
       ],
       icon: undefined,
+      initialBackgroundColor: "#151515",
       isMac: true,
       isQuitting() {
         return false;
@@ -504,6 +509,7 @@ describe("desktop window factory", () => {
         },
       ],
       icon: undefined,
+      initialBackgroundColor: "#151515",
       isMac: true,
       isQuitting() {
         return false;
@@ -564,6 +570,7 @@ describe("desktop window factory", () => {
         },
       ],
       icon: undefined,
+      initialBackgroundColor: "#151515",
       isMac: true,
       isQuitting() {
         return false;
@@ -622,6 +629,7 @@ describe("desktop window factory", () => {
         },
       ],
       icon: undefined,
+      initialBackgroundColor: "#ffffff",
       isMac: false,
       isQuitting() {
         return false;

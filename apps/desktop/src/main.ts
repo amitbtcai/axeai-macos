@@ -2154,6 +2154,8 @@ async function runDesktopApp(): Promise<void> {
 
   const paths = createDesktopPathContext();
   const iconPath = resolveDesktopIconPath({
+    developmentIconFileName:
+      process.platform === "darwin" ? "icon-macos-runtime.png" : "icon.png",
     packagedIconFileName: DESKTOP_RELEASE_INFO.iconFileName,
     paths,
   });
@@ -2205,8 +2207,9 @@ async function runDesktopApp(): Promise<void> {
   // Packaged builds must not call dock.setIcon: it replaces the bundle icon
   // (already channel-correct via electron-builder) with a raw NSImage that
   // bypasses the macOS appearance pipeline, so dark mode shows the light
-  // rendering. Dev runs still need it to show icon-dev.png instead of the
-  // stock Electron icon.
+  // rendering. Dev runs still need an explicit override to show the same
+  // production artwork instead of the stock Electron icon; its runtime PNG
+  // includes the rounded silhouette that the bundle pipeline normally adds.
   if (
     process.platform === "darwin" &&
     app.dock !== undefined &&
@@ -2370,6 +2373,9 @@ async function runDesktopApp(): Promise<void> {
     },
     displayWorkAreas: null,
     icon: nativeImage.createFromPath(iconPath),
+    initialBackgroundColor: nativeTheme.shouldUseDarkColors
+      ? "#151515"
+      : "#ffffff",
     isMac: process.platform === "darwin",
     isQuitting() {
       return quitting;

@@ -99,6 +99,13 @@
         document.getElementById("theme-color").content = darkTheme
           ? "#151515"
           : "#ffffff";
+        // Give Chromium's document canvas the resolved color immediately.
+        // Electron may expose the first renderer paint before Vite has loaded
+        // theme.css; without this, that otherwise-correct dark class still
+        // sits on the browser's default white backing surface for one frame.
+        document.documentElement.style.backgroundColor = darkTheme
+          ? "#151515"
+          : "#ffffff";
         // theme.css keys every dark token off the `dark` class, so add it
         // before the stylesheet applies. Otherwise the first paint is the
         // light palette until main.tsx (behind ~1.5 MB of JS) toggles it,

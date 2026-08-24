@@ -130,11 +130,46 @@ describe("ThreadDetailHeader", () => {
       const showButton = screen.getByRole("button", {
         name: "Show right panel",
       });
+      if (isCompactViewport) {
+        expect(
+          screen.queryByRole("link", { name: "Visit Axe AI website" }),
+        ).toBeNull();
+      } else {
+        expect(
+          screen.getByRole("link", { name: "Visit Axe AI website" }),
+        ).not.toBeNull();
+      }
       expect(
         showButton.querySelector(`[data-icon="${expectedIcon}"]`),
       ).not.toBeNull();
     },
   );
+
+  it("places the Axe AI website link before populated-chat workflow controls", () => {
+    render(
+      <PaneContext.Provider value={PANE_CONTEXT}>
+        <ThreadDetailHeader
+          actionsMenu={null}
+          childPillLabel={null}
+          isSecondaryPanelOpen={false}
+          onOpenThreadGitAction={vi.fn()}
+          onToggleSecondaryPanel={vi.fn()}
+          threadHeaderGitActions={[]}
+          threadId={THREAD_ID}
+          threadTitle="Panel state"
+          workspaceOpenButton={<button type="button">Workspace menu</button>}
+        />
+      </PaneContext.Provider>,
+    );
+
+    const logo = screen.getByRole("link", { name: "Visit Axe AI website" });
+    const dropdown = screen.getByRole("button", { name: "Workspace menu" });
+
+    expect(logo.getAttribute("href")).toBe("https://axeai.com");
+    expect(
+      logo.compareDocumentPosition(dropdown) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).not.toBe(0);
+  });
 
   it("keeps thread Full Screen in a split header while its panel is open", () => {
     render(

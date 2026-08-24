@@ -147,6 +147,7 @@ import {
 } from "@/components/secondary-panel/useThreadFileTabs";
 import { isSecondaryFileTab } from "@bb/client-core";
 import { RightPanelFileTabIcon } from "@/components/secondary-panel/RightPanelFileTabIcon";
+import { AxeAiChromeLogo } from "@/components/ui/axeai-logo";
 import {
   DEFAULT_TERMINAL_COLS,
   DEFAULT_TERMINAL_ROWS,
@@ -262,24 +263,27 @@ export function RootComposeRightPanelToggle({
   const rightPanelIconName = useRightPanelToggleIconName();
 
   return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      className={`${HEADER_ICON_BUTTON_CLASS} relative`}
-      aria-label={
-        shortcut ? `${rightPanelLabel} (${shortcut.label})` : rightPanelLabel
-      }
-      aria-keyshortcuts={shortcut?.ariaKeyshortcuts}
-      aria-expanded={isOpen}
-      onClick={onToggle}
-    >
-      <Icon name={rightPanelIconName} />
+    <div className="relative flex items-center gap-3">
       <AppCommandShortcutHint
         shortcut={shortcut}
         className="absolute right-full mr-1"
       />
-    </Button>
+      <AxeAiChromeLogo />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className={HEADER_ICON_BUTTON_CLASS}
+        aria-label={
+          shortcut ? `${rightPanelLabel} (${shortcut.label})` : rightPanelLabel
+        }
+        aria-keyshortcuts={shortcut?.ariaKeyshortcuts}
+        aria-expanded={isOpen}
+        onClick={onToggle}
+      >
+        <Icon name={rightPanelIconName} />
+      </Button>
+    </div>
   );
 }
 
@@ -1980,9 +1984,7 @@ function RootComposeSurface({
               <div className="flex min-h-full w-full flex-1 flex-col">
                 {showLanding ? (
                   <div className="flex flex-1 items-center justify-center pb-16 pt-8">
-                    <RootComposeEmptyWelcome
-                      onCompose={handleStartComposing}
-                    />
+                    <RootComposeEmptyWelcome onCompose={handleStartComposing} />
                   </div>
                 ) : null}
                 <div className="sticky bottom-0 z-10 mt-auto w-full pb-1">

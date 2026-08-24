@@ -35,6 +35,7 @@ import { SecondaryPanelHostLayoutContext } from "@/components/secondary-panel/Se
 import { getRightPanelToggleIconName } from "@/components/secondary-panel/panelToggleControlState";
 import { CHROME_SUBTLE_ICON_BUTTON_FOREGROUND_CLASS } from "@bb/shared-ui/chrome-style-tokens";
 import { dimInactiveSplitsAtom } from "@/lib/split-layout/atoms";
+import { AxeAiChromeLogo } from "@/components/ui/axeai-logo";
 import {
   CONTEXT_INACTIVE_TEXT_CLASS,
   CONTEXT_SELECTION_SURFACE_CLASS,
@@ -227,6 +228,11 @@ export function ThreadDetailHeader({
 
   const actions = (
     <>
+      {showRightPanelToggle &&
+      !renderAsDrawer &&
+      !usesResponsiveActionOverflow ? (
+        <AxeAiChromeLogo />
+      ) : null}
       <div
         className="flex items-center gap-1"
         data-thread-header-workflow-actions=""

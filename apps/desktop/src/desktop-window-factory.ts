@@ -87,6 +87,7 @@ interface CreateDesktopWindowFactoryArgs {
   createWindowStateKey(): WindowStateKey;
   displayWorkAreas: DisplayWorkArea[] | null;
   icon: DesktopWindowIcon;
+  initialBackgroundColor: string;
   isMac: boolean;
   isQuitting(): boolean;
   openExternalUrl(args: OpenExternalUrlArgs): void;
@@ -135,6 +136,7 @@ interface LoadUrlIntoWindowArgs {
 }
 
 interface CreateWindowOptionsArgs {
+  backgroundColor: string;
   bounds: WindowBounds;
   icon: DesktopWindowIcon;
   isMac: boolean;
@@ -175,6 +177,7 @@ function createWindowOptions(
           trafficLightPosition: MACOS_TRAFFIC_LIGHT_POSITION,
         }
       : {}),
+    backgroundColor: args.backgroundColor,
     height: args.bounds.height,
     icon: args.icon,
     minHeight: MIN_WINDOW_HEIGHT,
@@ -235,6 +238,7 @@ export function createDesktopWindowFactory(
       });
       const browserWindow = args.browserWindowCreator.create(
         createWindowOptions({
+          backgroundColor: args.initialBackgroundColor,
           bounds: restoredState.bounds,
           icon: args.icon,
           isMac: args.isMac,

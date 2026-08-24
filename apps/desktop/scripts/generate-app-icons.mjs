@@ -1,11 +1,5 @@
 import { execFileSync } from "node:child_process";
-import {
-  copyFileSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const desktopDirectory = join(dirname(fileURLToPath(import.meta.url)), "..");
 const source = join(desktopDirectory, "assets/icon.svg");
 const png = join(desktopDirectory, "assets/icon.png");
-const developmentPng = join(desktopDirectory, "assets/icon-dev.png");
+const macosRuntimePng = join(desktopDirectory, "assets/icon-macos-runtime.png");
 const windowsIcon = join(desktopDirectory, "assets/icon.ico");
 const nightlyPng = join(desktopDirectory, "assets/icon-nightly.png");
 const nightlyWindowsIcon = join(desktopDirectory, "assets/icon-nightly.ico");
@@ -63,7 +57,6 @@ try {
     "png:exclude-chunks=date,time",
     png,
   ]);
-  copyFileSync(png, developmentPng);
   execFileSync("magick", [
     png,
     "-define",
@@ -99,6 +92,31 @@ try {
     "-define",
     "png:exclude-chunks=date,time",
     renderedMacosSource,
+  ]);
+  // macOS applies its rounded mask and optical inset when it loads the packaged
+  // ICNS from the bundle. Electron's development-only dock.setIcon override
+  // skips that pipeline, so bake both into the runtime PNG. The 100px inset
+  // matches the apparent size of the production icon in a 1024px Dock tile.
+  execFileSync("magick", [
+    renderedMacosSource,
+    "(",
+    "-size",
+    "1024x1024",
+    "xc:none",
+    "-fill",
+    "white",
+    "-draw",
+    "roundrectangle 100,100 923,923 185,185",
+    ")",
+    "-alpha",
+    "off",
+    "-compose",
+    "CopyOpacity",
+    "-composite",
+    "-strip",
+    "-define",
+    "png:exclude-chunks=date,time",
+    macosRuntimePng,
   ]);
   for (const [size, fileName] of variants) {
     execFileSync("sips", [

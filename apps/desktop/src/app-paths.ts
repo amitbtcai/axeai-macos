@@ -12,6 +12,7 @@ interface ResolveDesktopBridgePathArgs {
 }
 
 interface ResolveDesktopIconPathArgs {
+  developmentIconFileName: string;
   packagedIconFileName: string;
   paths: DesktopPathContext;
 }
@@ -45,7 +46,9 @@ export function resolveDesktopIconPath(
   return join(
     args.paths.appPath,
     "assets",
-    args.paths.isPackaged ? args.packagedIconFileName : "icon-dev.png",
+    args.paths.isPackaged
+      ? args.packagedIconFileName
+      : args.developmentIconFileName,
   );
 }
 

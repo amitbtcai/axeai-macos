@@ -1,4 +1,5 @@
 import type { SVGProps } from "react";
+import { cn } from "@bb/shared-ui/lib/utils";
 
 const MARK_PATHS = [
   "M97.1923 0.128124L196.375 164.224C196.545 164.505 196.159 164.786 195.947 164.536L97.1036 47.7897C96.9985 47.6655 96.8084 47.6646 96.7021 47.7878L68.7241 80.2122C68.5317 80.4351 68.1757 80.2248 68.2748 79.9469L96.7167 0.176713C96.792 -0.0344117 97.0765 -0.0634694 97.1923 0.128124Z",
@@ -38,5 +39,22 @@ export function AxeAiLogoLockup(props: SVGProps<SVGSVGElement>) {
         ))}
       </g>
     </svg>
+  );
+}
+
+export function AxeAiChromeLogo({ className }: { className?: string }) {
+  return (
+    <a
+      href="https://axeai.com"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Visit Axe AI website"
+      className={cn(
+        "mr-2 inline-flex h-8 shrink-0 items-center rounded-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        className,
+      )}
+    >
+      <AxeAiLogoLockup aria-hidden="true" className="h-auto w-16 select-none" />
+    </a>
   );
 }
