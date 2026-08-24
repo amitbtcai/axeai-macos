@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.39.4
+
+More consistent providers, model controls, and AxeAI desktop chrome.
+
+### New and improved
+
+- Codex, Claude Code, Pi, and ACP agents now use one provider-plugin architecture, making provider behavior and future upgrades more consistent.
+- Provider order is draggable and updates immediately.
+- The desktop model picker uses one predictable scroll region, so reasoning options remain reachable in shorter windows.
+
+### Fixes and polish
+
+- Provider logos render correctly in packaged builds, and model-picker icons use consistent sizing.
+- The AxeAI logo remains visible beside the right-panel control and opens axeai.com.
+- Dark-mode windows start on a dark canvas instead of flashing white while the interface loads.
+- Development builds use the same macOS app artwork as production.
+- Native dependency repair is isolated per checkout so one development runtime cannot break another.
+
 ## 0.39.3
 
 AxeAI models now handle desktop sign-in before starting a coding session.

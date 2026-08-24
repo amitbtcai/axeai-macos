@@ -2,7 +2,7 @@ import {
   experimental_defineProviderBridge,
   type ProviderBridgeEntry,
 } from "@get-bb/plugin-sdk/provider-bridge";
-import { experimental_providerBridge as acpBridge } from "../../provider-acp/src/bridge/bridge.js";
+import { experimental_acpProviderBridge as acpBridge } from "@get-bb/plugin-sdk/provider-bridge/acp";
 import { axeCredentialIsExpired, readAxeCredential } from "./auth.js";
 
 const AUTH_REQUIRED_MESSAGE = "ACP agent is not authenticated.";

@@ -29,6 +29,10 @@ type ReleaseMeta = {
 };
 
 export const RELEASE_META: Record<string, ReleaseMeta> = {
+  "0.39.4": {
+    date: "August 24, 2026",
+    headline: "Provider upgrades and polished desktop chrome",
+  },
   "0.39.3": {
     date: "August 24, 2026",
     headline: "Reliable AxeAI model sign-in",

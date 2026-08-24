@@ -48,9 +48,10 @@ describe("AxeAI provider plugin", () => {
       expect.objectContaining({
         id: "axeai",
         displayName: "AxeAI",
-        capabilities: expect.objectContaining({
-          experimental_providerHealth: true,
+        maintenance: expect.objectContaining({
+          health: true,
         }),
+        models: expect.objectContaining({ scope: "host" }),
       }),
     );
     expect(

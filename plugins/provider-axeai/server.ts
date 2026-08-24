@@ -71,12 +71,12 @@ export default async function plugin(bb: BbPluginApi): Promise<void> {
     id: AXEAI_PROVIDER_ID,
     displayName: "AxeAI",
     icon: "./icons/axeai.svg",
-    experimental_strings: {
+    strings: {
       signInHint: "Run `bb axeai login`.",
       expiredHint: "Run `bb axeai login`.",
       installUrl: "https://opencode.ai/docs",
     },
-    experimental_models: { fallback },
+    models: { fallback, scope: "host" },
     experimental_bridgeOptions: {
       acpLaunchSpec: {
         displayName: "AxeAI",
@@ -85,10 +85,12 @@ export default async function plugin(bb: BbPluginApi): Promise<void> {
         env: { OPENCODE_CONFIG_CONTENT: config },
       },
     },
+    maintenance: {
+      health: true,
+      usage: false,
+      installation: false,
+    },
     capabilities: {
-      experimental_providerHealth: true,
-      experimental_providerUsage: false,
-      experimental_providerInstallation: false,
       supportsServiceTier: false,
       supportsNativeUserQuestion: false,
       fork: "tip",
