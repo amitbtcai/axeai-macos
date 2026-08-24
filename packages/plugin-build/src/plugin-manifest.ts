@@ -116,7 +116,7 @@ export async function validatePluginBuildManifest(
       realpath(rootDir),
       realpath(assetPath),
     ]);
-    if (realAsset !== realRoot && !realAsset.startsWith(realRoot + "/")) {
+    if (!isPathWithinRoot(realRoot, realAsset)) {
       throw new Error(
         `manifest ${label} escapes the plugin directory through a symlink`,
       );
