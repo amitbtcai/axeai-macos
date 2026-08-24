@@ -8,6 +8,7 @@ import {
 } from "react";
 import { nanoid } from "nanoid";
 import { useSystemProviderInfo } from "@/hooks/queries/system-queries";
+import { useActiveThreadReconciliation } from "@/hooks/useActiveThreadReconciliation";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
@@ -534,6 +535,12 @@ function ThreadDetailViewInternal(props: ThreadRoutePathArgs) {
     )
       ? false
       : "always",
+  });
+  useActiveThreadReconciliation({
+    active:
+      thread !== undefined &&
+      isRunningThreadRuntimeDisplayStatus(thread.runtime.displayStatus),
+    threadId,
   });
   const environmentQuery = useEnvironment(thread?.environmentId, {
     enabled: hasThreadDetailBootstrapSettled,
