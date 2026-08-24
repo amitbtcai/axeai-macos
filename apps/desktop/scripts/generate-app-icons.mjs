@@ -22,6 +22,10 @@ const renderedMacosDockIcon = join(
   temporaryDirectory,
   "icon-macos-dock-icon.png",
 );
+const renderedMacosDockFinished = join(
+  temporaryDirectory,
+  "icon-macos-dock-finished.png",
+);
 
 const variants = [
   [16, "icon_16x16.png"],
@@ -168,6 +172,24 @@ try {
     "png:exclude-chunks=date,time",
     renderedMacosDockIcon,
   ]);
+  // Bundle icons receive a restrained edge highlight from macOS. The raw
+  // NSImage supplied through app.dock.setIcon bypasses that treatment, so add
+  // the same one-pixel-at-Dock-size rim to the development artwork itself.
+  execFileSync("magick", [
+    renderedMacosDockIcon,
+    "-fill",
+    "none",
+    "-stroke",
+    "rgba(255,255,255,0.20)",
+    "-strokewidth",
+    "8",
+    "-draw",
+    "roundrectangle 104,104 919,919 181,181",
+    "-strip",
+    "-define",
+    "png:exclude-chunks=date,time",
+    renderedMacosDockFinished,
+  ]);
   // Electron normalizes a raw Dock PNG to its non-transparent alpha bounds,
   // which would remove the 100px optical inset and visibly enlarge the icon.
   // A practically invisible full-canvas alpha extent prevents that crop while
@@ -176,7 +198,7 @@ try {
     "-size",
     "1024x1024",
     "xc:#060AE601",
-    renderedMacosDockIcon,
+    renderedMacosDockFinished,
     "-compose",
     "over",
     "-composite",
