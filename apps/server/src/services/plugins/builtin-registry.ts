@@ -109,12 +109,6 @@ export const BUILTIN_PLUGINS = [
     category: "Agent interaction",
   },
   {
-    name: "provider-axeai",
-    pluginId: "provider-axeai",
-    defaultEnabled: true,
-    category: "Agent interaction",
-  },
-  {
     name: "provider-acp",
     pluginId: "provider-acp",
     defaultEnabled: true,
