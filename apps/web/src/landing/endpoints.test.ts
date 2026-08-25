@@ -1,11 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL,
+  DOWNLOAD_LINUX_VERSION_FEED_URL,
   DOWNLOAD_MACOS_FALLBACK_URL,
   DOWNLOAD_MACOS_RELEASE_ASSET_BASE_URL,
   DOWNLOAD_MACOS_VERSION_FEED_URL,
+  DOWNLOAD_WINDOWS_VERSION_FEED_URL,
 } from "./site";
-import { handleDownloadMacos, handleSubscribe } from "./endpoints";
+import {
+  handleDownloadLinux,
+  handleDownloadMacos,
+  handleDownloadWindows,
+  handleSubscribe,
+} from "./endpoints";
 
 describe("marketing download redirect", () => {
   afterEach(() => {
@@ -67,6 +75,37 @@ describe("marketing download redirect", () => {
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe(DOWNLOAD_MACOS_FALLBACK_URL);
   });
+
+  it.each([
+    {
+      asset: "AxeAI-0.39.6-x86_64.AppImage",
+      feed: DOWNLOAD_LINUX_VERSION_FEED_URL,
+      handle: handleDownloadLinux,
+    },
+    {
+      asset: "AxeAI-0.39.6-x64.exe",
+      feed: DOWNLOAD_WINDOWS_VERSION_FEED_URL,
+      handle: handleDownloadWindows,
+    },
+  ])(
+    "redirects to the current $asset release",
+    async ({ asset, feed, handle }) => {
+      const fetchMock = vi.fn(async () =>
+        new Response(JSON.stringify({ files: [{ url: asset }] })),
+      );
+      vi.stubGlobal("fetch", fetchMock);
+
+      const response = await handle();
+
+      expect(fetchMock).toHaveBeenCalledWith(feed, {
+        headers: { accept: "application/json" },
+      });
+      expect(response.status).toBe(302);
+      expect(response.headers.get("Location")).toBe(
+        `${DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL}/${asset}`,
+      );
+    },
+  );
 
   it("tracks the click through waitUntil when a PostHog key is set", async () => {
     const fetchMock = vi.fn(

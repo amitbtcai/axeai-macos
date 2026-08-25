@@ -65,10 +65,6 @@ export function createAuth(env: Env) {
       expiresIn: CONNECT_SESSION_EXPIRES_IN_SECONDS,
       updateAge: CONNECT_SESSION_UPDATE_AGE_SECONDS,
     },
-    session: {
-      expiresIn: CONNECT_SESSION_EXPIRES_IN_SECONDS,
-      updateAge: CONNECT_SESSION_UPDATE_AGE_SECONDS,
-    },
     emailAndPassword: { enabled: devEmailPasswordEnabled },
     user: {
       additionalFields: {

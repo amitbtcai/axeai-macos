@@ -417,6 +417,42 @@ jobs:
               --latest=false
           fi
 
+      - name: Verify published desktop release
+        if: steps.release_plan.outputs.should_publish == 'true'
+        env:
+          VERSION: ${{ steps.release_plan.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          RELEASE_BASE="https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest"
+          verify_feed() {
+            local feed_name="$1"
+            local expected_suffix="$2"
+            local feed
+            local published_version
+            local asset_name
+
+            feed="$(curl --fail --silent --show-error --location --retry 5 --retry-delay 2 "$RELEASE_BASE/$feed_name")"
+            published_version="$(jq -r '.version' <<<"$feed")"
+            asset_name="$(jq -r --arg suffix "$expected_suffix" '.files[] | select(.url | endswith($suffix)) | .url' <<<"$feed" | head -n 1)"
+
+            if [[ "$published_version" != "$VERSION" ]]; then
+              echo "::error::$feed_name reports $published_version; expected $VERSION."
+              exit 1
+            fi
+            if [[ -z "$asset_name" ]]; then
+              echo "::error::$feed_name has no $expected_suffix installer."
+              exit 1
+            fi
+
+            curl --fail --silent --show-error --location --head --retry 5 --retry-delay 2 "$RELEASE_BASE/$asset_name" >/dev/null
+            echo "Verified $feed_name -> $asset_name"
+          }
+
+          verify_feed desktop-version.json .dmg
+          verify_feed desktop-version-linux.json .AppImage
+          verify_feed desktop-version-windows.json .exe
+
       - name: Summarize
         env:
           IS_PRERELEASE: ${{ steps.release_plan.outputs.is_prerelease }}

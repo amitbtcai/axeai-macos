@@ -3,9 +3,11 @@
 // TanStack server routes (routes/download.macos.tsx, routes/api.subscribe.tsx);
 // this module keeps the framework-free request/response logic testable.
 import {
-  DOWNLOAD_MACOS_FALLBACK_URL,
-  DOWNLOAD_MACOS_RELEASE_ASSET_BASE_URL,
+  DOWNLOAD_DESKTOP_FALLBACK_URL,
+  DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL,
+  DOWNLOAD_LINUX_VERSION_FEED_URL,
   DOWNLOAD_MACOS_VERSION_FEED_URL,
+  DOWNLOAD_WINDOWS_VERSION_FEED_URL,
 } from "./site";
 import type { CtaPlacement } from "./site";
 
@@ -17,6 +19,8 @@ const MAX_URL_PROPERTY_LENGTH = 2048;
 const RESEND_CONTACTS_URL = "https://api.resend.com/audiences";
 const MAX_EMAIL_LENGTH = 254;
 const MACOS_INSTALLER_EXTENSION = ".dmg";
+const LINUX_INSTALLER_EXTENSION = ".AppImage";
+const WINDOWS_INSTALLER_EXTENSION = ".exe";
 // Permissive single-line email shape; Resend does the authoritative validation.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -72,6 +76,24 @@ export async function handleDownloadMacos(
   );
   const location = await resolveMacosDownloadUrl();
   return redirectResponse(location);
+}
+
+export async function handleDownloadLinux(): Promise<Response> {
+  return redirectResponse(
+    await resolveDesktopDownloadUrl(
+      DOWNLOAD_LINUX_VERSION_FEED_URL,
+      LINUX_INSTALLER_EXTENSION,
+    ),
+  );
+}
+
+export async function handleDownloadWindows(): Promise<Response> {
+  return redirectResponse(
+    await resolveDesktopDownloadUrl(
+      DOWNLOAD_WINDOWS_VERSION_FEED_URL,
+      WINDOWS_INSTALLER_EXTENSION,
+    ),
+  );
 }
 
 function jsonResponse(body: object, status: number): Response {
@@ -165,26 +187,42 @@ function redirectResponse(location: string): Response {
 }
 
 async function resolveMacosDownloadUrl(): Promise<string> {
+  return resolveDesktopDownloadUrl(
+    DOWNLOAD_MACOS_VERSION_FEED_URL,
+    MACOS_INSTALLER_EXTENSION,
+  );
+}
+
+async function resolveDesktopDownloadUrl(
+  versionFeedUrl: string,
+  installerExtension: string,
+): Promise<string> {
   try {
-    const response = await fetch(DOWNLOAD_MACOS_VERSION_FEED_URL, {
+    const response = await fetch(versionFeedUrl, {
       headers: { accept: "application/json" },
     });
     if (!response.ok) {
-      return DOWNLOAD_MACOS_FALLBACK_URL;
+      return DOWNLOAD_DESKTOP_FALLBACK_URL;
     }
 
-    const assetName = findMacosInstallerAssetName(await response.json());
+    const assetName = findInstallerAssetName(
+      await response.json(),
+      installerExtension,
+    );
     if (!assetName) {
-      return DOWNLOAD_MACOS_FALLBACK_URL;
+      return DOWNLOAD_DESKTOP_FALLBACK_URL;
     }
 
-    return `${DOWNLOAD_MACOS_RELEASE_ASSET_BASE_URL}/${encodeURIComponent(assetName)}`;
+    return `${DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL}/${encodeURIComponent(assetName)}`;
   } catch {
-    return DOWNLOAD_MACOS_FALLBACK_URL;
+    return DOWNLOAD_DESKTOP_FALLBACK_URL;
   }
 }
 
-function findMacosInstallerAssetName(feed: unknown): string | null {
+function findInstallerAssetName(
+  feed: unknown,
+  installerExtension: string,
+): string | null {
   if (!isRecord(feed) || !Array.isArray(feed.files)) {
     return null;
   }
@@ -193,17 +231,20 @@ function findMacosInstallerAssetName(feed: unknown): string | null {
     if (!isRecord(file) || typeof file.url !== "string") {
       continue;
     }
-    if (isMacosInstallerAssetName(file.url)) {
+    if (isInstallerAssetName(file.url, installerExtension)) {
       return file.url;
     }
   }
   return null;
 }
 
-function isMacosInstallerAssetName(value: string): boolean {
+function isInstallerAssetName(
+  value: string,
+  installerExtension: string,
+): boolean {
   return (
-    value.length > MACOS_INSTALLER_EXTENSION.length &&
-    value.endsWith(MACOS_INSTALLER_EXTENSION) &&
+    value.length > installerExtension.length &&
+    value.endsWith(installerExtension) &&
     !value.includes("/") &&
     !value.includes("\\")
   );

@@ -1,11 +1,16 @@
 export const GITHUB_URL = "https://github.com/get-bb/bb";
 export const DISCORD_URL = "https://discord.gg/kvBU6tJhcJ";
 export const X_URL = "https://x.com/get_bb_app";
-export const DOWNLOAD_MACOS_FALLBACK_URL =
+export const DOWNLOAD_DESKTOP_FALLBACK_URL =
   "https://github.com/amitbtcai/axeai-macos/releases/tag/desktop-latest";
-export const DOWNLOAD_MACOS_RELEASE_ASSET_BASE_URL =
+export const DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL =
   "https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest";
-export const DOWNLOAD_MACOS_VERSION_FEED_URL = `${DOWNLOAD_MACOS_RELEASE_ASSET_BASE_URL}/desktop-version.json`;
+export const DOWNLOAD_MACOS_FALLBACK_URL = DOWNLOAD_DESKTOP_FALLBACK_URL;
+export const DOWNLOAD_MACOS_RELEASE_ASSET_BASE_URL =
+  DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL;
+export const DOWNLOAD_MACOS_VERSION_FEED_URL = `${DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL}/desktop-version.json`;
+export const DOWNLOAD_LINUX_VERSION_FEED_URL = `${DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL}/desktop-version-linux.json`;
+export const DOWNLOAD_WINDOWS_VERSION_FEED_URL = `${DOWNLOAD_DESKTOP_RELEASE_ASSET_BASE_URL}/desktop-version-windows.json`;
 const DOWNLOAD_MACOS_REDIRECT_PATH = "/download/macos";
 /** First-party endpoint that adds an email to the bb marketing audience.
  *  Handled by the Worker (see worker.ts), not a prerendered asset. */

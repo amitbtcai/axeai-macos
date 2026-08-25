@@ -14,7 +14,9 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DownloadWindowsRouteImport } from './routes/download.windows'
 import { Route as DownloadMacosRouteImport } from './routes/download.macos'
+import { Route as DownloadLinuxRouteImport } from './routes/download.linux'
 import { Route as BlogSlugRouteImport } from './routes/blog_.$slug'
 import { Route as ApiSubscribeRouteImport } from './routes/api.subscribe'
 import { Route as DotwellKnownAssetlinksDotjsonRouteImport } from './routes/[.]well-known.assetlinks[.]json'
@@ -51,9 +53,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DownloadWindowsRoute = DownloadWindowsRouteImport.update({
+  id: '/download/windows',
+  path: '/download/windows',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DownloadMacosRoute = DownloadMacosRouteImport.update({
   id: '/download/macos',
   path: '/download/macos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadLinuxRoute = DownloadLinuxRouteImport.update({
+  id: '/download/linux',
+  path: '/download/linux',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
@@ -119,7 +131,9 @@ export interface FileRoutesByFullPath {
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/api/subscribe': typeof ApiSubscribeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/download/linux': typeof DownloadLinuxRoute
   '/download/macos': typeof DownloadMacosRoute
+  '/download/windows': typeof DownloadWindowsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/connect/machine-code': typeof ApiConnectMachineCodeRoute
   '/api/connect/redeem': typeof ApiConnectRedeemRoute
@@ -137,7 +151,9 @@ export interface FileRoutesByTo {
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/api/subscribe': typeof ApiSubscribeRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/download/linux': typeof DownloadLinuxRoute
   '/download/macos': typeof DownloadMacosRoute
+  '/download/windows': typeof DownloadWindowsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/connect/machine-code': typeof ApiConnectMachineCodeRoute
   '/api/connect/redeem': typeof ApiConnectRedeemRoute
@@ -156,7 +172,9 @@ export interface FileRoutesById {
   '/.well-known/assetlinks.json': typeof DotwellKnownAssetlinksDotjsonRoute
   '/api/subscribe': typeof ApiSubscribeRoute
   '/blog_/$slug': typeof BlogSlugRoute
+  '/download/linux': typeof DownloadLinuxRoute
   '/download/macos': typeof DownloadMacosRoute
+  '/download/windows': typeof DownloadWindowsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/connect/machine-code': typeof ApiConnectMachineCodeRoute
   '/api/connect/redeem': typeof ApiConnectRedeemRoute
@@ -176,7 +194,9 @@ export interface FileRouteTypes {
     | '/.well-known/assetlinks.json'
     | '/api/subscribe'
     | '/blog/$slug'
+    | '/download/linux'
     | '/download/macos'
+    | '/download/windows'
     | '/api/auth/$'
     | '/api/connect/machine-code'
     | '/api/connect/redeem'
@@ -194,7 +214,9 @@ export interface FileRouteTypes {
     | '/.well-known/assetlinks.json'
     | '/api/subscribe'
     | '/blog/$slug'
+    | '/download/linux'
     | '/download/macos'
+    | '/download/windows'
     | '/api/auth/$'
     | '/api/connect/machine-code'
     | '/api/connect/redeem'
@@ -212,7 +234,9 @@ export interface FileRouteTypes {
     | '/.well-known/assetlinks.json'
     | '/api/subscribe'
     | '/blog_/$slug'
+    | '/download/linux'
     | '/download/macos'
+    | '/download/windows'
     | '/api/auth/$'
     | '/api/connect/machine-code'
     | '/api/connect/redeem'
@@ -231,7 +255,9 @@ export interface RootRouteChildren {
   DotwellKnownAssetlinksDotjsonRoute: typeof DotwellKnownAssetlinksDotjsonRoute
   ApiSubscribeRoute: typeof ApiSubscribeRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  DownloadLinuxRoute: typeof DownloadLinuxRoute
   DownloadMacosRoute: typeof DownloadMacosRoute
+  DownloadWindowsRoute: typeof DownloadWindowsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiConnectMachineCodeRoute: typeof ApiConnectMachineCodeRoute
   ApiConnectRedeemRoute: typeof ApiConnectRedeemRoute
@@ -277,11 +303,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/download/windows': {
+      id: '/download/windows'
+      path: '/download/windows'
+      fullPath: '/download/windows'
+      preLoaderRoute: typeof DownloadWindowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/download/macos': {
       id: '/download/macos'
       path: '/download/macos'
       fullPath: '/download/macos'
       preLoaderRoute: typeof DownloadMacosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/download/linux': {
+      id: '/download/linux'
+      path: '/download/linux'
+      fullPath: '/download/linux'
+      preLoaderRoute: typeof DownloadLinuxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog_/$slug': {
@@ -368,7 +408,9 @@ const rootRouteChildren: RootRouteChildren = {
   DotwellKnownAssetlinksDotjsonRoute: DotwellKnownAssetlinksDotjsonRoute,
   ApiSubscribeRoute: ApiSubscribeRoute,
   BlogSlugRoute: BlogSlugRoute,
+  DownloadLinuxRoute: DownloadLinuxRoute,
   DownloadMacosRoute: DownloadMacosRoute,
+  DownloadWindowsRoute: DownloadWindowsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiConnectMachineCodeRoute: ApiConnectMachineCodeRoute,
   ApiConnectRedeemRoute: ApiConnectRedeemRoute,
