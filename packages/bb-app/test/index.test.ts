@@ -2192,7 +2192,7 @@ describe("bb-app launcher", () => {
       }
 
       const missingChunks =
-        /^Missing bundled bb CLI chunks at .*\/host-daemon\/dist\/bb-chunks\. Rebuild bb-app/;
+        /^Missing bundled bb CLI chunks at .*[/\\]host-daemon[/\\]dist[/\\]bb-chunks\. Rebuild bb-app/;
       expect(() => assertBbAppArtifacts(context)).toThrow(missingChunks);
 
       // An empty directory (a copy interrupted after mkdir, say) fails the
