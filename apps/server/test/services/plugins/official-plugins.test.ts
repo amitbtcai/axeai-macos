@@ -102,7 +102,6 @@ describe("official plugin registry invariants", () => {
       memory: "Context & knowledge",
       "pdf-preview": "Interface",
       "provider-acp": "Agent interaction",
-      "provider-axeai": "Agent interaction",
       "provider-claude-code": "Agent interaction",
       "provider-codex": "Agent interaction",
       "provider-pi": "Agent interaction",
