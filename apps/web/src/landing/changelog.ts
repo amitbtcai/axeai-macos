@@ -29,6 +29,10 @@ type ReleaseMeta = {
 };
 
 export const RELEASE_META: Record<string, ReleaseMeta> = {
+  "0.39.7": {
+    date: "August 25, 2026",
+    headline: "Clearer text in every theme",
+  },
   "0.39.5": {
     date: "August 24, 2026",
     headline: "Balanced macOS app icon",

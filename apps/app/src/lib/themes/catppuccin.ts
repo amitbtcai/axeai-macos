@@ -11,7 +11,8 @@ export const catppuccinThemeCss = `
 :root, .light {
   /* Anchors: Base / Text */
   --canvas: #eff1f5;
-  --ink: #4c4f69;
+  /* Text hue preserved, strengthened beyond Latte's intentionally soft Text. */
+  --ink: #37394f;
 
   /* Accent: Mauve */
   --primary: #8839ef;
@@ -19,10 +20,10 @@ export const catppuccinThemeCss = `
   --timeline-accent: #1e66f5; /* Blue — the timeline tint */
   --file-accent: var(--timeline-accent);
 
-  /* Text tiers: Subtext1 / Subtext0 / Overlay1 */
-  --muted-foreground: #5c5f77;
-  --readback-foreground: #6c6f85;
-  --subtle-foreground: #8c8fa1;
+  /* Shared semantic text ramp, tinted by the Catppuccin anchors. */
+  --muted-foreground: color-mix(in oklch, var(--ink) 88%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 78%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 68%, var(--canvas));
 
   /* Semantic — Red / Yellow / Peach / Green / Mauve(merged) */
   --destructive: #d20f39;
@@ -65,10 +66,10 @@ export const catppuccinThemeCss = `
   --timeline-accent: #89b4fa; /* Blue */
   --file-accent: var(--timeline-accent);
 
-  /* Text tiers: Subtext1 / Subtext0 / Overlay1 */
-  --muted-foreground: #bac2de;
-  --readback-foreground: #a6adc8;
-  --subtle-foreground: #7f849c;
+  /* Shared semantic text ramp, tinted by the Catppuccin anchors. */
+  --muted-foreground: color-mix(in oklch, var(--ink) 88%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 78%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 68%, var(--canvas));
 
   /* Semantic — lighter pastels so they read on the dark base */
   --destructive: #f38ba8;

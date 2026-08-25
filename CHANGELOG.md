@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.39.7
+
+Clearer text across every built-in theme.
+
+### Fixes and polish
+
+- Conversation text is easier to read in light and dark mode, while labels, readbacks, and metadata retain a clear visual hierarchy.
+- Catppuccin, Dracula, Gruvbox, Nord, and Solarized now derive their text tiers from each palette, preserving the theme's character without sacrificing contrast.
+
 ## 0.39.5
 
 Corrected macOS app icon sizing.

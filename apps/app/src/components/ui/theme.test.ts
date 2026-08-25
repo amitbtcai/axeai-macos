@@ -56,6 +56,12 @@ const REQUIRED_RAMP_TOKENS = [
   "sidebar-border",
 ] as const;
 
+const TEXT_RAMP_TOKENS = [
+  "muted-foreground",
+  "readback-foreground",
+  "subtle-foreground",
+] as const;
+
 const MODES = ["light", "dark"] as const;
 
 interface OklchColor {
@@ -96,6 +102,29 @@ function parseOklch(value: string): OklchColor {
     lightness: Number(lightness),
     chroma: Number(chroma),
     hueDegrees: Number(hueDegrees),
+  };
+}
+
+function resolveOklchVariable(block: string, token: string): OklchColor {
+  const value = variableValue(block, token);
+  if (value.startsWith("oklch(")) return parseOklch(value);
+
+  const mix = value.match(
+    /^color-mix\(\s*in oklch,\s*var\(--ink\) ([\d.]+)%,\s*var\(--canvas\)\s*\)$/s,
+  );
+  const inkPercent = mix?.[1];
+  if (inkPercent === undefined) {
+    throw new Error(`unsupported --${token} value: ${value}`);
+  }
+
+  const ink = parseOklch(variableValue(block, "ink"));
+  const canvas = parseOklch(variableValue(block, "canvas"));
+  const inkWeight = Number(inkPercent) / 100;
+  const canvasWeight = 1 - inkWeight;
+  return {
+    lightness: ink.lightness * inkWeight + canvas.lightness * canvasWeight,
+    chroma: ink.chroma * inkWeight + canvas.chroma * canvasWeight,
+    hueDegrees: ink.hueDegrees,
   };
 }
 
@@ -194,6 +223,31 @@ describe("theme.css neutral ramp", () => {
         }
       });
 
+      it("derives the complete semantic text ramp from the anchors", () => {
+        for (const token of TEXT_RAMP_TOKENS) {
+          expect(variableValue(block, token)).toMatch(
+            /^color-mix\(\s*in oklch,\s*var\(--ink\) [\d.]+%,\s*var\(--canvas\)\s*\)$/s,
+          );
+        }
+      });
+
+      it("keeps primary prose strong and every secondary tier distinct", () => {
+        const canvas = resolveOklchVariable(block, "canvas");
+        const foreground = resolveOklchVariable(block, "ink");
+        const muted = resolveOklchVariable(block, "muted-foreground");
+        const readback = resolveOklchVariable(block, "readback-foreground");
+        const subtle = resolveOklchVariable(block, "subtle-foreground");
+
+        const contrasts = [foreground, muted, readback, subtle].map((color) =>
+          contrastRatio(color, canvas),
+        );
+        expect(contrasts[0]).toBeGreaterThanOrEqual(12);
+        expect(contrasts[0]).toBeGreaterThan(contrasts[1]);
+        expect(contrasts[1]).toBeGreaterThan(contrasts[2]);
+        expect(contrasts[2]).toBeGreaterThan(contrasts[3]);
+        expect(contrasts[3]).toBeGreaterThanOrEqual(4.5);
+      });
+
       it("uses one seam value for every app-shell boundary", () => {
         expect(block).toMatch(
           /--border-seam-vertical:\s*var\(--border-seam\);/,
@@ -273,9 +327,10 @@ describe("theme.css Cadence text tokens", () => {
   for (const mode of MODES) {
     it(`keeps ${mode} Cadence text tokens above the AA text floor`, () => {
       const block = modeBlock(mode);
-      const canvas = parseOklch(variableValue(block, "canvas"));
-      const readbackForeground = parseOklch(
-        variableValue(block, "readback-foreground"),
+      const canvas = resolveOklchVariable(block, "canvas");
+      const readbackForeground = resolveOklchVariable(
+        block,
+        "readback-foreground",
       );
       const timelineAccent = parseOklch(
         variableValue(block, "timeline-accent"),

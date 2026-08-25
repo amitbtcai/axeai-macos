@@ -9,9 +9,9 @@ export const solarizedThemeCss = `
   --ink: #073642;
   --primary: #268bd2;
   --primary-foreground: #fdf6e3;
-  --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));
-  --subtle-foreground: color-mix(in oklch, var(--ink) 58%, var(--canvas));
-  --readback-foreground: color-mix(in oklch, var(--ink) 64%, var(--canvas));
+  --muted-foreground: color-mix(in oklch, var(--ink) 88%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 78%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 68%, var(--canvas));
   --timeline-accent: #268bd2;
   --file-accent: var(--timeline-accent);
   --destructive: #dc322f;
@@ -58,8 +58,10 @@ export const solarizedThemeCss = `
   --ansi-bg-fg-15: #000000;
 }
 .dark {
-  --canvas: #002b36;
-  --ink: #93a1a1;
+  /* Base02 plus Base2 keeps Solarized's blue-paper character while avoiding
+   * its intentionally low-contrast editor-text pairing in conversation UI. */
+  --canvas: #073642;
+  --ink: #eee8d5;
   --primary: #268bd2;
   --primary-foreground: #002b36;
   --timeline-accent: #2aa198;

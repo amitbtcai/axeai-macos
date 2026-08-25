@@ -12,9 +12,9 @@ export const nordThemeCss = `
   --ink: #2e3440;
   --primary: #5e81ac;
   --primary-foreground: #eceff4;
-  --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));
-  --subtle-foreground: color-mix(in oklch, var(--ink) 58%, var(--canvas));
-  --readback-foreground: color-mix(in oklch, var(--ink) 64%, var(--canvas));
+  --muted-foreground: color-mix(in oklch, var(--ink) 88%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 78%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 68%, var(--canvas));
   --timeline-accent: #5e81ac;
   --file-accent: var(--timeline-accent);
   --destructive: #bf616a;
@@ -62,7 +62,7 @@ export const nordThemeCss = `
 }
 .dark {
   --canvas: #2e3440;
-  --ink: #d8dee9;
+  --ink: #eceff4;
   --primary: #88c0d0;
   --primary-foreground: #2e3440;
   --timeline-accent: #88c0d0;

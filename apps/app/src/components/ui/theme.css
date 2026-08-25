@@ -431,9 +431,11 @@
 .light {
   color-scheme: light;
   /* Anchors. The neutral ramp below is derived from these two by mixing ink
-   * into the canvas, so changing the canvas moves every surface coherently. */
+   * into the canvas, so changing the canvas moves every surface coherently.
+   * Ink is deliberately strong: primary prose should lead the hierarchy, not
+   * read like another metadata tier. */
   --canvas: oklch(1 0 0);
-  --ink: oklch(0.3211 0 0);
+  --ink: oklch(0.24 0 0);
   --background: var(--canvas);
   --foreground: var(--ink);
   /* Card and popover are flush with the canvas — elevation is conveyed by
@@ -455,12 +457,13 @@
   --accent: color-mix(in oklch, var(--ink) 8%, var(--canvas));
   --accent-foreground: var(--ink);
   --muted: color-mix(in oklch, var(--ink) 11%, var(--canvas));
-  /* Secondary text tiers. Sit at ~7.4:1 and ~5.9:1 on the white background
-   * while keeping muted darker than subtle so the hierarchy survives. */
-  --muted-foreground: oklch(0.44 0 0);
-  --subtle-foreground: oklch(0.5 0 0);
-  /* Recede tier between muted (7.77:1) and subtle (6.00:1); ~6.83:1 on white. */
-  --readback-foreground: oklch(0.47 0 0);
+  /* Semantic text ramp shared by every palette. Primary prose is full ink;
+   * labels, readbacks, and metadata step away from it visibly while remaining
+   * comfortably readable. Deriving all three from the anchors preserves the
+   * active palette instead of stranding neutral gray inside tinted themes. */
+  --muted-foreground: color-mix(in oklch, var(--ink) 88%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 78%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 68%, var(--canvas));
   /* The version an update would move you to. Its own role rather than plain
    * body text so the "this is the one you'd get" emphasis can be tuned without
    * touching every other foreground, and derived from the anchors so custom
@@ -589,8 +592,9 @@
     var(--canvas) 60%
   );
   --sidebar-ring: var(--primary);
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Helvetica Neue", sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    sans-serif;
   --font-serif: Georgia, serif;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
@@ -686,11 +690,12 @@
 
 .dark {
   color-scheme: dark;
-  --canvas: oklch(0.195 0 0);
-  /* Softened from a brighter near-white so dark-mode foreground text reads a
-   * touch less intense; the whole achromatic ramp is anchored here, so chrome
-   * follows by an imperceptible amount. */
-  --ink: oklch(0.81 0 0);
+  /* Keep the workspace dark without collapsing it into near-black, and give
+   * primary prose a true near-white ceiling. The old 0.195/0.81 pair made the
+   * canvas feel flat and left only 0.03 lightness between primary and muted
+   * text, so the entire conversation read as one gray tier. */
+  --canvas: oklch(0.22 0 0);
+  --ink: oklch(0.9 0 0);
   --background: var(--canvas);
   --foreground: var(--ink);
   /* Card and popover stay flush with the canvas here too — elevation comes from
@@ -709,10 +714,9 @@
   --accent: color-mix(in oklch, var(--ink) 13%, var(--canvas));
   --accent-foreground: var(--ink);
   --muted: color-mix(in oklch, var(--ink) 16%, var(--canvas));
-  --muted-foreground: oklch(0.78 0 0);
-  --subtle-foreground: oklch(0.68 0 0);
-  /* Recede tier between muted (9.14:1) and subtle (6.35:1); ~7.24:1 on canvas. */
-  --readback-foreground: oklch(0.715 0 0);
+  --muted-foreground: color-mix(in oklch, var(--ink) 88%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 78%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 68%, var(--canvas));
   /* See the light block: the version an update would move you to. */
   --version-upgrade: color-mix(in oklch, var(--ink) 96%, var(--canvas));
   /* Soft "paper blue" timeline accent, lifted for the dark canvas (~6:1). */
@@ -825,8 +829,9 @@
     var(--canvas) 67%
   );
   --sidebar-ring: var(--primary);
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Helvetica Neue", sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    sans-serif;
   --font-serif: Georgia, serif;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
