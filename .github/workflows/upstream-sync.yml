@@ -40,6 +40,10 @@ jobs:
         if: steps.compare.outputs.update_available == 'true'
         run: |
           git checkout --force -B automation/upstream-main upstream/main
+          # Workflow files are AxeAI-owned release infrastructure. Preserve
+          # them from main so the restricted Actions token never needs the
+          # separate workflows permission and upstream cannot replace them.
+          git restore --source=origin/main --staged --worktree .github/workflows
           git push --force origin automation/upstream-main
 
       - name: Open upstream sync PR
