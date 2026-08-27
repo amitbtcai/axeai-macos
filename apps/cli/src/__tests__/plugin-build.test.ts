@@ -147,9 +147,10 @@ describe("buildPluginApp", () => {
     );
     expect(css).toMatch(/\.rounded-lg\s*\{[^}]*var\(--radius\)/);
     // Host typography scale: the utility reads the token, and the plugin
-    // sheet carries the host's override (0.8125rem, not Tailwind's 0.875rem).
+    // sheet carries the AxeAI host override (0.9375rem, not Tailwind's
+    // 0.875rem).
     expect(css).toMatch(/\.text-sm\s*\{[^}]*var\(--text-sm/);
-    expect(css).toContain("--text-sm:.8125rem");
+    expect(css).toContain("--text-sm:.9375rem");
     // tw-animate-css utilities (host idiom for overlay open/close animation).
     expect(css).toContain(".animate-in");
     expect(css).toContain(".fade-in-0");
