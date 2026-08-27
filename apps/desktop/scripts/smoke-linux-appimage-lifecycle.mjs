@@ -440,11 +440,18 @@ async function smokeLinuxAppImageLifecycle() {
     delete childEnv.BB_DESKTOP_NODE_EXEC_PATH;
     delete childEnv.ELECTRON_RUN_AS_NODE;
 
-    child = spawn(appImage, [`--user-data-dir=${userDataDir}`], {
-      detached: true,
-      env: childEnv,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+    // AppImage mounts on unprivileged CI runners cannot provide a root-owned,
+    // setuid chrome-sandbox. This smoke test exercises the packaged runtime
+    // lifecycle; production launches continue to use Electron's sandbox.
+    child = spawn(
+      appImage,
+      ["--no-sandbox", `--user-data-dir=${userDataDir}`],
+      {
+        detached: true,
+        env: childEnv,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    );
     if (child.pid === undefined) {
       throw new Error("The AppImage process did not expose a PID");
     }
