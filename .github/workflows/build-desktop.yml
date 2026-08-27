@@ -75,7 +75,7 @@ jobs:
 
       - name: Verify canonical macOS icon artwork
         run: |
-          node apps/desktop/scripts/verify-macos-app-icon.mjs
+          pnpm --dir apps/desktop run verify:macos-icon
           pnpm --dir apps/desktop run generate:icons
           git diff --exit-code -- apps/desktop/assets/AxeAI.icon
 

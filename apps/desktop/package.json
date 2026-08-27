@@ -29,8 +29,9 @@
     "smoke:packaged": "node scripts/smoke-packaged-app.mjs",
     "start": "pnpm run package && node scripts/run-packaged-app.mjs",
     "start:linux": "pnpm run package:linux && node scripts/run-packaged-app.mjs",
-    "test": "node scripts/verify-macos-app-icon.mjs && vitest run --config vitest.config.ts",
-    "typecheck": "tsc --noEmit"
+    "test": "vitest run --config vitest.config.ts",
+    "typecheck": "tsc --noEmit",
+    "verify:macos-icon": "node scripts/verify-macos-app-icon.mjs"
   },
   "dependencies": {
     "@bb/connect-client": "workspace:*",
