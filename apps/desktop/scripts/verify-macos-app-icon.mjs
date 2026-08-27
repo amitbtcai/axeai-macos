@@ -23,8 +23,33 @@ const variants = [
   "icon_128x128@2x.png",
 ];
 
-function run(command, args) {
-  execFileSync(command, args, { stdio: "ignore" });
+function formatCommandFailure(error) {
+  if (!(error instanceof Error)) {
+    return String(error);
+  }
+  const stdout = "stdout" in error ? String(error.stdout ?? "").trim() : "";
+  const stderr = "stderr" in error ? String(error.stderr ?? "").trim() : "";
+  return [error.message, stdout, stderr]
+    .filter((part) => part.length > 0)
+    .join("\n");
+}
+
+function run(command, args, { attempts = 1 } = {}) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      execFileSync(command, args, { encoding: "utf8" });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) {
+        process.stderr.write(
+          `${command} failed on attempt ${attempt}; retrying.\n`,
+        );
+      }
+    }
+  }
+  throw new Error(formatCommandFailure(lastError));
 }
 
 try {
@@ -32,33 +57,40 @@ try {
   const composerOutput = join(temporaryDirectory, "composer-output");
   cpSync(composerIcon, composerInput, { recursive: true });
   mkdirSync(composerOutput);
-  run("xcrun", [
-    "actool",
-    composerInput,
-    "--compile",
-    composerOutput,
-    "--output-format",
-    "human-readable-text",
-    "--notices",
-    "--warnings",
-    "--output-partial-info-plist",
-    join(composerOutput, "assetcatalog_generated_info.plist"),
-    "--app-icon",
-    "Icon",
-    "--include-all-app-icons",
-    "--accent-color",
-    "AccentColor",
-    "--enable-on-demand-resources",
-    "NO",
-    "--development-region",
-    "en",
-    "--target-device",
-    "mac",
-    "--minimum-deployment-target",
-    "26.0",
-    "--platform",
-    "macosx",
-  ]);
+  // Xcode 26's actool intermittently exits 255 without diagnostics on clean
+  // GitHub macOS runners. Retry this isolated compiler invocation; malformed
+  // documents still fail every attempt and report the captured output below.
+  run(
+    "xcrun",
+    [
+      "actool",
+      composerInput,
+      "--compile",
+      composerOutput,
+      "--output-format",
+      "human-readable-text",
+      "--notices",
+      "--warnings",
+      "--output-partial-info-plist",
+      join(composerOutput, "assetcatalog_generated_info.plist"),
+      "--app-icon",
+      "Icon",
+      "--include-all-app-icons",
+      "--accent-color",
+      "AccentColor",
+      "--enable-on-demand-resources",
+      "NO",
+      "--development-region",
+      "en",
+      "--target-device",
+      "mac",
+      "--minimum-deployment-target",
+      "26.0",
+      "--platform",
+      "macosx",
+    ],
+    { attempts: 3 },
+  );
   if (
     !existsSync(join(composerOutput, "Assets.car")) ||
     !existsSync(join(composerOutput, "Icon.icns"))
