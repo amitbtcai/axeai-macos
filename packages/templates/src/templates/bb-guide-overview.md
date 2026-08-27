@@ -1,11 +1,11 @@
 ---
 kind: instruction
 title: bb Guide Overview
-summary: System overview and chapter index for the bb CLI guide.
-intent: Orient agents to bb core concepts and help them find the right guide chapter.
+summary: System overview and chapter index for the AxeAI CLI guide.
+intent: Orient agents to AxeAI core concepts and help them find the right guide chapter.
 editingNotes: Keep this concise. Concepts only — command details belong in chapter files.
 ---
-bb is an agent orchestration tool for managing multiple agents.
+AxeAI is an agentic IDE for managing coding agents. Its internal CLI command is `bb`; that command name is not the product name. In user-facing messages, always call the product AxeAI.
 
 Core concepts:
 
@@ -26,12 +26,12 @@ Context variables set automatically inside a thread environment:
 - BB_CLI — absolute path to the daemon-managed `bb` executable (prefer this if bare `bb` is wrong; official entrypoints also re-exec to it)
 
 Run `bb status` to see your current context (resolved project and thread IDs).
-It also warns when an enabled plugin is not running (incompatible after a bb
+It also warns when an enabled plugin is not running (incompatible after an AxeAI
 upgrade, failed to load, or missing); run `bb plugin list` for the detail.
 
 All commands support --json for machine-readable output.
 
-To make a repo work with bb worktrees, run `bb guide environments` for the
+To make a repo work with AxeAI worktrees, run `bb guide environments` for the
 repo-level `.bb-env-setup.sh` setup hook. Run `bb guide agent-configuration` for
 the data-dir and workspace files that customize agent behavior.
 

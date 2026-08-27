@@ -46,10 +46,26 @@ describe("@bb/templates", () => {
   it("renders standardAgentAppendInstructions without user-question guidance", () => {
     const rendered = renderTemplate("standardAgentAppendInstructions", {});
 
-    expect(rendered).toContain("You are working inside bb");
+    expect(rendered).toContain("You are working inside AxeAI");
+    expect(rendered).toContain('Never call the product "BB" or "bb"');
+    expect(rendered).toContain(
+      "Do not run `bb status`, `bb guide`, or other diagnostic commands merely",
+    );
+    expect(rendered).not.toContain("You are working inside bb");
     expect(rendered).toContain("agentic IDE");
     expect(rendered).not.toContain(
       "Ask the user a blocking question only when",
+    );
+  });
+
+  it("brands the CLI guide as AxeAI without renaming the command", () => {
+    const rendered = renderTemplate("bbGuideOverview", {});
+
+    expect(rendered).toContain("AxeAI is an agentic IDE");
+    expect(rendered).toContain("always call the product AxeAI");
+    expect(rendered).toContain("`bb status`");
+    expect(rendered).not.toContain(
+      "bb is an agent orchestration tool for managing multiple agents",
     );
   });
 
