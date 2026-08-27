@@ -9,6 +9,7 @@ import {
   hostQueryKey,
   hostsQueryKey,
   threadQueryKey,
+  threadTimelineQueryKey,
 } from "../queries/query-keys";
 
 type HostList = Host[];
@@ -22,6 +23,29 @@ interface UpsertHostListArgs {
 interface ThreadDetailBootstrapIngestionArgs {
   queryClient: QueryClient;
   thread: ThreadWithIncludesResponse;
+}
+
+interface RefetchActiveThreadDetailArgs {
+  queryClient: QueryClient;
+  threadId: string;
+}
+
+export async function refetchActiveThreadDetail({
+  queryClient,
+  threadId,
+}: RefetchActiveThreadDetailArgs): Promise<void> {
+  await Promise.allSettled([
+    queryClient.refetchQueries({
+      exact: true,
+      queryKey: threadQueryKey(threadId),
+      type: "active",
+    }),
+    queryClient.refetchQueries({
+      exact: true,
+      queryKey: threadTimelineQueryKey(threadId),
+      type: "active",
+    }),
+  ]);
 }
 
 function stripThreadIncludes(

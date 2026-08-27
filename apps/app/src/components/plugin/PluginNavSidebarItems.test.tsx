@@ -406,7 +406,7 @@ describe("PluginNavSidebarItems", () => {
     ).not.toContain("__builtin__/tools");
   });
 
-  it("carries both Extensions glyphs so hover swaps without reflow", () => {
+  it("uses the stable AxeAI Extensions glyph", () => {
     renderSidebarItems({ toolsRoutePath: "/extensions/plugins" });
 
     const extensionsRow = screen
@@ -414,18 +414,9 @@ describe("PluginNavSidebarItems", () => {
       .find((button) => button.textContent?.trim() === "Extensions");
     expect(extensionsRow).toBeTruthy();
 
-    // The swap is CSS on the row's :hover, which jsdom cannot evaluate. What is
-    // testable — and what the CSS depends on — is that BOTH glyphs are rendered
-    // into the one swap container: a regression to a single icon, or to React
-    // hover state, breaks this and would also reintroduce the layout shift the
-    // shared grid cell exists to prevent.
-    const swap = extensionsRow?.querySelector(".bb-sidebar-row-icon-swap");
-    expect(swap).toBeTruthy();
     expect(
-      swap?.querySelector('.bb-sidebar-row-icon-rest[data-icon="Toolbox"]'),
+      extensionsRow?.querySelector('[data-icon="Puzzle"]'),
     ).toBeTruthy();
-    expect(
-      swap?.querySelector('.bb-sidebar-row-icon-hover[data-icon="ToolCase"]'),
-    ).toBeTruthy();
+    expect(extensionsRow?.querySelector(".bb-sidebar-row-icon-swap")).toBeNull();
   });
 });

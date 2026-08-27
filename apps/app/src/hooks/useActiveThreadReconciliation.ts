@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  threadQueryKey,
-  threadTimelineQueryKey,
-} from "@/hooks/queries/query-keys";
+import { refetchActiveThreadDetail } from "@/hooks/cache-owners/thread-detail-cache-owner";
 
 export const ACTIVE_THREAD_RECONCILIATION_INTERVAL_MS = 1_000;
 
@@ -30,18 +27,7 @@ export function useActiveThreadReconciliation({
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     const reconcile = async (): Promise<void> => {
-      await Promise.allSettled([
-        queryClient.refetchQueries({
-          exact: true,
-          queryKey: threadQueryKey(threadId),
-          type: "active",
-        }),
-        queryClient.refetchQueries({
-          exact: true,
-          queryKey: threadTimelineQueryKey(threadId),
-          type: "active",
-        }),
-      ]);
+      await refetchActiveThreadDetail({ queryClient, threadId });
 
       if (!cancelled) {
         timer = setTimeout(

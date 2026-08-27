@@ -1,6 +1,6 @@
 {
   "name": "@bb/desktop",
-  "version": "0.39.7",
+  "version": "0.40.0",
   "private": true,
   "description": "AxeAI desktop app for macOS, Windows, and Linux",
   "main": "dist/main.js",
@@ -25,6 +25,7 @@
     "package:linux": "pnpm run prepare-runtime && pnpm run build && node scripts/run-electron-builder.mjs --linux --dir --x64",
     "package:windows": "pnpm run prepare-runtime && pnpm run build && node scripts/run-electron-builder.mjs --win --dir --x64",
     "prepare-runtime": "pnpm exec turbo run build --filter=bb-app --output-logs=new-only",
+    "smoke:appimage-lifecycle": "node scripts/smoke-linux-appimage-lifecycle.mjs",
     "smoke:packaged": "node scripts/smoke-packaged-app.mjs",
     "start": "pnpm run package && node scripts/run-packaged-app.mjs",
     "start:linux": "pnpm run package:linux && node scripts/run-packaged-app.mjs",
