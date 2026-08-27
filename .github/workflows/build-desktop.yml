@@ -32,7 +32,9 @@ concurrency:
 jobs:
   macos:
     name: macOS arm64 desktop artifacts
-    runs-on: macos-15
+    # Icon Composer's Xcode 26 AssetCatalog agent links against macOS 26
+    # system frameworks and crashes on macOS 15 even when Xcode itself starts.
+    runs-on: macos-26
     timeout-minutes: 45
     outputs:
       has_signing_secrets: ${{ steps.signing.outputs.has_signing_secrets }}
