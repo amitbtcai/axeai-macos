@@ -50,6 +50,7 @@ export const SF_SYMBOL_MAP = {
   ArrowTurnBackward: "arrow.uturn.backward",
   ArrowTurnForward: "arrow.uturn.forward",
   ArrowUpRight: "arrow.up.right",
+  AudioWave: "waveform",
   Beaker: "testtube.2",
   Bot: "cpu",
   Browser: "safari",
