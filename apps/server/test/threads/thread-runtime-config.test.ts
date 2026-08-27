@@ -1183,7 +1183,7 @@ describe("thread runtime config", () => {
         }),
       ]);
       expect(runtimeConfig.instructions).toContain(
-        "You are working inside bb, an agentic IDE",
+        "You are working inside AxeAI, an agentic IDE",
       );
       expect(runtimeConfig.instructions).toContain("bb status");
       expect(runtimeConfig.instructions).toContain("bb guide");
@@ -1240,7 +1240,7 @@ describe("thread runtime config", () => {
 
       expect(runtimeConfig.instructionMode).toBe("append");
       expect(runtimeConfig.instructions).toContain(
-        "You are working inside bb, an agentic IDE",
+        "You are working inside AxeAI, an agentic IDE",
       );
       expect(runtimeConfig.instructions).toContain(
         "The following workspace instructions come from .bb/AGENTS.md:",

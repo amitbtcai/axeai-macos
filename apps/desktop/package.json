@@ -1,6 +1,6 @@
 {
   "name": "@bb/desktop",
-  "version": "0.40.0",
+  "version": "0.40.1",
   "private": true,
   "description": "AxeAI desktop app for macOS, Windows, and Linux",
   "main": "dist/main.js",

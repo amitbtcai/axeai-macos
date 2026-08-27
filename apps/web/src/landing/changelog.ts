@@ -29,6 +29,10 @@ type ReleaseMeta = {
 };
 
 export const RELEASE_META: Record<string, ReleaseMeta> = {
+  "0.40.1": {
+    date: "August 27, 2026",
+    headline: "Consistent AxeAI branding with the latest upstream improvements",
+  },
   "0.40.0": {
     date: "August 26, 2026",
     headline: "File Editor, quick palette, and agent providers",

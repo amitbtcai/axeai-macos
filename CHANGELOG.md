@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.40.1
+
+AxeAI branding stays consistent while bringing in the latest upstream app improvements.
+
+### Fixes and polish
+
+- Agent-facing startup instructions now call the product AxeAI and reserve `bb` for the CLI command, paths, and environment variables.
+- Short greetings and connection checks no longer trigger unsolicited `bb status` or `bb guide` diagnostics that can leak internal CLI branding into chat replies.
+- Desktop startup keeps AxeAI's dark-mode canvas while supporting upstream Linux transparent and frameless windows correctly.
+- The sidebar bug-report action opens the AxeAI repository instead of the upstream BB repository.
+- Upstream 0.40.0 features, performance work, provider updates, and fixes are included below.
+
 ## 0.40.0
 
 This release adds the File Editor and a quick command palette. It also makes AxeAI faster across all devices.
