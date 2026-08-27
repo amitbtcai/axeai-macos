@@ -147,7 +147,7 @@ describe("run-dev", () => {
 
     const inheritedSkillsRootPaths = [
       "/Users/tester/.bb-dev/code-bb-abc123/skills",
-      "/Users/tester/.bb/skills",
+      "/Users/tester/.axeai/skills",
     ];
     expect(resolveInheritedDevSkillsRootPaths({ homeDir, repoRoot })).toEqual(
       inheritedSkillsRootPaths,
@@ -159,17 +159,17 @@ describe("run-dev", () => {
 
   it("dedupes inherited bb skills for prod-managed worktree dev apps", () => {
     const homeDir = "/Users/tester";
-    const repoRoot = "/Users/tester/.bb/worktrees/env_feature/bb";
+    const repoRoot = "/Users/tester/.axeai/worktrees/env_feature/bb";
     const config = resolveDevInstanceConfig({
       homeDir,
       repoRoot,
     });
 
     expect(resolveInheritedDevSkillsRootPaths({ homeDir, repoRoot })).toEqual([
-      "/Users/tester/.bb/skills",
+      "/Users/tester/.axeai/skills",
     ]);
     expect(toDevProcessEnv({ baseEnv: {}, config })).toMatchObject({
-      BB_INHERITED_SKILLS_ROOTS: "/Users/tester/.bb/skills",
+      BB_INHERITED_SKILLS_ROOTS: "/Users/tester/.axeai/skills",
     });
   });
 
@@ -182,10 +182,10 @@ describe("run-dev", () => {
     });
 
     expect(resolveInheritedDevSkillsRootPaths({ homeDir, repoRoot })).toEqual([
-      "/Users/tester/.bb/skills",
+      "/Users/tester/.axeai/skills",
     ]);
     expect(toDevProcessEnv({ baseEnv: {}, config })).toMatchObject({
-      BB_INHERITED_SKILLS_ROOTS: "/Users/tester/.bb/skills",
+      BB_INHERITED_SKILLS_ROOTS: "/Users/tester/.axeai/skills",
     });
   });
 
