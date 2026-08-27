@@ -13,7 +13,7 @@ export interface DesktopReleaseConfig {
   artifactName: string;
   iconFileName: "icon.png" | "icon-nightly.png";
   linuxExecutableName: "axeai" | "axeai-nightly";
-  macIconPath: "assets/icon.icns" | "assets/icon-nightly.icns";
+  macIconPath: "assets/AxeAI.icon" | "assets/icon-nightly.icns";
   windowsIconPath: "assets/icon.ico" | "assets/icon-nightly.ico";
   releaseTag: "desktop-latest" | "desktop-nightly";
   updateMetadataFileNames: DesktopUpdateMetadataFileNames;

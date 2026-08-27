@@ -1,0 +1,31 @@
+{
+  "fill": {
+    "automatic-gradient": "extended-srgb:0.02353,0.03922,0.90196,1.00000"
+  },
+  "groups": [
+    {
+      "layers": [
+        {
+          "image-name": "axeai-mark.svg",
+          "name": "AxeAI mark",
+          "position": {
+            "scale": 1,
+            "translation-in-points": [0, 0]
+          }
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.2
+      },
+      "translucency": {
+        "enabled": false,
+        "value": 0
+      }
+    }
+  ],
+  "supported-platforms": {
+    "circles": ["watchOS"],
+    "squares": "shared"
+  }
+}

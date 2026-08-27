@@ -29,6 +29,10 @@ type ReleaseMeta = {
 };
 
 export const RELEASE_META: Record<string, ReleaseMeta> = {
+  "0.40.2": {
+    date: "August 27, 2026",
+    headline: "A consistent, balanced AxeAI icon on macOS",
+  },
   "0.40.1": {
     date: "August 27, 2026",
     headline: "Consistent AxeAI branding with the latest upstream improvements",

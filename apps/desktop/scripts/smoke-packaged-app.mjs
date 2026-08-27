@@ -1,6 +1,6 @@
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { createServer } from "node:http";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { access, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -363,6 +363,22 @@ async function smokePackagedApp() {
     productName: releaseConfig.applicationName,
     releaseDir,
   });
+  if (process.platform === "darwin" && releaseChannel === "latest") {
+    const contentsDirectory = resolve(dirname(appBinary), "..");
+    const infoPlist = join(contentsDirectory, "Info.plist");
+    const iconName = execFileSync(
+      "plutil",
+      ["-extract", "CFBundleIconName", "raw", infoPlist],
+      { encoding: "utf8" },
+    ).trim();
+    if (iconName !== "Icon") {
+      throw new Error(
+        `Packaged stable macOS app must declare the layered Icon asset, got ${iconName}.`,
+      );
+    }
+    await access(join(contentsDirectory, "Resources", "Assets.car"));
+    await access(join(contentsDirectory, "Resources", "icon.icns"));
+  }
   const smokeRoot = await mkdtemp(join(tmpdir(), "bb-desktop-packaged-smoke-"));
   const dataDir = join(smokeRoot, "data");
   const userDataDir = join(smokeRoot, "user-data");

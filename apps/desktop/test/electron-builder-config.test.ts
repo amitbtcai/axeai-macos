@@ -530,6 +530,25 @@ describe("electron-builder signing config", () => {
     ]);
   });
 
+  it("packages the stable macOS app with Apple's layered icon format", async () => {
+    const { config } = await readResolvedConfig({});
+
+    expect(config.mac.icon).toBe("assets/AxeAI.icon");
+    await expect(
+      access(resolve(desktopPackageRoot, config.mac.icon, "icon.json")),
+    ).resolves.toBeUndefined();
+    await expect(
+      access(
+        resolve(
+          desktopPackageRoot,
+          config.mac.icon,
+          "Assets",
+          "axeai-mark.svg",
+        ),
+      ),
+    ).resolves.toBeUndefined();
+  });
+
   it("packages a Linux AppImage for x64", async () => {
     const configText = await readFile(
       resolve(desktopPackageRoot, "electron-builder.config.json"),

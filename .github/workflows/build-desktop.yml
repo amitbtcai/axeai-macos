@@ -56,6 +56,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
 
+      - name: Select Xcode 26 for layered macOS icons
+        run: |
+          XCODE_PATH="$(find /Applications -maxdepth 1 -type d -name 'Xcode_26*.app' -print | sort -V | tail -1)"
+          if [[ -n "$XCODE_PATH" ]]; then
+            sudo xcode-select --switch "$XCODE_PATH/Contents/Developer"
+          fi
+          ACTOOL_VERSION_PLIST="$RUNNER_TEMP/axeai-actool-version.plist"
+          xcrun actool --version > "$ACTOOL_VERSION_PLIST"
+          ACTOOL_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :com.apple.actool.version:short-bundle-version' "$ACTOOL_VERSION_PLIST")"
+          if [[ "${ACTOOL_VERSION%%.*}" -lt 26 ]]; then
+            echo "::error::Xcode 26 or newer is required to compile assets/AxeAI.icon; found actool $ACTOOL_VERSION."
+            exit 1
+          fi
+
+      - name: Install macOS icon tooling
+        run: command -v magick >/dev/null || brew install imagemagick
+
+      - name: Verify generated app icons are committed
+        run: |
+          pnpm --dir apps/desktop run generate:icons
+          git diff --exit-code -- apps/desktop/assets
+
       - name: Typecheck desktop and launcher
         run: pnpm exec turbo run typecheck --filter=@bb/desktop --filter=bb-app --output-logs=new-only
 

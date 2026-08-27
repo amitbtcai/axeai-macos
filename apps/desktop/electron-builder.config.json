@@ -40,7 +40,7 @@
     "entitlementsInherit": "build/entitlements.mac.inherit.plist",
     "gatekeeperAssess": false,
     "hardenedRuntime": true,
-    "icon": "assets/icon.icns",
+    "icon": "assets/AxeAI.icon",
     "identity": null,
     "notarize": false,
     "target": [

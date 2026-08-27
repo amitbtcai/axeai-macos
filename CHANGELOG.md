@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.40.2
+
+The macOS app icon now renders consistently in development and production releases.
+
+### Fixes and polish
+
+- Finder, Launchpad, and the Dock use one canonical, optically balanced AxeAI icon.
+- Release validation compiles the layered icon and fails if packaged or development artwork drifts from the canonical source.
+- Fresh desktop launches no longer contact macOS Keychain when there is no saved Connect credential.
+
 ## 0.40.1
 
 AxeAI branding stays consistent while bringing in the latest upstream app improvements.

@@ -57,7 +57,7 @@ export function createDesktopReleaseConfig(channel) {
     artifactName: "AxeAI-${version}-${arch}.${ext}",
     iconFileName: "icon.png",
     linuxExecutableName: "axeai",
-    macIconPath: "assets/icon.icns",
+    macIconPath: "assets/AxeAI.icon",
     windowsIconPath: "assets/icon.ico",
     releaseTag: "desktop-latest",
     updateMetadataFileNames: {

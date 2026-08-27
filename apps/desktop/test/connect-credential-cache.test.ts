@@ -91,6 +91,22 @@ describe("createConnectCredentialCache", () => {
     await expect(cache.read()).resolves.toBeNull();
   });
 
+  it("does not contact the OS keychain when no credential file exists", async () => {
+    const encryption = createEncryption();
+    const isEncryptionAvailable = vi.spyOn(
+      encryption,
+      "isEncryptionAvailable",
+    );
+    const cache = createConnectCredentialCache({
+      encryption,
+      fs: createFs(),
+      userDataPath: "/data",
+    });
+
+    await expect(cache.read()).resolves.toBeNull();
+    expect(isEncryptionAvailable).not.toHaveBeenCalled();
+  });
+
   it("drops bytes it cannot decrypt or parse", async () => {
     const undecryptable = createFs(Buffer.from("from-another-machine"));
     await expect(

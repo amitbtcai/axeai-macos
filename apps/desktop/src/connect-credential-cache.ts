@@ -69,13 +69,17 @@ export function createConnectCredentialCache(
     },
     clear,
     async read() {
-      if (!args.encryption.isEncryptionAvailable()) {
-        return null;
-      }
       let encrypted: Buffer;
       try {
         encrypted = await fsImpl.readFile(filePath);
       } catch {
+        return null;
+      }
+      // Check the disk before asking Electron whether safeStorage is ready.
+      // On macOS that readiness check can contact Keychain (and can prompt or
+      // block for a newly signed build). Fresh installs have no credential to
+      // decrypt, so they must not touch Keychain during startup at all.
+      if (!args.encryption.isEncryptionAvailable()) {
         return null;
       }
       let plainText: string;

@@ -1,50 +1,46 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const desktopDirectory = join(dirname(fileURLToPath(import.meta.url)), "..");
 const source = join(desktopDirectory, "assets/icon.svg");
 const png = join(desktopDirectory, "assets/icon.png");
+const iconComposerLayer = join(
+  desktopDirectory,
+  "assets/AxeAI.icon/Assets/axeai-mark.svg",
+);
+const iconComposerDocument = join(desktopDirectory, "assets/AxeAI.icon");
 const macosRuntimePng = join(desktopDirectory, "assets/icon-macos-runtime.png");
 const windowsIcon = join(desktopDirectory, "assets/icon.ico");
 const nightlyPng = join(desktopDirectory, "assets/icon-nightly.png");
 const nightlyWindowsIcon = join(desktopDirectory, "assets/icon-nightly.ico");
-const icns = join(desktopDirectory, "assets/icon.icns");
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "axeai-icon-"));
-const iconset = join(temporaryDirectory, "icon.iconset");
 const renderedSource = join(temporaryDirectory, "icon-render.svg");
-const renderedMacosSource = join(temporaryDirectory, "icon-macos.png");
-const renderedMacosIcon = join(temporaryDirectory, "icon-macos-icon.png");
-const renderedMacosDockSource = join(temporaryDirectory, "icon-macos-dock.png");
-const renderedMacosDockIcon = join(
-  temporaryDirectory,
-  "icon-macos-dock-icon.png",
-);
-const renderedMacosDockFinished = join(
-  temporaryDirectory,
-  "icon-macos-dock-finished.png",
-);
-
-const variants = [
-  [16, "icon_16x16.png"],
-  [32, "icon_16x16@2x.png"],
-  [32, "icon_32x32.png"],
-  [64, "icon_32x32@2x.png"],
-  [128, "icon_128x128.png"],
-  [256, "icon_128x128@2x.png"],
-  [256, "icon_256x256.png"],
-  [512, "icon_256x256@2x.png"],
-  [512, "icon_512x512.png"],
-  [1024, "icon_512x512@2x.png"],
-];
 
 try {
-  execFileSync("mkdir", ["-p", iconset]);
+  const renderedSourceText = readFileSync(source, "utf8").replaceAll(
+    "currentColor",
+    "#FFFFFF",
+  );
+  writeFileSync(renderedSource, renderedSourceText);
+  const sourceBody = renderedSourceText
+    .replace(/^<svg[^>]*>\s*/u, "")
+    .replace(/\s*<\/svg>\s*$/u, "")
+    .split("\n")
+    .map((line) => `    ${line}`)
+    .join("\n");
+  mkdirSync(dirname(iconComposerLayer), { recursive: true });
   writeFileSync(
-    renderedSource,
-    readFileSync(source, "utf8").replaceAll("currentColor", "#FFFFFF"),
+    iconComposerLayer,
+    `<svg viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <svg x="227" y="252" width="570" height="520" viewBox="0 0 197 168" preserveAspectRatio="none">\n${sourceBody}\n  </svg>\n</svg>\n`,
   );
   execFileSync("magick", [
     "-size",
@@ -79,145 +75,41 @@ try {
     "icon:auto-resize=256,128,64,48,32,16",
     nightlyWindowsIcon,
   ]);
-  // Keep the full-bleed blue macOS background unchanged. Only reduce the
-  // white AxeAI SVG's vertical scale so the mark feels less tall without
-  // shrinking the app icon itself.
-  execFileSync("magick", [
-    "-size",
-    "1024x1024",
-    "xc:#060AE6",
-    "(",
-    "-background",
-    "none",
-    renderedSource,
-    "-resize",
-    "700x630!",
-    ")",
-    "-gravity",
-    "center",
-    "-composite",
-    "-alpha",
-    "off",
-    "-strip",
-    "-define",
-    "png:exclude-chunks=date,time",
-    renderedMacosSource,
-  ]);
-  // Electron's app.dock.setIcon rendering enlarges the foreground mark
-  // relative to the same artwork embedded in an ICNS. Compensate for that
-  // macOS-specific path so development and packaged apps match in the Dock.
-  execFileSync("magick", [
-    "-size",
-    "1024x1024",
-    "xc:#060AE6",
-    "(",
-    "-background",
-    "none",
-    renderedSource,
-    "-resize",
-    "570x520!",
-    ")",
-    "-gravity",
-    "center",
-    "-composite",
-    "-alpha",
-    "off",
-    "-strip",
-    "-define",
-    "png:exclude-chunks=date,time",
-    renderedMacosDockSource,
-  ]);
-  // macOS displays the artwork embedded in an ICNS without adding the optical
-  // inset used by Apple's own icons. Bake the rounded 100px inset into the
-  // packaged ICNS artwork first.
-  execFileSync("magick", [
-    renderedMacosSource,
-    "(",
-    "-size",
-    "1024x1024",
-    "xc:none",
-    "-fill",
-    "white",
-    "-draw",
-    "roundrectangle 100,100 923,923 185,185",
-    ")",
-    "-alpha",
-    "off",
-    "-compose",
-    "CopyOpacity",
-    "-composite",
-    "-strip",
-    "-define",
-    "png:exclude-chunks=date,time",
-    renderedMacosIcon,
-  ]);
-  execFileSync("magick", [
-    renderedMacosDockSource,
-    "(",
-    "-size",
-    "1024x1024",
-    "xc:none",
-    "-fill",
-    "white",
-    "-draw",
-    "roundrectangle 100,100 923,923 185,185",
-    ")",
-    "-alpha",
-    "off",
-    "-compose",
-    "CopyOpacity",
-    "-composite",
-    "-strip",
-    "-define",
-    "png:exclude-chunks=date,time",
-    renderedMacosDockIcon,
-  ]);
-  // Bundle icons receive a restrained edge highlight from macOS. The raw
-  // NSImage supplied through app.dock.setIcon bypasses that treatment, so add
-  // the same one-pixel-at-Dock-size rim to the development artwork itself.
-  execFileSync("magick", [
-    renderedMacosDockIcon,
-    "-fill",
-    "none",
-    "-stroke",
-    "rgba(255,255,255,0.20)",
-    "-strokewidth",
-    "8",
-    "-draw",
-    "roundrectangle 104,104 919,919 181,181",
-    "-strip",
-    "-define",
-    "png:exclude-chunks=date,time",
-    renderedMacosDockFinished,
-  ]);
-  // Electron normalizes a raw Dock PNG to its non-transparent alpha bounds,
-  // which would remove the 100px optical inset and visibly enlarge the icon.
-  // A practically invisible full-canvas alpha extent prevents that crop while
-  // leaving the rendered Dock pixels indistinguishable from transparency.
-  execFileSync("magick", [
-    "-size",
-    "1024x1024",
-    "xc:#060AE601",
-    renderedMacosDockFinished,
-    "-compose",
-    "over",
-    "-composite",
-    "-strip",
-    "-define",
-    "png:exclude-chunks=date,time",
-    macosRuntimePng,
-  ]);
-  for (const [size, fileName] of variants) {
-    execFileSync("sips", [
-      "-z",
-      String(size),
-      String(size),
-      renderedMacosIcon,
-      "--out",
-      join(iconset, fileName),
-    ]);
-  }
-  execFileSync("iconutil", ["-c", "icns", iconset, "-o", icns]);
+  // Use Apple's renderer for development too. Production compiles the same
+  // AxeAI.icon document through actool, eliminating the old split where dev
+  // and packaged builds used differently scaled artwork.
+  const developerDirectory = execFileSync("xcode-select", ["-p"], {
+    encoding: "utf8",
+  }).trim();
+  const iconTool = resolve(
+    developerDirectory,
+    "..",
+    "Applications",
+    "Icon Composer.app",
+    "Contents",
+    "Executables",
+    "ictool",
+  );
+  execFileSync(
+    iconTool,
+    [
+      iconComposerDocument,
+      "--export-image",
+      "--output-file",
+      macosRuntimePng,
+      "--platform",
+      "macOS",
+      "--rendition",
+      "Default",
+      "--width",
+      "1024",
+      "--height",
+      "1024",
+      "--scale",
+      "1",
+    ],
+    { stdio: "ignore" },
+  );
 } finally {
   rmSync(temporaryDirectory, { recursive: true, force: true });
 }

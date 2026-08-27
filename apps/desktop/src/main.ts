@@ -2210,10 +2210,9 @@ async function runDesktopApp(): Promise<void> {
   // Packaged builds must not call dock.setIcon: it replaces the bundle icon
   // (already channel-correct via electron-builder) with a raw NSImage that
   // bypasses the macOS appearance pipeline, so dark mode shows the light
-  // rendering. Dev runs still need an explicit override to show the same
-  // production artwork instead of the stock Electron icon. Its dedicated Dock
-  // PNG keeps a nearly transparent full-canvas alpha extent so Electron does
-  // not normalize away the optical inset baked into the packaged ICNS.
+  // rendering. Dev runs still need an explicit override instead of Electron's
+  // stock icon; that PNG is exported by Apple's renderer from the exact same
+  // layered Icon Composer document used by packaged builds.
   if (
     process.platform === "darwin" &&
     app.dock !== undefined &&
