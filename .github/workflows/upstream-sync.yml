@@ -44,6 +44,9 @@ jobs:
           # them from main so the restricted Actions token never needs the
           # separate workflows permission and upstream cannot replace them.
           git restore --source=origin/main --staged --worktree .github/workflows
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Preserve AxeAI workflows"
           git push --force origin automation/upstream-main
 
       - name: Open upstream sync PR
