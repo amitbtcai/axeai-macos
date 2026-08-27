@@ -144,34 +144,37 @@ describe("bb app process", () => {
     });
   });
 
-  it("imports the bridge from the child AppImage mount", async () => {
-    const desktopMountScript = await createTempScript({
-      contents: 'process.stdout.write("desktop mount\\n");\n',
-    });
-    const childMountScript = await createTempScript({
-      contents: 'process.stdout.write("child mount\\n");\n',
-    });
-    const launch = createBbAppProcessLaunch({
-      bridgePath: desktopMountScript.path,
-      env: process.env,
-      runtime: {
-        appDirPath: desktopMountScript.root,
-        executablePath: process.execPath,
-        kind: "appimage",
-        mode: "electron-node",
-      },
-    });
+  it.skipIf(process.platform !== "linux")(
+    "imports the bridge from the child AppImage mount",
+    async () => {
+      const desktopMountScript = await createTempScript({
+        contents: 'process.stdout.write("desktop mount\\n");\n',
+      });
+      const childMountScript = await createTempScript({
+        contents: 'process.stdout.write("child mount\\n");\n',
+      });
+      const launch = createBbAppProcessLaunch({
+        bridgePath: desktopMountScript.path,
+        env: process.env,
+        runtime: {
+          appDirPath: desktopMountScript.root,
+          executablePath: process.execPath,
+          kind: "appimage",
+          mode: "electron-node",
+        },
+      });
 
-    expect(launch.args).toContain(desktopMountScript.path);
-    const result = await execFileAsync(launch.executablePath, launch.args, {
-      env: {
-        ...launch.env,
-        APPDIR: childMountScript.root,
-      },
-    });
+      expect(launch.args).toContain(desktopMountScript.path);
+      const result = await execFileAsync(launch.executablePath, launch.args, {
+        env: {
+          ...launch.env,
+          APPDIR: childMountScript.root,
+        },
+      });
 
-    expect(result.stdout).toBe("child mount\n");
-  });
+      expect(result.stdout).toBe("child mount\n");
+    },
+  );
 
   it.skipIf(process.platform !== "linux")(
     "anchors the process group while supervising descendants after the bridge exits",
