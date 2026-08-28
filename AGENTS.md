@@ -1,5 +1,17 @@
 # Codebase Guidelines
 
+## AxeAI Downstream Integration
+
+- Treat `main` as the stable AxeAI release line. Never merge upstream directly into `main`, develop features on `main`, or promote an unverified integration commit to it.
+- Treat `axeai/integration` as the only long-lived branch that receives upstream changes. Start AxeAI feature branches from `axeai/integration`, land them back there, and promote the exact verified integration commit to `main`.
+- Keep `upstream/main` as a read-only remote-tracking ref for `get-bb/bb`. Never commit to it, force-push it, or rewrite published AxeAI history to imitate it.
+- Import upstream work with merge commits. Do not rebase published AxeAI branches across upstream history. Preserve upstream commit identities when cherry-picking an isolated pull request so a later upstream merge can recognize or cleanly drop the duplicate change.
+- Resolve upstream conflicts file by file. Preserve AxeAI branding, release configuration, privacy defaults, and product behavior deliberately; never resolve a sync with repository-wide `ours` or `theirs` strategies.
+- Keep AxeAI-only adaptations behind narrow capability boundaries, adapters, feature flags, or app-specific modules. Avoid scattering downstream conditionals through upstream core code.
+- Before an upstream sync, record the current stable and integration SHAs and enable `git rerere`. After the merge, run the affected package tests plus the desktop build, launch, update, signing, and primary workflow checks described in [docs/axeai-downstream-development.md](docs/axeai-downstream-development.md).
+- A failed integration never blocks feature development: branch new work from the last verified `axeai/integration` commit while the sync is repaired separately.
+- Never push an integration branch, update `main`, publish a build, or modify a GitHub pull request unless the user explicitly authorizes that external action.
+
 ## Simplicity First
 
 - When renaming a domain concept, search project-wide for stale names in variables, files, query keys, constants, tests, and docs. TypeScript only catches type references.
