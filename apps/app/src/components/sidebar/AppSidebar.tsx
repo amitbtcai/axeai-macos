@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@bb/shared-ui/lib/utils";
 import { THREAD_JUMP_APP_COMMAND_IDS } from "@bb/domain";
 import { Link, useNavigate } from "react-router-dom";
@@ -55,11 +49,6 @@ import {
   useIndexedAppCommandHandlers,
 } from "@/components/commands/AppCommandProvider";
 import { useRouteState } from "@/hooks/useRouteState";
-import {
-  getSidebarVoiceSnapshot,
-  requestSidebarVoiceToggle,
-  subscribeSidebarVoice,
-} from "@/components/voice/sidebarVoiceControl";
 
 const NEW_THREAD_PANE_CONTENT = { kind: "new-thread" } as const;
 const BUG_REPORT_NEW_ISSUE_URL =
@@ -120,22 +109,9 @@ export function AppSidebar({
   );
   const isAppCommandModifierHeld = useIsAppCommandModifierHeld();
   const settingsShortcut = useAppCommandShortcut("settings.open");
-  const sidebarVoice = useSyncExternalStore(
-    subscribeSidebarVoice,
-    getSidebarVoiceSnapshot,
-    getSidebarVoiceSnapshot,
-  );
 
   const handleNewChat = useCallback(() => {
     closeOnMobile();
-    void navigate(getRootComposeRoutePath(), {
-      state: { focusPrompt: true },
-    });
-  }, [closeOnMobile, navigate]);
-
-  const handleSidebarVoice = useCallback(() => {
-    closeOnMobile();
-    if (requestSidebarVoiceToggle()) return;
     void navigate(getRootComposeRoutePath(), {
       state: { focusPrompt: true },
     });
@@ -341,57 +317,6 @@ export function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
           <PluginSidebarFooterActions onNavigate={closeOnMobile} />
-          <SidebarMenuItem className="min-w-0">
-            <SidebarMenuButton
-              className={cn(
-                SIDEBAR_FOOTER_ACTION_CLASS,
-                "group/voice-orb relative rounded-full",
-                sidebarVoice.state === "recording" &&
-                  "text-primary hover:text-primary",
-              )}
-              tooltip={{
-                children:
-                  sidebarVoice.state === "recording"
-                    ? "Stop voice input"
-                    : sidebarVoice.state === "transcribing"
-                      ? "Cancel voice transcription"
-                      : "Start voice input",
-                hidden: false,
-                side: "top",
-              }}
-              aria-label={
-                sidebarVoice.state === "recording"
-                  ? "Stop voice input"
-                  : sidebarVoice.state === "transcribing"
-                    ? "Cancel voice transcription"
-                    : "Start voice input"
-              }
-              aria-pressed={sidebarVoice.state === "recording"}
-              disabled={sidebarVoice.available && !sidebarVoice.isSupported}
-              onClick={handleSidebarVoice}
-            >
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "relative size-[18px] rounded-full bg-primary/20 ring-1 ring-primary/45 transition-[transform,box-shadow,background-color] duration-200 motion-reduce:transition-none",
-                  "after:absolute after:inset-[4px] after:rounded-full after:bg-primary after:shadow-[0_0_8px] after:shadow-primary/50 after:content-['']",
-                  "group-hover/voice-orb:scale-105 group-focus-visible/voice-orb:ring-2 group-focus-visible/voice-orb:ring-ring",
-                  (sidebarVoice.pending ||
-                    sidebarVoice.state === "transcribing") &&
-                    "motion-safe:animate-pulse",
-                  sidebarVoice.state === "recording" &&
-                    "scale-105 bg-primary/30 shadow-[0_0_12px] shadow-primary/40 ring-2 ring-primary/70",
-                )}
-              />
-              <span className="sr-only">
-                {sidebarVoice.state === "recording"
-                  ? "Stop voice input"
-                  : sidebarVoice.state === "transcribing"
-                    ? "Cancel voice transcription"
-                    : "Start voice input"}
-              </span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <SidebarMenuItem className="min-w-0">
             <SidebarMenuButton
               className={SIDEBAR_FOOTER_ACTION_CLASS}

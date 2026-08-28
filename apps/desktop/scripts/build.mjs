@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { readFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { build } from "esbuild";
 import { resolveDesktopReleaseChannel } from "./desktop-release-channel.mjs";
@@ -61,32 +61,6 @@ function readBuildDate(env) {
 
 await rm(distDir, { force: true, recursive: true });
 
-async function buildAppleSpeechHelper() {
-  if (process.platform !== "darwin") return;
-
-  const nativeDistDir = resolve(distDir, "native");
-  await mkdir(nativeDistDir, { recursive: true });
-  const targetArchitecture = process.arch === "x64" ? "x86_64" : "arm64";
-  execFileSync(
-    "xcrun",
-    [
-      "swiftc",
-      "-parse-as-library",
-      "-O",
-      "-target",
-      `${targetArchitecture}-apple-macos14.0`,
-      "-framework",
-      "Speech",
-      "-framework",
-      "AVFAudio",
-      resolve(packageRoot, "native", "apple-speech", "main.swift"),
-      "-o",
-      resolve(nativeDistDir, "axeai-apple-speech"),
-    ],
-    { cwd: packageRoot, stdio: "inherit" },
-  );
-}
-
 const desktopVersion = readPackageVersion(
   await readFile(packageJsonPath, "utf8"),
   "apps/desktop/package.json",
@@ -118,7 +92,6 @@ const commonOptions = {
 };
 
 await Promise.all([
-  buildAppleSpeechHelper(),
   build({
     ...commonOptions,
     entryPoints: [resolve(packageRoot, "src", "main.ts")],

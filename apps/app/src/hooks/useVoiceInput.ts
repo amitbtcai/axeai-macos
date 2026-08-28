@@ -25,7 +25,6 @@ interface UseVoiceInputOptions {
     signal?: AbortSignal;
   }) => Promise<string>;
   getPromptContext?: () => string | undefined;
-  preferredMimeTypes?: readonly string[];
 }
 
 const MIN_RECORDING_DURATION_MS = 1_000;
@@ -91,15 +90,10 @@ function resolveRecordingErrorMessage(
   return "Voice input failed";
 }
 
-function resolvePreferredAudioMimeType(
-  preferredMimeTypes: readonly string[] = [
-    "audio/webm",
-    "audio/mp4",
-    "audio/ogg",
-  ],
-): string | null {
+function resolvePreferredAudioMimeType(): string | null {
   if (typeof MediaRecorder === "undefined") return null;
-  for (const candidate of preferredMimeTypes) {
+  const candidates = ["audio/webm", "audio/mp4", "audio/ogg"];
+  for (const candidate of candidates) {
     if (MediaRecorder.isTypeSupported(candidate)) {
       return candidate;
     }
@@ -270,9 +264,7 @@ export function useVoiceInput(options: UseVoiceInputOptions) {
       shouldHoldWakeLockRef.current = true;
       requestRecordingWakeLock();
 
-      const preferredMimeType = resolvePreferredAudioMimeType(
-        options.preferredMimeTypes,
-      );
+      const preferredMimeType = resolvePreferredAudioMimeType();
       const recorder = preferredMimeType
         ? new MediaRecorder(stream, { mimeType: preferredMimeType })
         : new MediaRecorder(stream);

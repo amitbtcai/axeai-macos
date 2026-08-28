@@ -363,9 +363,7 @@ function FollowUpPromptBoxWithComposer({
     isPrimary: isPrimaryComposer,
     focusDefault,
   });
-  const voice = usePromptVoice(promptBoxRef, {
-    isSidebarTarget: isFocusedPane && isPrimaryComposer,
-  });
+  const voice = usePromptVoice(promptBoxRef);
   const isCompactViewport = useIsCompactViewport();
   const isPointerCoarse = usePointerCoarse();
   const composerInteractionRef = useRef<HTMLDivElement>(null);

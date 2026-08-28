@@ -4,7 +4,7 @@
   "artifactName": "AxeAI-${version}-${arch}.${ext}",
   "afterPack": "scripts/prepare-native-modules.cjs",
   "asar": true,
-  "asarUnpack": ["dist/bb-app-bridge.mjs", "dist/native/**", "node_modules/**"],
+  "asarUnpack": ["dist/bb-app-bridge.mjs", "node_modules/**"],
   "directories": {
     "buildResources": "assets",
     "output": "release"
@@ -52,11 +52,7 @@
         "target": "zip",
         "arch": ["arm64"]
       }
-    ],
-    "extendInfo": {
-      "NSMicrophoneUsageDescription": "AxeAI uses the microphone when you start voice input.",
-      "NSSpeechRecognitionUsageDescription": "AxeAI transcribes your voice into text on this Mac."
-    }
+    ]
   },
   "linux": {
     "category": "Development",
