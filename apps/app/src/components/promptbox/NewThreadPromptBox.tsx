@@ -272,7 +272,9 @@ export const NewThreadPromptBoxUI = memo(function NewThreadPromptBoxUI({
     }),
     [],
   );
-  const voice = usePromptVoice(promptBoxRef);
+  const voice = usePromptVoice(promptBoxRef, {
+    isSidebarTarget: isFocusedPane,
+  });
   const attachmentCount = attachments.items?.length ?? 0;
   const [composerLayout, setComposerLayout] =
     useState<ComposerView["layout"]>("expanded");

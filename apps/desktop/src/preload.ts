@@ -8,6 +8,7 @@ import {
   bbDesktopBrowserSnapshotSchema,
   bbDesktopBrowserStateSchema,
   bbDesktopInfoSchema,
+  bbDesktopSpeechTranscriptionResultSchema,
   bbDesktopWindowStateSchema,
   type BbDesktopApi,
   type BbDesktopAppCommandHandler,
@@ -25,10 +26,12 @@ import {
   type BbDesktopInfoChangeHandler,
   type BbDesktopInfoUnsubscribe,
   type BbDesktopOpenNewTabHandler,
+  type BbDesktopSpeechApi,
   type BbDesktopTheme,
   type BbDesktopWindowState,
   type BbDesktopWindowStateChangeHandler,
 } from "@bb/desktop-contract";
+import { BB_DESKTOP_APPLE_SPEECH_TRANSCRIBE_CHANNEL } from "./apple-speech-ipc.js";
 import {
   BB_DESKTOP_CHECK_FOR_UPDATES_CHANNEL,
   BB_DESKTOP_GET_INFO_CHANNEL,
@@ -281,8 +284,24 @@ const bbBrowserApi: BbDesktopBrowserApi = {
   },
 };
 
+const bbSpeechApi: BbDesktopSpeechApi = {
+  async transcribe(request) {
+    const payload: unknown = await ipcRenderer.invoke(
+      BB_DESKTOP_APPLE_SPEECH_TRANSCRIBE_CHANNEL,
+      {
+        audio: new Uint8Array(request.audio),
+        mimeType: request.mimeType,
+        ...(request.locale ? { locale: request.locale } : {}),
+        ...(request.context ? { context: request.context } : {}),
+      },
+    );
+    return bbDesktopSpeechTranscriptionResultSchema.parse(payload);
+  },
+};
+
 const bbDesktopApi: BbDesktopApi = {
   browser: bbBrowserApi,
+  ...(process.platform === "darwin" ? { speech: bbSpeechApi } : {}),
   get lastCheckedAt() {
     return currentInfo.lastCheckedAt;
   },
