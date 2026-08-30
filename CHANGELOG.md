@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.40.3
+
+AxeAI catches up with the latest bb improvements and starts attached desktop servers more reliably.
+
+### New and improved
+
+- Copy a direct link to a thread from its actions menu.
+- Reopen the most recently closed tab with the app menu or keyboard shortcut.
+- Use clearer update download controls and follow-up composer actions.
+- Receive the latest upstream performance, plugin, provider, sidebar, and panel fixes.
+
+### Reliability
+
+- Desktop startup retries a transient system-config timeout instead of declaring an otherwise healthy attached server incompatible.
+- Stable releases now refresh the homepage download resolver automatically, so every platform link follows the moving `desktop-latest` feed without a manual edit.
+- Scheduled upstream syncs now merge bb into `axeai/integration` and preserve AxeAI-owned release workflows instead of replacing the downstream tree.
+
 ## 0.40.2
 
 The macOS app icon now renders consistently in development and production releases.

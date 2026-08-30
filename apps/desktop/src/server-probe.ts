@@ -33,6 +33,7 @@ export interface CompatibleServerProbeResult {
 interface IncompatibleServerProbeResult {
   kind: "incompatible";
   reason: string;
+  retryable: boolean;
   serverUrl: string;
 }
 
@@ -49,6 +50,7 @@ interface ProbeBbServerArgs {
 }
 
 interface WaitForCompatibleServerArgs {
+  fetchImpl?: ServerProbeFetch;
   intervalMs: number;
   serverUrl: string;
   timeoutMs: number;
@@ -178,6 +180,7 @@ export async function probeBbServer(
     return {
       kind: "incompatible",
       reason: `/health returned ${formatFetchFailure(healthResult)}`,
+      retryable: false,
       serverUrl: args.serverUrl,
     };
   }
@@ -186,6 +189,7 @@ export async function probeBbServer(
     return {
       kind: "incompatible",
       reason: "/health did not report ok=true",
+      retryable: false,
       serverUrl: args.serverUrl,
     };
   }
@@ -201,6 +205,7 @@ export async function probeBbServer(
     return {
       kind: "incompatible",
       reason: `/api/v1/system/config returned ${formatFetchFailure(configResult)}`,
+      retryable: configResult.kind === "network-error",
       serverUrl: args.serverUrl,
     };
   }
@@ -224,6 +229,7 @@ export async function waitForCompatibleServer(
 
   while (Date.now() <= deadline) {
     lastResult = await probeBbServer({
+      fetchImpl: args.fetchImpl,
       serverUrl: args.serverUrl,
       timeoutMs: Math.min(args.intervalMs, 1_000),
     });
@@ -232,7 +238,7 @@ export async function waitForCompatibleServer(
       return lastResult;
     }
 
-    if (lastResult.kind === "incompatible") {
+    if (lastResult.kind === "incompatible" && !lastResult.retryable) {
       return lastResult;
     }
 

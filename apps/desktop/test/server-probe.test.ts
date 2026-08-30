@@ -4,7 +4,11 @@ import {
   type ServerResponse,
 } from "node:http";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { probeBbServer, type ServerProbeFetch } from "../src/server-probe.js";
+import {
+  probeBbServer,
+  type ServerProbeFetch,
+  waitForCompatibleServer,
+} from "../src/server-probe.js";
 
 interface TestServer {
   close(): Promise<void>;
@@ -221,5 +225,49 @@ describe("probeBbServer", () => {
     });
 
     expect(result.kind).toBe("unavailable");
+  });
+});
+
+describe("waitForCompatibleServer", () => {
+  it("retries when system config exceeds one probe interval", async () => {
+    let configRequestCount = 0;
+    const fetchImpl: ServerProbeFetch = async (input, init) => {
+      const url = new URL(input);
+      if (url.pathname === "/health") {
+        return Response.json({ ok: true });
+      }
+
+      configRequestCount += 1;
+      if (configRequestCount === 1) {
+        await new Promise<void>((_resolvePromise, rejectPromise) => {
+          init?.signal?.addEventListener(
+            "abort",
+            () => {
+              rejectPromise(new Error("This operation was aborted"));
+            },
+            { once: true },
+          );
+        });
+      }
+
+      return Response.json({
+        hostDaemonPort: 38_887,
+        voiceTranscriptionEnabled: false,
+      });
+    };
+
+    await expect(
+      waitForCompatibleServer({
+        fetchImpl,
+        intervalMs: 10,
+        serverUrl: "http://127.0.0.1:38886",
+        timeoutMs: 500,
+      }),
+    ).resolves.toEqual({
+      dataDir: null,
+      kind: "compatible",
+      serverUrl: "http://127.0.0.1:38886",
+    });
+    expect(configRequestCount).toBe(2);
   });
 });
