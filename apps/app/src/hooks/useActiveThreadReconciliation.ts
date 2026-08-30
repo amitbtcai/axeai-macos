@@ -4,11 +4,6 @@ import { refetchActiveThreadDetail } from "@/hooks/cache-owners/thread-detail-ca
 
 export const ACTIVE_THREAD_RECONCILIATION_INTERVAL_MS = 1_000;
 
-/**
- * Reconciles an active thread when a browser or tunnel misses a realtime
- * notification. Realtime remains the primary update path; this fallback only
- * runs for the currently active turn and stops as soon as the thread is idle.
- */
 export function useActiveThreadReconciliation({
   active,
   threadId,

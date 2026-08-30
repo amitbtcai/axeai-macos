@@ -93,8 +93,6 @@ describe("favicon rendering", () => {
   const originalGetContext = HTMLCanvasElement.prototype.getContext;
 
   beforeEach(() => {
-    // jsdom has no 2D context; a null context ends the draw after the image
-    // load, which is all these tests observe.
     Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
       configurable: true,
       value: () => null,
@@ -156,8 +154,6 @@ describe("favicon rendering", () => {
     rerender({ badge: "none" });
     rerender({ badge: "unread" });
     await new Promise((resolve) => setTimeout(resolve, 0));
-    // Both default-size links share the canonical SVG, decoded once; the
-    // second badge does not refetch it.
     expect(FakeImage.created).toBe(1);
     unmount();
   });

@@ -1,4 +1,3 @@
-/** Shared presentation for the primary new-thread and follow-up composers. */
 export const PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT = 56;
 
 export const PRIMARY_COMPOSER_PROMPT_BOX_CLASS =
