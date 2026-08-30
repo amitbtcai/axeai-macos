@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
 
 concurrency:
@@ -17,48 +18,71 @@ jobs:
   open-sync-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out AxeAI
+      - name: Check out AxeAI integration
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: axeai/integration
 
       - name: Fetch bb upstream
         run: |
           git remote add upstream https://github.com/get-bb/bb.git
           git fetch upstream main
 
-      - name: Stop when AxeAI already contains upstream
+      - name: Stop when integration already contains upstream
         id: compare
         run: |
-          if git merge-base --is-ancestor upstream/main origin/main; then
+          if git merge-base --is-ancestor upstream/main HEAD; then
             echo "update_available=false" >> "$GITHUB_OUTPUT"
           else
             echo "update_available=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publish upstream sync branch
+      - name: Merge upstream into the sync branch
         if: steps.compare.outputs.update_available == 'true'
+        id: merge
         run: |
-          git checkout --force -B automation/upstream-main upstream/main
-          # Workflow files are AxeAI-owned release infrastructure. Preserve
-          # them from main so the restricted Actions token never needs the
-          # separate workflows permission and upstream cannot replace them.
-          git restore --source=origin/main --staged --worktree .github/workflows
+          set -euo pipefail
+          git checkout --force -B automation/upstream-main
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Preserve AxeAI workflows"
-          git push --force origin automation/upstream-main
+
+          if ! git merge --no-ff --no-commit upstream/main; then
+            git merge --abort
+            echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Release and deployment workflows are AxeAI-owned. Upstream changes
+          # to them are reviewed separately instead of entering through sync.
+          git restore --source=HEAD --staged --worktree .github/workflows
+          git commit -m "Merge get-bb/bb main into AxeAI integration"
+          git push --force-with-lease origin automation/upstream-main
+          echo "has_conflicts=false" >> "$GITHUB_OUTPUT"
 
       - name: Open upstream sync PR
-        if: steps.compare.outputs.update_available == 'true'
+        if: steps.compare.outputs.update_available == 'true' && steps.merge.outputs.has_conflicts == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          existing_pr="$(gh pr list --base main --head automation/upstream-main --state open --json number --jq '.[0].number')"
+          existing_pr="$(gh pr list --base axeai/integration --head automation/upstream-main --state open --json number --jq '.[0].number')"
           if [ -z "$existing_pr" ]; then
             gh pr create \
-              --base main \
+              --base axeai/integration \
               --head automation/upstream-main \
               --title "chore: sync bb upstream" \
-              --body $'Updates AxeAI with the latest commits from `get-bb/bb:main`.\n\nThis PR is created automatically and is never merged automatically.\n\n> AGENT GENERATED'
+              --body $'Merges the latest commits from `get-bb/bb:main` into the AxeAI integration line. This PR is never merged automatically.\n\n> AGENT GENERATED'
           fi
+
+      - name: Report conflicts
+        if: steps.compare.outputs.update_available == 'true' && steps.merge.outputs.has_conflicts == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing_issue="$(gh issue list --state open --search 'Upstream sync needs conflict resolution in:title' --json number --jq '.[0].number')"
+          if [ -z "$existing_issue" ]; then
+            gh issue create \
+              --title "Upstream sync needs conflict resolution" \
+              --body $'The scheduled merge of `get-bb/bb:main` into `axeai/integration` has conflicts and needs a bounded manual sync branch.\n\n> AGENT GENERATED'
+          fi
+          exit 1

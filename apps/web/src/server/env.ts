@@ -10,24 +10,10 @@ export interface Env {
   AXEAI_AUTH_ISSUER?: string;
   AXEAI_AUTH_CLIENT_ID?: string;
   BETTER_AUTH_SECRET: string;
-  /**
-   * Marketing-page endpoints (see src/landing/endpoints.ts). Unset on forks
-   * and local dev: /api/subscribe reports signup as not configured, and the
-   * download redirect skips server-side click tracking.
-   */
   LANDING_POSTHOG_KEY?: string;
   RESEND_API_KEY?: string;
   RESEND_AUDIENCE_ID?: string;
-  /**
-   * bb-marketplace R2 bucket holding the bb-community plugin catalog. Optional:
-   * the bucket is provisioned outside this deploy, and /marketplace/v1/*
-   * answers 404 until it exists.
-   */
   MARKETPLACE?: R2Bucket;
-  /**
-   * Android signing-cert SHA-256 fingerprints for `/.well-known/assetlinks.json`
-   * (bb mobile app links; comma-separated). Unset → empty list.
-   */
   ASSETLINKS_SHA256_FINGERPRINTS?: string;
 }
 

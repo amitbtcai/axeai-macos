@@ -509,3 +509,10 @@ jobs:
             echo "- Linux feed URL: https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/desktop-version-linux.json"
             echo "- Windows feed URL: https://github.com/amitbtcai/axeai-macos/releases/download/desktop-latest/desktop-version-windows.json"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy-web:
+    name: Refresh homepage download links
+    needs: publish
+    if: ${{ inputs.publish && inputs.release_channel == 'stable' }}
+    uses: ./.github/workflows/deploy-web.yml
+    secrets: inherit

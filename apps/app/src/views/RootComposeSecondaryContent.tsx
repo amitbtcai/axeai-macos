@@ -16,32 +16,9 @@ import {
 } from "@/lib/bb-desktop";
 import { useOptionalPaneContext } from "./thread-detail/PaneContext";
 
-// Where root compose pins its right-panel toggle in the viewport corner (see
-// rootPanelToggle in RootComposeView, which passes its selected position here).
-// The window
-// drag strip below must carve this same footprint back out of the macOS drag
-// region while the panel is closed: Electron resolves app-regions in DOM order
-// (later wins), and the strip renders after the fixed toggle, so a no-drag on
-// the toggle itself would just be re-added by the strip's own drag rect. The
-// carve has to live inside the strip, and this constant keeps the two footprints
-// from drifting apart.
-// The toggle is `fixed`, so it positions against the viewport, whose origin
-// is under the translucent status bar in an iOS standalone PWA. Without the
-// safe-area insets it lands on the status bar and collides with the battery.
-// The insets are 0 everywhere else, so desktop and Safari keep the same
-// offsets.
-//
-// The top offset centers the logo-and-toggle group on the same axis as the pinned sidebar
-// trigger, which CHROME_ROW_CLASS box-centers in a 48px row (center = 24px).
-// The group is 32px tall normally and 36px under a coarse pointer, so the
-// offset has to change with it: 24 - 32/2 = 8px, and 24 - 36/2 = 6px.
 export const ROOT_COMPOSE_PINNED_PANEL_TOGGLE_POSITION_CLASS =
   "right-[calc(1rem+env(safe-area-inset-right))] top-[calc(0.5rem+env(safe-area-inset-top))] max-md:pointer-coarse:top-[calc(0.375rem+env(safe-area-inset-top))]";
 
-// The drag-strip cutout must cover both interactive controls: the 64px logo,
-// its 8px right margin, 12px gap, and 28px/36px panel button. Electron resolves the later drag strip
-// over earlier no-drag descendants, so cutting out only the panel button would
-// make the website link unclickable in the macOS title bar.
 export const ROOT_COMPOSE_PINNED_CHROME_CUTOUT_CLASS =
   "h-8 w-[112px] max-md:pointer-coarse:h-9 max-md:pointer-coarse:w-[120px]";
 
@@ -95,9 +72,6 @@ export function RootComposeSecondaryContent({
   const composerHost = usePluginComposerHost();
   const [desktopInfo] = useState(getBbDesktopInfo);
   const usesDesktopChrome = shouldUseMacosDesktopChrome(desktopInfo);
-  // A bounded pane below a horizontal split is not part of the native window
-  // chrome. Marking its top as draggable creates an invisible Electron hit-test
-  // strip that consumes pointer input over portaled menus.
   const rendersWindowDragStrip =
     usesDesktopChrome && paneContext?.isTopRow !== false;
   const { renderBrowserDeck, ...threadSecondaryPanelProps } = secondaryPanel;

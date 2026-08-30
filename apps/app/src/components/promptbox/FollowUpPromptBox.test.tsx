@@ -10,6 +10,7 @@ import {
 } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { EMPTY_ORDERED_MENTION_SUGGESTIONS } from "@bb/client-core";
 import {
   resetPluginSlotStoreForTest,
   setPluginSlotRegistrations,
@@ -251,7 +252,7 @@ function createFollowUpPromptBoxProps(
     },
     typeahead: {
       mention: {
-        suggestions: [],
+        results: EMPTY_ORDERED_MENTION_SUGGESTIONS,
         isLoading: false,
         isError: false,
         onQueryChange: vi.fn(),
@@ -442,12 +443,10 @@ describe("FollowUpPromptBox", () => {
       />,
     );
 
-    // Same component instance and DOM: no TipTap teardown per approval.
     expect(screen.getByTestId("prompt-box")).toBe(promptBox);
     expect(screen.getByLabelText("Follow-up prompt")).toBe(input);
     expect(input.value).toBe("Draft typed before the approval");
     expect(composerShell?.hidden).toBe(true);
-    // The interaction renders below the (reduced) stack, above the composer.
     const interaction = screen.getByTestId("pending-interaction");
     const stackItem = screen.getByTestId("pending-stack");
     expect(

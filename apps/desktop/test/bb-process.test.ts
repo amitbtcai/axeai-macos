@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createBbAppProcessLaunch,
   createBbAppProcessEnv,
@@ -144,37 +144,37 @@ describe("bb app process", () => {
     });
   });
 
-  it.skipIf(process.platform !== "linux")(
-    "imports the bridge from the child AppImage mount",
-    async () => {
-      const desktopMountScript = await createTempScript({
-        contents: 'process.stdout.write("desktop mount\\n");\n',
-      });
-      const childMountScript = await createTempScript({
-        contents: 'process.stdout.write("child mount\\n");\n',
-      });
-      const launch = createBbAppProcessLaunch({
-        bridgePath: desktopMountScript.path,
-        env: process.env,
-        runtime: {
-          appDirPath: desktopMountScript.root,
-          executablePath: process.execPath,
-          kind: "appimage",
-          mode: "electron-node",
-        },
-      });
+  it("imports the bridge from the child AppImage mount", async () => {
+    const desktopMountScript = await createTempScript({
+      contents: 'process.stdout.write("desktop mount\\n");\n',
+    });
+    const childMountScript = await createTempScript({
+      contents: 'process.stdout.write("child mount\\n");\n',
+    });
+    const launch = createBbAppProcessLaunch({
+      bridgePath: desktopMountScript.path,
+      env: process.env,
+      runtime: {
+        appDirPath: desktopMountScript.root,
+        executablePath: process.execPath,
+        kind: "appimage",
+        mode: "electron-node",
+      },
+    });
 
-      expect(launch.args).toContain(desktopMountScript.path);
-      const result = await execFileAsync(launch.executablePath, launch.args, {
-        env: {
-          ...launch.env,
-          APPDIR: childMountScript.root,
-        },
-      });
+    expect(launch.args).toContain(desktopMountScript.path);
+    if (process.platform !== "linux") {
+      return;
+    }
+    const result = await execFileAsync(launch.executablePath, launch.args, {
+      env: {
+        ...launch.env,
+        APPDIR: childMountScript.root,
+      },
+    });
 
-      expect(result.stdout).toBe("child mount\n");
-    },
-  );
+    expect(result.stdout).toBe("child mount\n");
+  });
 
   it.skipIf(process.platform !== "linux")(
     "anchors the process group while supervising descendants after the bridge exits",
@@ -277,55 +277,51 @@ process.stdout.write(\`grandchild=\${grandchild.pid}\\n\`);
     });
   });
 
-  it.skipIf(process.platform === "win32")(
-    "escalates to SIGKILL when the bridge ignores SIGTERM",
-    async () => {
-      const script = await createTempScript({
-        contents: `
+  it("escalates to SIGKILL when the bridge ignores SIGTERM", async () => {
+    const script = await createTempScript({
+      contents: `
 process.on("SIGTERM", () => {
   process.stdout.write("ignored SIGTERM\\n");
 });
 process.stdout.write("ready\\n");
 setInterval(() => undefined, 1000);
 `,
-      });
-      const processEntry = startBbAppProcess({
-        bridgePath: script.path,
-        cwd: script.root,
-        env: process.env,
-        logLineLimit: 20,
-        runtime: {
-          executablePath: process.execPath,
-          kind: "direct",
-          mode: "node",
-        },
-      });
-      processes.push(processEntry);
-      await waitForLog({
-        process: processEntry,
-        text: "ready",
-        timeoutMs: 1_000,
-      });
+    });
+    const processEntry = startBbAppProcess({
+      bridgePath: script.path,
+      cwd: script.root,
+      env: process.env,
+      logLineLimit: 20,
+      runtime: {
+        executablePath: process.execPath,
+        kind: "direct",
+        mode: "node",
+      },
+    });
+    processes.push(processEntry);
+    await waitForLog({
+      process: processEntry,
+      text: "ready",
+      timeoutMs: 1_000,
+    });
+    processEntry.childProcess.kill("SIGTERM");
+    await waitForLog({
+      process: processEntry,
+      text: "ignored SIGTERM",
+      timeoutMs: 1_000,
+    });
+    const killSpy = vi.spyOn(processEntry.childProcess, "kill");
 
-      // Prove the fixture can handle SIGTERM before starting the short
-      // escalation window, which may otherwise expire before the child runs.
-      processEntry.childProcess.kill("SIGTERM");
-      await waitForLog({
-        process: processEntry,
-        text: "ignored SIGTERM",
-        timeoutMs: 1_000,
-      });
+    await processEntry.stop({
+      killSignal: "SIGKILL",
+      killTimeoutMs: 1_000,
+      signal: "SIGTERM",
+      timeoutMs: 50,
+    });
 
-      await processEntry.stop({
-        killSignal: "SIGKILL",
-        killTimeoutMs: 1_000,
-        signal: "SIGTERM",
-        timeoutMs: 50,
-      });
-
-      const exit = await processEntry.exit;
-      expect(processEntry.logs.text()).toContain("ignored SIGTERM");
-      expect(exit.signal).toBe("SIGKILL");
-    },
-  );
+    const exit = await processEntry.exit;
+    expect(killSpy).toHaveBeenNthCalledWith(1, "SIGTERM");
+    expect(killSpy).toHaveBeenNthCalledWith(2, "SIGKILL");
+    expect(exit.signal).toBe("SIGKILL");
+  });
 });

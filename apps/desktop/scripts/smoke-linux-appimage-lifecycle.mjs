@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { createPackagedAppLaunchArguments } from "./packaged-app-launch.mjs";
 
 const execFileAsync = promisify(execFile);
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
@@ -12,6 +13,7 @@ const desktopPackageRoot = resolve(scriptDirectory, "..");
 const releaseDir = join(desktopPackageRoot, "release");
 const startupTimeoutMs = 60_000;
 const exitTimeoutMs = 10_000;
+const outputFlushTimeoutMs = 2_000;
 const pollIntervalMs = 100;
 const maxCapturedOutputCharacters = 20_000;
 
@@ -440,12 +442,12 @@ async function smokeLinuxAppImageLifecycle() {
     delete childEnv.BB_DESKTOP_NODE_EXEC_PATH;
     delete childEnv.ELECTRON_RUN_AS_NODE;
 
-    // AppImage mounts on unprivileged CI runners cannot provide a root-owned,
-    // setuid chrome-sandbox. This smoke test exercises the packaged runtime
-    // lifecycle; production launches continue to use Electron's sandbox.
     child = spawn(
       appImage,
-      ["--no-sandbox", `--user-data-dir=${userDataDir}`],
+      createPackagedAppLaunchArguments({
+        platform: process.platform,
+        userDataDir,
+      }),
       {
         detached: true,
         env: childEnv,
@@ -457,11 +459,15 @@ async function smokeLinuxAppImageLifecycle() {
     }
     child.stdout.on("data", (chunk) => appendOutput(stdout, chunk));
     child.stderr.on("data", (chunk) => appendOutput(stderr, chunk));
+    const childClosed = new Promise((resolveClosed) => {
+      child.once("close", resolveClosed);
+    });
 
     runtime = await waitFor({
       describe: "the desktop-owned runtime PID file",
       predicate: async () => {
         if (child.exitCode !== null || child.signalCode !== null) {
+          await Promise.race([childClosed, sleep(outputFlushTimeoutMs)]);
           throw new Error(
             `AppImage exited before its runtime started: code=${String(
               child.exitCode,

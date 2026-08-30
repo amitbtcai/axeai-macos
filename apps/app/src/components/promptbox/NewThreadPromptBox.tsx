@@ -35,11 +35,6 @@ import {
   type TypeaheadConfig,
 } from "@/components/promptbox/PromptBoxInternal";
 import { usePromptVoice } from "@/components/promptbox/usePromptVoice";
-import {
-  PRIMARY_COMPOSER_CONTEXT_ROW_CLASS,
-  PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT,
-  PRIMARY_COMPOSER_PROMPT_BOX_CLASS,
-} from "@/components/promptbox/primary-composer-presentation";
 import { useOptionalPaneContext } from "@/views/thread-detail/PaneContext";
 import {
   BranchPicker,
@@ -74,6 +69,7 @@ import {
   permissionDisplayForPromptMode,
 } from "@bb/client-core";
 
+const NEW_THREAD_PROMPT_BOX_MIN_HEIGHT = 80;
 const DEFAULT_NEW_THREAD_COMPOSER_SCOPE = {
   kind: "new-thread",
   projectId: null,
@@ -86,11 +82,7 @@ export interface NewThreadEnvironmentConfig {
   host: EnvironmentPickerUIProps["host"];
   isLocal: EnvironmentPickerUIProps["isLocal"];
   machines?: EnvironmentPickerMachines | null;
-  /** Opens the guided machine-setup flow for a machine without a project
-   * source (multi-machine menu only). */
   onRequestMachineSetup?: (host: Host) => void;
-  /** When true, the picker's "Reuse existing worktree" entry is disabled.
-   * Caller signals the project has no worktree envs available. */
   reuseDisabled?: boolean;
   worktreeDisabledReason?: string | null;
   disabled?: boolean;
@@ -119,18 +111,11 @@ export interface NewThreadBranchConfig {
   onSearchQueryChange?: (query: string) => void;
   onCreateBaseChange?: (value: string) => void;
   disabled?: boolean;
-  /**
-   * When provided, the picker exposes a "Create new branch" item. Only set
-   * for `host:local` (work locally / on host). Managed-worktree mode uses
-   * the picked branch as the branch source instead.
-   */
   onCreate?: () => void;
 }
 
 export interface NewThreadWorktreeConfig {
   options: readonly ReuseThreadOption[];
-  /** Currently-selected env id, or null when reuse mode is active but no
-   * worktree has been chosen yet. */
   value: string | null;
   onChange: (environmentId: string) => void;
   disabled?: boolean;
@@ -138,20 +123,12 @@ export interface NewThreadWorktreeConfig {
 
 export interface NewThreadProjectConfig {
   projects: readonly ProjectSelectorOption[];
-  /** Currently-selected project id, or null when the user has no project
-   * scope. The picker handles the null case when `allowNoProject` is on. */
   value: string | null;
   onChange: (projectId: string | null) => void;
-  /** When true, the picker exposes a "Don't work in a project" entry and
-   * emits `null` from onChange. Off by default to match current production
-   * (project is required). */
   allowNoProject?: boolean;
   createProject?: ProjectSelectorCreateProjectConfig;
   disabled?: boolean;
-  /** The project list is still loading; the picker shows a loading label. */
   isLoading?: boolean;
-  /** Keep the chevron while `disabled`, for transient locks (submitting,
-   * uploading) that must not change the trigger's width. */
   showChevronWhenDisabled?: boolean;
 }
 
@@ -160,18 +137,13 @@ export interface NewThreadModeConfig {
   branch: NewThreadBranchConfig;
   worktree: NewThreadWorktreeConfig;
   permission: ExecutionPermissionConfig;
-  /** Slot rendered above the prompt box card, matching the follow-up banner stack. */
   banner?: ReactNode;
-  /** Slot rendered inside the prompt box card, above the text area.
-   * Used by RootComposeView to surface contextual creation state. */
   header?: ReactNode;
 }
 
 interface NewThreadPromptBoxUIProps {
-  /** id forwarded to the underlying PromptBoxInternal (used for autofocus targeting). */
   id?: string;
 
-  // PromptBox passthrough
   value: string;
   mentionRanges: readonly PromptTextMention[];
   onChange: (value: string, mentionRanges: PromptTextMention[]) => void;
@@ -179,14 +151,10 @@ interface NewThreadPromptBoxUIProps {
   promptBoxRef?: Ref<PromptBoxHandle>;
   isSubmitting: boolean;
   disabled: boolean;
-  /** Explains a disabled submit action on hover and to assistive technology. */
   disabledReason?: string;
-  /** Whether the editor should take passive focus when it mounts. */
   autoFocus?: boolean;
-  /** Active root-composer binding for plugin composer hooks and customizations. */
   pluginComposerHost?: PluginComposerHost | null;
   textEffects?: readonly ComposerTextEffectSource[];
-  /** Overrides the default new-thread placeholder copy. */
   placeholder?: string;
 
   history: HistoryConfig;
@@ -194,7 +162,6 @@ interface NewThreadPromptBoxUIProps {
   attachments: AttachmentsConfig;
   promptActions?: readonly PromptBoxAction[];
 
-  /** Thread environment, branch/worktree, permission, and optional header config. */
   modeConfig: NewThreadModeConfig;
 
   project?: NewThreadProjectConfig;
@@ -221,10 +188,6 @@ function getNewThreadPromptPlaceholder(isProjectless: boolean): string {
     : "Ask anything. @ to mention files, folders, or sections";
 }
 
-/**
- * Prop-only variant. Stories render this directly with mock host data; the
- * connected NewThreadPromptBox below wires up the real hooks.
- */
 export const NewThreadPromptBoxUI = memo(function NewThreadPromptBoxUI({
   id,
   value,
@@ -333,7 +296,6 @@ interface DefaultNewThreadComposerProps extends Omit<
   onComposerLayoutChange: (layout: ComposerView["layout"]) => void;
 }
 
-/** BB's presentation for a host-owned new-thread Composer controller. */
 const DefaultNewThreadComposer = memo(function DefaultNewThreadComposer({
   id,
   value,
@@ -394,30 +356,6 @@ const DefaultNewThreadComposer = memo(function DefaultNewThreadComposer({
           {modeConfig.banner}
         </ComposerBannersSlot>
       </div>
-      <div className={PRIMARY_COMPOSER_CONTEXT_ROW_CLASS}>
-        {project ? (
-          <ProjectSelector
-            projects={project.projects}
-            value={project.value}
-            onChange={project.onChange}
-            allowNoProject={project.allowNoProject ?? false}
-            createProject={project.createProject}
-            disabled={project.disabled}
-            isLoading={project.isLoading}
-            showChevronWhenDisabled={project.showChevronWhenDisabled}
-            className="shrink-0"
-          />
-        ) : null}
-        {project?.value !== null ? (
-          <ThreadEnvSlot
-            environment={modeConfig.environment}
-            branch={modeConfig.branch}
-            worktree={modeConfig.worktree}
-          />
-        ) : (
-          <ProjectlessMachineSlot environment={modeConfig.environment} />
-        )}
-      </div>
       <PromptBoxInternal
         id={id}
         promptBoxRef={promptBoxRef}
@@ -441,26 +379,49 @@ const DefaultNewThreadComposer = memo(function DefaultNewThreadComposer({
         }}
         autoFocus={autoFocus}
         editorLayout="root-compose"
-        minHeight={PRIMARY_COMPOSER_EDITOR_MIN_HEIGHT}
-        className={PRIMARY_COMPOSER_PROMPT_BOX_CLASS}
+        minHeight={NEW_THREAD_PROMPT_BOX_MIN_HEIGHT}
         placeholder={placeholder}
         header={modeConfig.header}
-        footerStart={
-          <>
-            <PermissionModePicker
-              value={modeConfig.permission.value}
-              options={modeConfig.permission.options}
-              onChange={modeConfig.permission.onChange}
-              supported={modeConfig.permission.supported}
-              disabled={permissionPickerDisabledByPlanMode}
-              showChevronWhenDisabled={permissionPickerDisabledByPlanMode}
-              displayOverride={permissionDisplayOverride}
-            />
-            <span className="min-w-2 flex-1" aria-hidden />
-            <ExecutionControls {...execution} />
-          </>
-        }
+        footerStart={<ExecutionControls {...execution} />}
       />
+      {}
+      <div className="mt-1 flex select-none items-center justify-between gap-2 px-3.5">
+        <div className="flex min-w-0 flex-1 items-center gap-1">
+          {project ? (
+            <ProjectSelector
+              projects={project.projects}
+              value={project.value}
+              onChange={project.onChange}
+              allowNoProject={project.allowNoProject ?? false}
+              createProject={project.createProject}
+              disabled={project.disabled}
+              isLoading={project.isLoading}
+              showChevronWhenDisabled={project.showChevronWhenDisabled}
+              className="shrink-0"
+            />
+          ) : null}
+          {project?.value !== null ? (
+            <ThreadEnvSlot
+              environment={modeConfig.environment}
+              branch={modeConfig.branch}
+              worktree={modeConfig.worktree}
+            />
+          ) : (
+            <ProjectlessMachineSlot environment={modeConfig.environment} />
+          )}
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <PermissionModePicker
+            value={modeConfig.permission.value}
+            options={modeConfig.permission.options}
+            onChange={modeConfig.permission.onChange}
+            supported={modeConfig.permission.supported}
+            disabled={permissionPickerDisabledByPlanMode}
+            showChevronWhenDisabled={permissionPickerDisabledByPlanMode}
+            displayOverride={permissionDisplayOverride}
+          />
+        </div>
+      </div>
     </div>
   );
 });
@@ -545,11 +506,6 @@ interface ProjectlessMachineSlotProps {
   environment: NewThreadEnvironmentConfig;
 }
 
-/**
- * Environment-slot replacement for projectless composing (>1 host): a
- * machine chip that picks which machine's personal workspace the thread runs
- * in. With a single host the slot stays empty.
- */
 export function ProjectlessMachineSlot({
   environment,
 }: ProjectlessMachineSlotProps) {
@@ -561,8 +517,6 @@ export function ProjectlessMachineSlot({
   const handleChange = environment.onChange;
   const handleMachineChange = useCallback(
     (hostId: string) => {
-      // Projectless threads always run in the machine's personal workspace,
-      // so a machine pick encodes as that host's local mode.
       handleChange(encodeHostValue(hostId, "local"));
     },
     [handleChange],
@@ -614,10 +568,6 @@ export interface NewThreadPromptBoxProps extends Omit<
   modeConfig: NewThreadConnectedModeConfig;
 }
 
-/**
- * The composed prompt area for creating a new thread in a project — used by
- * RootComposeView. It wires host queries into the UI mode config.
- */
 export function NewThreadPromptBox({
   modeConfig: threadConfig,
   ...rest
@@ -646,10 +596,6 @@ export function NewThreadPromptBox({
   );
 
   const isHostMode = parsedEnvironment?.type === "host";
-  // Create-new-branch is only meaningful for host:local (work locally /
-  // on host) — the server checks out a fresh branch in the primary checkout
-  // before the thread starts. Worktree mode uses the picked branch as the
-  // branch source instead, so we omit onCreate there.
   const allowCreate = isHostMode && parsedEnvironment.mode === "local";
 
   const uiEnvironment = useMemo(
