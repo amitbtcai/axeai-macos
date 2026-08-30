@@ -1,0 +1,64 @@
+name: Upstream sync PR
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: true
+
+jobs:
+  open-sync-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out AxeAI
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Fetch bb upstream
+        run: |
+          git remote add upstream https://github.com/get-bb/bb.git
+          git fetch upstream main
+
+      - name: Stop when AxeAI already contains upstream
+        id: compare
+        run: |
+          if git merge-base --is-ancestor upstream/main origin/main; then
+            echo "update_available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "update_available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish upstream sync branch
+        if: steps.compare.outputs.update_available == 'true'
+        run: |
+          git checkout --force -B automation/upstream-main upstream/main
+          # Workflow files are AxeAI-owned release infrastructure. Preserve
+          # them from main so the restricted Actions token never needs the
+          # separate workflows permission and upstream cannot replace them.
+          git restore --source=origin/main --staged --worktree .github/workflows
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Preserve AxeAI workflows"
+          git push --force origin automation/upstream-main
+
+      - name: Open upstream sync PR
+        if: steps.compare.outputs.update_available == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing_pr="$(gh pr list --base main --head automation/upstream-main --state open --json number --jq '.[0].number')"
+          if [ -z "$existing_pr" ]; then
+            gh pr create \
+              --base main \
+              --head automation/upstream-main \
+              --title "chore: sync bb upstream" \
+              --body $'Updates AxeAI with the latest commits from `get-bb/bb:main`.\n\nThis PR is created automatically and is never merged automatically.\n\n> AGENT GENERATED'
+          fi
