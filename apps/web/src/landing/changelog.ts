@@ -19,6 +19,10 @@ type ReleaseMeta = {
 };
 
 export const RELEASE_META: Record<string, ReleaseMeta> = {
+  "0.40.4": {
+    date: "August 31, 2026",
+    headline: "Native visible Browser control for AxeAI agents",
+  },
   "0.40.3": {
     date: "August 30, 2026",
     headline: "Latest bb improvements and more reliable desktop startup",

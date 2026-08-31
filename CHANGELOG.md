@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.40.4
+
+AxeAI agents can securely operate fresh tabs in the visible desktop Browser through native Chromium controls.
+
+### Browser automation
+
+- Enable the default-off `browserAutomation` experiment to give agents a bounded visible Browser surface.
+- Open, list, navigate, wait for, inspect, click, type into, select from, capture, and close Browser tabs through the SDK or `bb browser` CLI.
+- Use accessibility-tree snapshots with stale-reference protection instead of injecting scripts into pages.
+- Keep automated tabs isolated by thread, host, window, and owner, with explicit Stop controls and automatic timeout cleanup.
+- Save screenshots as private, thread-confined artifacts with bounded retention.
+
+### Reliability
+
+- Exercise the complete CLI-to-Electron Browser boundary in CI, including navigation, native input, screenshots, ownership rejection, cancellation, and cleanup.
+- Run Linux AppImage and Unix signal lifecycle tests only on platforms that implement those semantics.
+
 ## 0.40.3
 
 AxeAI catches up with the latest bb improvements and starts attached desktop servers more reliably.
