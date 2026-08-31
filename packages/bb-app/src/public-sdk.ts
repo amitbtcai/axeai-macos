@@ -47,6 +47,7 @@ export type BBSdkRealtimeSubscribeArgs = BbRealtimeSubscribeArgs;
 export type BBSdkRealtimeSocket = BbRealtimeSocket;
 export type BBSdkRealtimeSocketFactory = BbRealtimeSocketFactory;
 export type BBSdkRealtimeSocketMessageEvent = BbRealtimeSocketMessageEvent;
+export type BBSdkBrowserArea = BbSdk["browser"];
 export type BBSdkStatusArea = BbSdk["status"];
 export type BBSdkSkillsArea = BbSdk["skills"];
 export type BBSdkTerminalsArea = BbSdk["terminals"];
@@ -60,6 +61,7 @@ export type ThreadWaitUnreachableErrorConstructor =
   typeof ThreadWaitUnreachableError;
 
 export class BBSdk implements BbSdk {
+  readonly browser: BbSdk["browser"];
   readonly environments: BbSdk["environments"];
   readonly files: BbSdk["files"];
   readonly guide: BbSdk["guide"];
@@ -78,6 +80,7 @@ export class BBSdk implements BbSdk {
 
   constructor(options: BBSdkOptions = {}) {
     const sdk = createNodeBbSdk(options);
+    this.browser = sdk.browser;
     this.environments = sdk.environments;
     this.files = sdk.files;
     this.guide = sdk.guide;
