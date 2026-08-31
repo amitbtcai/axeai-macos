@@ -204,7 +204,11 @@
       "passThroughEnv": ["*"]
     },
     "@bb/integration-tests#test:browser-cli-electron": {
-      "dependsOn": ["@bb/cli#build", "topo"],
+      "dependsOn": [
+        "@bb/cli#build",
+        "@get-bb/plugin-sdk#build",
+        "topo"
+      ],
       "cache": false,
       "outputs": [],
       "passThroughEnv": ["*"]
