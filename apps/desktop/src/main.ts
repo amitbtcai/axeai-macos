@@ -148,12 +148,14 @@ import {
   BB_DESKTOP_APP_COMMAND_CHANNEL,
   BB_DESKTOP_CLOSE_WINDOW_REQUEST_CHANNEL,
   BB_DESKTOP_CLOSE_WINDOW_RESPONSE_CHANNEL,
+  BB_DESKTOP_GET_WINDOW_IDENTITY_CHANNEL,
   BB_DESKTOP_GET_WINDOW_STATE_CHANNEL,
   BB_DESKTOP_OPEN_NEW_TAB_CHANNEL,
   BB_DESKTOP_OPEN_SERVER_DAEMON_LOGS_CHANNEL,
   BB_DESKTOP_WINDOW_STATE_CHANGED_CHANNEL,
   CLOSE_WINDOW_REQUEST_TIMEOUT_MS,
 } from "./desktop-window-command-ipc.js";
+import { createDesktopWindowIdentityRegistry } from "./desktop-window-identity.js";
 import {
   createDesktopBrowserViewManager,
   type DesktopBrowserViewManager,
@@ -319,6 +321,7 @@ let systemConfigSync: SystemConfigSync | null = null;
 let systemConfigRefreshToken = 0;
 let refreshRemoteSystemConfig: (() => void) | null = null;
 const applicationWindowWebContentsIds = new Set<number>();
+const desktopWindowIdentities = createDesktopWindowIdentityRegistry();
 let bbAppLoaded = false;
 let stoppingForQuit = false;
 let quitting = false;
@@ -1070,6 +1073,7 @@ function registerApplicationWindow(browserWindow: DesktopBrowserWindow): void {
   });
   browserWindow.on("closed", () => {
     applicationWindowWebContentsIds.delete(webContentsId);
+    desktopWindowIdentities.release(webContentsId);
   });
 }
 
@@ -1671,6 +1675,17 @@ function registerDesktopUpdateIpc(): void {
   });
   ipcMain.handle(BB_DESKTOP_GET_WINDOW_STATE_CHANNEL, (event) => {
     return getSenderDesktopWindowState(event);
+  });
+  ipcMain.handle(BB_DESKTOP_GET_WINDOW_IDENTITY_CHANNEL, (event) => {
+    const browserWindow = resolveApplicationWindow(event.sender);
+    if (
+      browserWindow === null ||
+      browserWindow.isDestroyed() ||
+      !isRegisteredApplicationWindow(browserWindow)
+    ) {
+      return null;
+    }
+    return desktopWindowIdentities.identityFor(browserWindow.webContents.id);
   });
   ipcMain.handle(BB_DESKTOP_OPEN_SERVER_DAEMON_LOGS_CHANNEL, async () => {
     // openServerDaemonLogs re-checks availability, so a renderer holding a
@@ -2335,6 +2350,10 @@ async function runDesktopApp(): Promise<void> {
   });
   registerDesktopUpdateIpc();
   desktopBrowserViewManager = createDesktopBrowserViewManager({
+    activateHostWindow(hostWebContentsId) {
+      app.focus({ steal: true });
+      BrowserWindow.getAllWindows().find((candidate) => candidate.webContents.id === hostWebContentsId)?.focus();
+    },
     dispatchAppCommand({ command, hostWebContentsId }) {
       const browserWindow = BrowserWindow.getAllWindows().find(
         (candidate) => candidate.webContents.id === hostWebContentsId,

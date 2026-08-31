@@ -37,6 +37,15 @@ export const bbDesktopWindowStateSchema = z
   .strict();
 export type BbDesktopWindowState = z.infer<typeof bbDesktopWindowStateSchema>;
 
+export const bbDesktopWindowIdentitySchema = z
+  .object({
+    windowId: z.string().min(1).max(128),
+  })
+  .strict();
+export type BbDesktopWindowIdentity = z.infer<
+  typeof bbDesktopWindowIdentitySchema
+>;
+
 export const bbDesktopThemeSchema = z.enum(["system", "light", "dark"]);
 export type BbDesktopTheme = z.infer<typeof bbDesktopThemeSchema>;
 
@@ -65,6 +74,7 @@ export interface BbDesktopApi extends BbDesktopInfo {
    * feature-detect and fall back to the normal window layout.
    */
   getWindowState?(): Promise<BbDesktopWindowState>;
+  getWindowIdentity?(): Promise<BbDesktopWindowIdentity | null>;
   installUpdate(): Promise<void>;
   onChange(listener: BbDesktopInfoChangeHandler): BbDesktopInfoUnsubscribe;
   /**
