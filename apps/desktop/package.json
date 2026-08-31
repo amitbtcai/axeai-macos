@@ -1,6 +1,6 @@
 {
   "name": "@bb/desktop",
-  "version": "0.40.3",
+  "version": "0.40.4",
   "private": true,
   "description": "AxeAI desktop app for macOS, Windows, and Linux",
   "main": "dist/main.js",
@@ -30,6 +30,7 @@
     "start": "pnpm run package && node scripts/run-packaged-app.mjs",
     "start:linux": "pnpm run package:linux && node scripts/run-packaged-app.mjs",
     "test": "vitest run --config vitest.config.ts",
+    "test:browser-automation-electron": "node scripts/run-browser-automation-electron.mjs",
     "typecheck": "tsc --noEmit",
     "verify:macos-icon": "node scripts/verify-macos-app-icon.mjs"
   },
