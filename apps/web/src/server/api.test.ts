@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   connectCode,
+  appAccessInvitation,
   labelClaim,
   machine,
   MAX_PER_ACCOUNT,
@@ -17,7 +18,9 @@ import {
 import {
   type Deps,
   checkAvailability,
+  acceptAppAccessInvitation,
   claimHandle,
+  createAppAccessInvitation,
   createConnectCode,
   createMachineCodeForServerCredential,
   createServer,
@@ -29,6 +32,7 @@ import {
   resolveServerUrlTemplate,
   revokeMachineForServerCredential,
   revokeMachine,
+  revokeAppAccessInvitation,
 } from "./api.js";
 import { sha256Hex } from "./tokens.js";
 
@@ -191,6 +195,89 @@ describe("createServer (connect another bb)", () => {
     expect(await createServer(deps, "u1", "sawyer-desktop")).toEqual({
       error: "taken",
     });
+  });
+});
+
+describe("AxeAI app access invitations", () => {
+  it("accepts once for the invited account and lists the shared app", async () => {
+    seedUser("u1");
+    seedUser("u2");
+    await claimHandle(deps, "u1", "sawyer");
+    const owned = db.select().from(server).where(eq(server.userId, "u1")).get();
+    if (!owned) throw new Error("setup");
+    const created = await createAppAccessInvitation(deps, "u1", {
+      serverId: owned.id,
+      email: "u2@example.com",
+    });
+    if (!("ok" in created)) throw new Error(created.error);
+    const token = new URL(created.invitationUrl).searchParams.get("invite");
+    if (!token) throw new Error("missing token");
+    const stored = db.select().from(appAccessInvitation).get();
+    expect(stored?.tokenHash).not.toBe(token);
+    expect(await acceptAppAccessInvitation(deps, "u2", token)).toEqual({
+      ok: true,
+    });
+    expect(await acceptAppAccessInvitation(deps, "u2", token)).toEqual({
+      error: "invalid-invitation",
+    });
+    const state = await getAccountState(deps, "u2");
+    expect(state.sharedServers).toHaveLength(1);
+    expect(state.sharedServers[0]?.serverUrl).toBe("https://sawyer.getbb.app");
+  });
+
+  it("rejects another account and expired invitations", async () => {
+    seedUser("u1");
+    seedUser("u2");
+    seedUser("u3");
+    await claimHandle(deps, "u1", "sawyer");
+    const owned = db.select().from(server).where(eq(server.userId, "u1")).get();
+    if (!owned) throw new Error("setup");
+    const created = await createAppAccessInvitation(deps, "u1", {
+      serverId: owned.id,
+      email: "u2@example.com",
+    });
+    if (!("ok" in created)) throw new Error(created.error);
+    const token = new URL(created.invitationUrl).searchParams.get("invite");
+    if (!token) throw new Error("missing token");
+    expect(await acceptAppAccessInvitation(deps, "u3", token)).toEqual({
+      error: "invalid-invitation",
+    });
+    db.update(appAccessInvitation)
+      .set({ expiresAt: new Date(Date.now() - 1) })
+      .where(
+        eq(
+          appAccessInvitation.id,
+          db.select().from(appAccessInvitation).get()!.id,
+        ),
+      )
+      .run();
+    expect(await acceptAppAccessInvitation(deps, "u2", token)).toEqual({
+      error: "invalid-invitation",
+    });
+  });
+
+  it("removes accepted access only when requested by the owner", async () => {
+    seedUser("u1");
+    seedUser("u2");
+    await claimHandle(deps, "u1", "sawyer");
+    const owned = db.select().from(server).where(eq(server.userId, "u1")).get();
+    if (!owned) throw new Error("setup");
+    const created = await createAppAccessInvitation(deps, "u1", {
+      serverId: owned.id,
+      email: "u2@example.com",
+    });
+    if (!("ok" in created)) throw new Error(created.error);
+    const invitation = db.select().from(appAccessInvitation).get();
+    const token = new URL(created.invitationUrl).searchParams.get("invite");
+    if (!invitation || !token) throw new Error("setup");
+    await acceptAppAccessInvitation(deps, "u2", token);
+    expect(await revokeAppAccessInvitation(deps, "u2", invitation.id)).toEqual({
+      error: "not-found",
+    });
+    expect(await revokeAppAccessInvitation(deps, "u1", invitation.id)).toEqual({
+      ok: true,
+    });
+    expect((await getAccountState(deps, "u2")).sharedServers).toHaveLength(0);
   });
 });
 

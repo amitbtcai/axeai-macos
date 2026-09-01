@@ -1,12 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
   checkAvailability,
+  acceptAppAccessInvitation,
   claimHandle,
+  createAppAccessInvitation,
   createConnectCode,
   createServer,
   depsFromEnv,
   disconnectServer,
   removeServer,
+  revokeAppAccessInvitation,
   revokeMachine,
   getAccountState,
   type AccountState,
@@ -100,4 +103,35 @@ export const revokeMachineFn = createServerFn({ method: "POST" })
     if (!userId) return { error: "unauthenticated" as const };
     if (!machineId) return { error: "not-found" as const };
     return revokeMachine(depsFromEnv(getEnv()), userId, machineId);
+  });
+
+export const createAppAccessInvitationFn = createServerFn({ method: "POST" })
+  .validator((input: { serverId: string; email: string }) => ({
+    serverId: String(input.serverId),
+    email: String(input.email),
+  }))
+  .handler(async ({ data }) => {
+    const userId = await getSessionUserId();
+    if (!userId) return { error: "unauthenticated" as const };
+    return createAppAccessInvitation(depsFromEnv(getEnv()), userId, data);
+  });
+
+export const acceptAppAccessInvitationFn = createServerFn({ method: "POST" })
+  .validator((token: string) => String(token))
+  .handler(async ({ data: token }) => {
+    const userId = await getSessionUserId();
+    if (!userId) return { error: "unauthenticated" as const };
+    return acceptAppAccessInvitation(depsFromEnv(getEnv()), userId, token);
+  });
+
+export const revokeAppAccessInvitationFn = createServerFn({ method: "POST" })
+  .validator((invitationId: string) => String(invitationId))
+  .handler(async ({ data: invitationId }) => {
+    const userId = await getSessionUserId();
+    if (!userId) return { error: "unauthenticated" as const };
+    return revokeAppAccessInvitation(
+      depsFromEnv(getEnv()),
+      userId,
+      invitationId,
+    );
   });

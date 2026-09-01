@@ -46,3 +46,8 @@ new machine TunnelDO/cache keys are generation-isolated from their first use.
 Server label resolution, cache/DO keys, disconnect, and reuse behavior remain
 exactly as on main. The pre-existing server-label reuse race is out of scope for
 this migration and must be handled as separate server hardening.
+
+Migrations 0006 and 0007 add app-scoped Remote Access invitations and the
+unique AxeAI Cloud Computer deployment reference on a server. Deploy these
+migrations before the dashboard or gate changes that read invitation access or
+before enabling the Cloud Computer provisioning service secret.

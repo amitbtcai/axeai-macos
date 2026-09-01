@@ -15,15 +15,24 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import {
   checkAvailabilityFn,
+  acceptAppAccessInvitationFn,
   claimHandleFn,
+  createAppAccessInvitationFn,
   createCodeFn,
   createServerRowFn,
   disconnectFn,
   removeServerFn,
+  revokeAppAccessInvitationFn,
   revokeMachineFn,
   getDashboard,
 } from "@/server/fns";
-import type { IssuedCode, MachineSummary, ServerSummary } from "@/server/api";
+import type {
+  AppAccessInvitationSummary,
+  IssuedCode,
+  MachineSummary,
+  ServerSummary,
+  SharedServerSummary,
+} from "@/server/api";
 import { DASHBOARD_PATH, connectReturnTo } from "@/lib/connect-return-to";
 import {
   dashboardRefreshIntervalMs,
@@ -33,6 +42,7 @@ import {
 
 interface DashboardSearch {
   returnTo?: string;
+  invite?: string;
 }
 
 // Absent means absent: never surface the literal strings "null"/"undefined" (or
@@ -42,15 +52,20 @@ function validateDashboardSearch(
   search: Record<string, unknown>,
 ): DashboardSearch {
   const raw = search.returnTo;
+  const invite = search.invite;
+  const result: DashboardSearch = {};
   if (
     typeof raw === "string" &&
     raw !== "" &&
     raw !== "null" &&
     raw !== "undefined"
   ) {
-    return { returnTo: raw };
+    result.returnTo = raw;
   }
-  return {};
+  if (typeof invite === "string" && invite.startsWith("bbinvite_")) {
+    result.invite = invite;
+  }
+  return result;
 }
 
 export const Route = createFileRoute("/dashboard")({
@@ -81,15 +96,36 @@ function AxeAiLogo() {
       className="h-8 w-auto shrink-0"
     >
       <g transform="scale(0.761905)" color="currentColor">
-        <path d="M97.1923 0.128124L196.375 164.224C196.545 164.505 196.159 164.786 195.947 164.536L97.1036 47.7897C96.9985 47.6655 96.8084 47.6646 96.7021 47.7878L68.7241 80.2122C68.5317 80.4351 68.1757 80.2248 68.2748 79.9469L96.7167 0.176713C96.792 -0.0344117 97.0765 -0.0634694 97.1923 0.128124Z" fill="currentColor" />
-        <path d="M196.128 167.965L0.265052 168C-0.0615031 168 -0.0989738 167.521 0.223566 167.469L153.138 143.075C153.305 143.049 153.404 142.874 153.344 142.716L138.868 104.828C138.762 104.553 139.113 104.334 139.311 104.552L196.324 167.518C196.479 167.69 196.358 167.965 196.128 167.965Z" fill="currentColor" />
-        <path d="M0.0463391 165.242L94.1125 0.500409C94.2762 0.213784 94.7089 0.423656 94.5886 0.731324L38.778 143.501C38.7144 143.663 38.8206 143.842 38.9929 143.863L83.2019 149.225C83.5024 149.262 83.517 149.695 83.2197 149.752L0.325476 165.638C0.102957 165.68 -0.066612 165.44 0.0463391 165.242Z" fill="currentColor" />
+        <path
+          d="M97.1923 0.128124L196.375 164.224C196.545 164.505 196.159 164.786 195.947 164.536L97.1036 47.7897C96.9985 47.6655 96.8084 47.6646 96.7021 47.7878L68.7241 80.2122C68.5317 80.4351 68.1757 80.2248 68.2748 79.9469L96.7167 0.176713C96.792 -0.0344117 97.0765 -0.0634694 97.1923 0.128124Z"
+          fill="currentColor"
+        />
+        <path
+          d="M196.128 167.965L0.265052 168C-0.0615031 168 -0.0989738 167.521 0.223566 167.469L153.138 143.075C153.305 143.049 153.404 142.874 153.344 142.716L138.868 104.828C138.762 104.553 139.113 104.334 139.311 104.552L196.324 167.518C196.479 167.69 196.358 167.965 196.128 167.965Z"
+          fill="currentColor"
+        />
+        <path
+          d="M0.0463391 165.242L94.1125 0.500409C94.2762 0.213784 94.7089 0.423656 94.5886 0.731324L38.778 143.501C38.7144 143.663 38.8206 143.842 38.9929 143.863L83.2019 149.225C83.5024 149.262 83.517 149.695 83.2197 149.752L0.325476 165.638C0.102957 165.68 -0.066612 165.44 0.0463391 165.242Z"
+          fill="currentColor"
+        />
       </g>
       <g transform="translate(190 0)" color="currentColor">
-        <path d="M118.551 128H101.977L88.3284 92.5091H30.0278L16.3788 128H0L50.1113 0H68.6349L118.551 128ZM35.6823 77.9636H82.6738L59.0806 14.9333L35.6823 77.9636Z" fill="currentColor" />
-        <path d="M224.94 128H207.001L172.099 75.2485L137.002 128H118.868L163.91 62.8364L122.768 0H141.096L173.659 49.8424L206.611 0H223.575L181.848 62.0606L224.94 128Z" fill="currentColor" />
-        <path d="M246.308 128V0H336.586V14.5455H261.907V55.8545H320.012V70.4H261.907V113.455H339.511V128H246.308Z" fill="currentColor" />
-        <path d="M487.316 128H470.742L457.093 92.5091H398.792L385.143 128H368.764L418.876 0H437.399L487.316 128ZM404.447 77.9636H451.438L427.845 14.9333L404.447 77.9636Z" fill="currentColor" />
+        <path
+          d="M118.551 128H101.977L88.3284 92.5091H30.0278L16.3788 128H0L50.1113 0H68.6349L118.551 128ZM35.6823 77.9636H82.6738L59.0806 14.9333L35.6823 77.9636Z"
+          fill="currentColor"
+        />
+        <path
+          d="M224.94 128H207.001L172.099 75.2485L137.002 128H118.868L163.91 62.8364L122.768 0H141.096L173.659 49.8424L206.611 0H223.575L181.848 62.0606L224.94 128Z"
+          fill="currentColor"
+        />
+        <path
+          d="M246.308 128V0H336.586V14.5455H261.907V55.8545H320.012V70.4H261.907V113.455H339.511V128H246.308Z"
+          fill="currentColor"
+        />
+        <path
+          d="M487.316 128H470.742L457.093 92.5091H398.792L385.143 128H368.764L418.876 0H437.399L487.316 128ZM404.447 77.9636H451.438L427.845 14.9333L404.447 77.9636Z"
+          fill="currentColor"
+        />
         <path d="M523.223 0V128H507.625V0H523.223Z" fill="currentColor" />
       </g>
     </svg>
@@ -269,9 +305,18 @@ function AxeMark() {
       fill="none"
       aria-hidden="true"
     >
-      <path d="M97.1923 0.128124L196.375 164.224C196.545 164.505 196.159 164.786 195.947 164.536L97.1036 47.7897C96.9985 47.6655 96.8084 47.6646 96.7021 47.7878L68.7241 80.2122C68.5317 80.4351 68.1757 80.2248 68.2748 79.9469L96.7167 0.176713C96.792 -0.0344117 97.0765 -0.0634694 97.1923 0.128124Z" fill="currentColor" />
-      <path d="M196.128 167.965L0.265052 168C-0.0615031 168 -0.0989738 167.521 0.223566 167.469L153.138 143.075C153.305 143.049 153.404 142.874 153.344 142.716L138.868 104.828C138.762 104.553 139.113 104.334 139.311 104.552L196.324 167.518C196.479 167.69 196.358 167.965 196.128 167.965Z" fill="currentColor" />
-      <path d="M0.0463391 165.242L94.1125 0.500409C94.2762 0.213784 94.7089 0.423656 94.5886 0.731324L38.778 143.501C38.7144 143.663 38.8206 143.842 38.9929 143.863L83.2019 149.225C83.5024 149.262 83.517 149.695 83.2197 149.752L0.325476 165.638C0.102957 165.68 -0.066612 165.44 0.0463391 165.242Z" fill="currentColor" />
+      <path
+        d="M97.1923 0.128124L196.375 164.224C196.545 164.505 196.159 164.786 195.947 164.536L97.1036 47.7897C96.9985 47.6655 96.8084 47.6646 96.7021 47.7878L68.7241 80.2122C68.5317 80.4351 68.1757 80.2248 68.2748 79.9469L96.7167 0.176713C96.792 -0.0344117 97.0765 -0.0634694 97.1923 0.128124Z"
+        fill="currentColor"
+      />
+      <path
+        d="M196.128 167.965L0.265052 168C-0.0615031 168 -0.0989738 167.521 0.223566 167.469L153.138 143.075C153.305 143.049 153.404 142.874 153.344 142.716L138.868 104.828C138.762 104.553 139.113 104.334 139.311 104.552L196.324 167.518C196.479 167.69 196.358 167.965 196.128 167.965Z"
+        fill="currentColor"
+      />
+      <path
+        d="M0.0463391 165.242L94.1125 0.500409C94.2762 0.213784 94.7089 0.423656 94.5886 0.731324L38.778 143.501C38.7144 143.663 38.8206 143.842 38.9929 143.863L83.2019 149.225C83.5024 149.262 83.517 149.695 83.2197 149.752L0.325476 165.638C0.102957 165.68 -0.066612 165.44 0.0463391 165.242Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -334,9 +379,14 @@ function claimErrorCopy(err: string, max: number): string {
 
 /* ── auth actions ─────────────────────────────────────────────────── */
 
-async function signInWithAxeAI(returnTo: string | undefined) {
+async function signInWithAxeAI(
+  returnTo: string | undefined,
+  invite: string | undefined,
+) {
   const callbackURL =
-    connectReturnTo(returnTo, window.location.origin) ?? DASHBOARD_PATH;
+    invite !== undefined
+      ? `${DASHBOARD_PATH}?invite=${encodeURIComponent(invite)}`
+      : (connectReturnTo(returnTo, window.location.origin) ?? DASHBOARD_PATH);
   const res = await fetch("/api/auth/sign-in/oauth2", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -390,6 +440,15 @@ async function signOut() {
 function Home() {
   const data = Route.useLoaderData();
   const search = Route.useSearch();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!data.authed || search.invite === undefined) return;
+    void acceptAppAccessInvitationFn({ data: search.invite }).then(async () => {
+      window.history.replaceState({}, "", DASHBOARD_PATH);
+      await router.invalidate();
+    });
+  }, [data.authed, router, search.invite]);
 
   useEffect(() => {
     if (!data.authed) return;
@@ -402,9 +461,10 @@ function Home() {
       <SignInView
         emailPasswordEnabled={data.emailPasswordEnabled}
         returnTo={search.returnTo}
+        invite={search.invite}
       />
     );
-  if (!data.handle)
+  if (!data.handle && data.sharedServers.length === 0)
     return <ClaimView serverUrlTemplate={data.serverUrlTemplate} />;
   return <AccountDashboard state={data} />;
 }
@@ -414,9 +474,11 @@ function Home() {
 function SignInView({
   emailPasswordEnabled,
   returnTo,
+  invite,
 }: {
   emailPasswordEnabled: boolean;
   returnTo: string | undefined;
+  invite: string | undefined;
 }) {
   const [mode, setMode] = useState<EmailAuthMode>("sign-in");
   const [name, setName] = useState("");
@@ -553,7 +615,7 @@ function SignInView({
         <Button
           className="w-full justify-center py-[11px]"
           type="button"
-          onClick={() => void signInWithAxeAI(returnTo)}
+          onClick={() => void signInWithAxeAI(returnTo, invite)}
         >
           <AxeMark />
           Continue with AxeAI
@@ -1190,8 +1252,109 @@ function AccountFooter({ state }: { state: ServerState }) {
         className="text-subtle-foreground hover:text-foreground"
         href="https://axeai.com/settings"
       >
-        {state.handle} · AxeAI{cap}
+        {state.handle ? `${state.handle} · AxeAI${cap}` : "AxeAI"}
       </a>
+    </div>
+  );
+}
+
+function InviteUsersSection({ state }: { state: ServerState }) {
+  const router = useRouter();
+  const [serverId, setServerId] = useState(state.servers[0]?.id ?? "");
+  const [email, setEmail] = useState("");
+  const [invitationUrl, setInvitationUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function invite(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    const result = await createAppAccessInvitationFn({
+      data: { serverId, email },
+    });
+    setBusy(false);
+    if ("ok" in result) {
+      setInvitationUrl(result.invitationUrl);
+      setEmail("");
+      await router.invalidate();
+      return;
+    }
+    setError(
+      result.error === "invalid-email"
+        ? "Enter a valid AxeAI account email."
+        : result.error === "owner"
+          ? "You already own this AxeAI app."
+          : "Could not create the invitation.",
+    );
+  }
+
+  async function revoke(invitation: AppAccessInvitationSummary) {
+    await revokeAppAccessInvitationFn({ data: invitation.id });
+    await router.invalidate();
+  }
+
+  const invitations = state.invitations.filter(
+    (invitation: AppAccessInvitationSummary) =>
+      invitation.serverId === serverId && !invitation.revoked,
+  );
+
+  return (
+    <div className="mt-3 rounded-xl border border-border bg-card p-4 shadow-sm">
+      <h3 className="text-[15px] font-semibold tracking-tight">Invite users</h3>
+      <form className="mt-3 flex flex-col gap-2 sm:flex-row" onSubmit={invite}>
+        {state.servers.length > 1 ? (
+          <select
+            className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+            value={serverId}
+            onChange={(event) => setServerId(event.target.value)}
+          >
+            {state.servers.map((server: ServerSummary) => (
+              <option key={server.id} value={server.id}>
+                {server.name}
+              </option>
+            ))}
+          </select>
+        ) : null}
+        <Input
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="AxeAI account email"
+          required
+        />
+        <Button type="submit" disabled={busy || serverId === ""}>
+          {busy ? "Creating…" : "Create invite"}
+        </Button>
+      </form>
+      {error ? <ErrorBox>{error}</ErrorBox> : null}
+      {invitationUrl ? (
+        <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-surface-recessed p-2">
+          <span className="min-w-0 flex-1 truncate font-mono text-xs">
+            {invitationUrl}
+          </span>
+          <CopyButton text={invitationUrl} label="Copy invite" />
+        </div>
+      ) : null}
+      {invitations.map((invitation: AppAccessInvitationSummary) => (
+        <div
+          key={invitation.id}
+          className="mt-2 flex items-center gap-3 rounded-lg px-1 py-2 text-sm"
+        >
+          <span className="min-w-0 flex-1 truncate">
+            {invitation.inviteeEmail}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            {invitation.accepted ? "Accepted" : "Pending"}
+          </span>
+          <button
+            className="text-xs text-destructive-text hover:underline"
+            onClick={() => void revoke(invitation)}
+          >
+            Remove
+          </button>
+        </div>
+      ))}
     </div>
   );
 }
@@ -1250,100 +1413,131 @@ function AccountDashboard({ state }: { state: ServerState }) {
 
   return (
     <Shell top width="md" footer={<AccountFooter state={state} />}>
-      {/* Tight padding so each row is a full-bleed, rounded hover target. */}
-      <div className="rounded-xl border border-border bg-card p-2 shadow-sm">
-        <div className="flex items-center px-1.5 pb-1.5 pl-3 pt-1.5">
-          <h3 className="flex-1 text-[17px] font-semibold tracking-tight">
-            Your AxeAI apps
-          </h3>
-          <button
-            className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-surface-recessed hover:text-foreground"
-            onClick={() => setConnectOpen(true)}
-          >
-            <HugeiconsIcon icon={PlusSignIcon} className="size-3" />
-            Add an AxeAI app
-          </button>
-        </div>
-        {state.servers.map((s: ServerSummary) => (
-          <ServerRow key={s.id} server={s} autoPair={single} />
-        ))}
-      </div>
-      <div className="mt-3 rounded-xl border border-border bg-card p-2 shadow-sm">
-        <div className="flex items-center px-3 pb-1.5 pt-1.5">
-          <h3 className="flex-1 text-[15px] font-semibold tracking-tight">
-            Machines
-          </h3>
-          {manageServer !== null ? (
-            <a
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-surface-recessed hover:text-foreground"
-              href={`${manageServer.serverUrl}/settings/machines`}
+      {state.servers.length > 0 ? (
+        <div className="rounded-xl border border-border bg-card p-2 shadow-sm">
+          <div className="flex items-center px-1.5 pb-1.5 pl-3 pt-1.5">
+            <h3 className="flex-1 text-[17px] font-semibold tracking-tight">
+              Your AxeAI apps
+            </h3>
+            <button
+              className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-surface-recessed hover:text-foreground"
+              onClick={() => setConnectOpen(true)}
             >
-              Manage machines in AxeAI
-              <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-3" />
-            </a>
-          ) : null}
+              <HugeiconsIcon icon={PlusSignIcon} className="size-3" />
+              Add an AxeAI app
+            </button>
+          </div>
+          {state.servers.map((s: ServerSummary) => (
+            <ServerRow key={s.id} server={s} autoPair={single} />
+          ))}
         </div>
-        {state.machines.length === 0 ? (
-          <p className="px-3 pb-2 text-xs text-subtle-foreground">
-            Add machines from AxeAI Settings → Machines.
-          </p>
-        ) : (
-          state.machines.map((machine: MachineSummary) => {
-            const machineName =
-              machine.name ?? `Machine ${machine.id.slice(0, 8)}`;
-            return (
-              <div
-                key={machine.id}
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5"
-              >
-                <StatusDot
-                  state={
-                    machine.lastSeenAt === null
-                      ? "new"
-                      : machine.online
-                        ? "online"
-                        : "offline"
-                  }
-                />
-                <span className="min-w-0 flex-1">
-                  {machine.subdomain !== null ? (
-                    <span className="block truncate font-mono text-sm font-medium leading-tight">
-                      {state.serverUrlTemplate
-                        .replace("{label}", machine.subdomain)
-                        .replace(/^https?:\/\//u, "")}
-                    </span>
-                  ) : (
-                    <span className="block truncate text-sm font-medium leading-tight">
-                      {machineName}
-                    </span>
-                  )}
-                  <span className="mt-px block truncate text-xs text-muted-foreground">
-                    {machine.online ? (
-                      "Online"
-                    ) : machine.lastSeenAt !== null ? (
-                      <>
-                        <span className="text-warning-text">Offline</span>
-                        {` · last seen ${relativeTime(machine.lastSeenAt)}`}
-                      </>
-                    ) : (
-                      "Never connected"
-                    )}
-                    {machine.subdomain !== null && machine.name !== null
-                      ? ` · ${machine.name}`
-                      : ""}
-                  </span>
+      ) : null}
+      {state.sharedServers.length > 0 ? (
+        <div className="mt-3 rounded-xl border border-border bg-card p-2 shadow-sm">
+          <div className="px-3 pb-1.5 pt-1.5">
+            <h3 className="text-[15px] font-semibold tracking-tight">
+              Shared AxeAI apps
+            </h3>
+          </div>
+          {state.sharedServers.map((sharedServer: SharedServerSummary) => (
+            <a
+              key={sharedServer.id}
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-surface-recessed"
+              href={sharedServer.serverUrl}
+            >
+              <StatusDot state="online" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">
+                  {sharedServer.name}
                 </span>
-                <button
-                  className="text-xs text-destructive-text hover:underline"
-                  onClick={() => void revoke(machine)}
+                <span className="block truncate text-xs text-muted-foreground">
+                  Shared by {sharedServer.ownerName}
+                </span>
+              </span>
+              <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-4" />
+            </a>
+          ))}
+        </div>
+      ) : null}
+      {state.servers.length > 0 ? <InviteUsersSection state={state} /> : null}
+      {state.servers.length > 0 ? (
+        <div className="mt-3 rounded-xl border border-border bg-card p-2 shadow-sm">
+          <div className="flex items-center px-3 pb-1.5 pt-1.5">
+            <h3 className="flex-1 text-[15px] font-semibold tracking-tight">
+              Machines
+            </h3>
+            {manageServer !== null ? (
+              <a
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-surface-recessed hover:text-foreground"
+                href={`${manageServer.serverUrl}/settings/machines`}
+              >
+                Manage machines in AxeAI
+                <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-3" />
+              </a>
+            ) : null}
+          </div>
+          {state.machines.length === 0 ? (
+            <p className="px-3 pb-2 text-xs text-subtle-foreground">
+              Add machines from AxeAI Settings → Machines.
+            </p>
+          ) : (
+            state.machines.map((machine: MachineSummary) => {
+              const machineName =
+                machine.name ?? `Machine ${machine.id.slice(0, 8)}`;
+              return (
+                <div
+                  key={machine.id}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5"
                 >
-                  Revoke
-                </button>
-              </div>
-            );
-          })
-        )}
-      </div>
+                  <StatusDot
+                    state={
+                      machine.lastSeenAt === null
+                        ? "new"
+                        : machine.online
+                          ? "online"
+                          : "offline"
+                    }
+                  />
+                  <span className="min-w-0 flex-1">
+                    {machine.subdomain !== null ? (
+                      <span className="block truncate font-mono text-sm font-medium leading-tight">
+                        {state.serverUrlTemplate
+                          .replace("{label}", machine.subdomain)
+                          .replace(/^https?:\/\//u, "")}
+                      </span>
+                    ) : (
+                      <span className="block truncate text-sm font-medium leading-tight">
+                        {machineName}
+                      </span>
+                    )}
+                    <span className="mt-px block truncate text-xs text-muted-foreground">
+                      {machine.online ? (
+                        "Online"
+                      ) : machine.lastSeenAt !== null ? (
+                        <>
+                          <span className="text-warning-text">Offline</span>
+                          {` · last seen ${relativeTime(machine.lastSeenAt)}`}
+                        </>
+                      ) : (
+                        "Never connected"
+                      )}
+                      {machine.subdomain !== null && machine.name !== null
+                        ? ` · ${machine.name}`
+                        : ""}
+                    </span>
+                  </span>
+                  <button
+                    className="text-xs text-destructive-text hover:underline"
+                    onClick={() => void revoke(machine)}
+                  >
+                    Revoke
+                  </button>
+                </div>
+              );
+            })
+          )}
+        </div>
+      ) : null}
       {dialog}
     </Shell>
   );

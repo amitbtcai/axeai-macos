@@ -1,9 +1,10 @@
-import { and, eq, isNotNull, isNull } from "drizzle-orm";
+import { and, eq, gt, gte, isNotNull, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import {
   CONNECT_CODE_TTL_MS,
   MAX_PER_ACCOUNT,
   SERVER_OFFLINE_AFTER_MS,
+  appAccessInvitation,
   checkLabelAvailability,
   connectCode,
   labelClaim,
@@ -102,6 +103,25 @@ export interface AccountState {
   githubLogin: string | null;
   maxServers: number;
   machines: MachineSummary[];
+  invitations: AppAccessInvitationSummary[];
+  sharedServers: SharedServerSummary[];
+}
+
+export interface AppAccessInvitationSummary {
+  id: string;
+  serverId: string;
+  inviteeEmail: string;
+  accepted: boolean;
+  accessExpiresAt: number | null;
+  revoked: boolean;
+}
+
+export interface SharedServerSummary {
+  id: string;
+  name: string;
+  serverUrl: string;
+  ownerName: string;
+  accessExpiresAt: number;
 }
 
 export interface MachineSummary {
@@ -199,6 +219,56 @@ export async function getAccountState(
     maxServers: MAX_PER_ACCOUNT,
   };
 
+  const invitationRows = await db
+    .select()
+    .from(appAccessInvitation)
+    .where(eq(appAccessInvitation.ownerUserId, userId))
+    .all();
+  const invitations = invitationRows
+    .map((row) => ({
+      id: row.id,
+      serverId: row.serverId,
+      inviteeEmail: row.inviteeEmail,
+      accepted: row.acceptedAt !== null,
+      accessExpiresAt: row.accessExpiresAt?.getTime() ?? null,
+      revoked: row.revokedAt !== null,
+    }))
+    .sort((left, right) => left.inviteeEmail.localeCompare(right.inviteeEmail));
+
+  const sharedRows = await db
+    .select({
+      id: server.id,
+      name: server.name,
+      subdomain: server.subdomain,
+      ownerName: user.name,
+      accessExpiresAt: appAccessInvitation.accessExpiresAt,
+    })
+    .from(appAccessInvitation)
+    .innerJoin(server, eq(server.id, appAccessInvitation.serverId))
+    .innerJoin(user, eq(user.id, appAccessInvitation.ownerUserId))
+    .where(
+      and(
+        eq(appAccessInvitation.inviteeUserId, userId),
+        isNotNull(appAccessInvitation.acceptedAt),
+        isNull(appAccessInvitation.revokedAt),
+        gt(appAccessInvitation.accessExpiresAt, new Date(now)),
+      ),
+    )
+    .all();
+  const sharedServers = sharedRows.flatMap((row) =>
+    row.accessExpiresAt === null
+      ? []
+      : [
+          {
+            id: row.id,
+            name: row.name,
+            serverUrl: serverUrlForLabel(row.subdomain, serverUrlTemplate),
+            ownerName: row.ownerName,
+            accessExpiresAt: row.accessExpiresAt.getTime(),
+          },
+        ],
+  );
+
   const machineRows = await db
     .select({
       id: machine.id,
@@ -226,7 +296,14 @@ export async function getAccountState(
     .sort((left, right) => left.createdAt - right.createdAt);
 
   if (!prof) {
-    return { handle: null, machines, servers: [], ...base };
+    return {
+      handle: null,
+      machines,
+      servers: [],
+      invitations,
+      sharedServers,
+      ...base,
+    };
   }
 
   const serverRows = await db
@@ -245,7 +322,131 @@ export async function getAccountState(
         : a.createdAt - b.createdAt,
     );
 
-  return { handle: prof.handle, machines, servers, ...base };
+  return {
+    handle: prof.handle,
+    machines,
+    servers,
+    invitations,
+    sharedServers,
+    ...base,
+  };
+}
+
+const INVITATION_TTL_MS = 24 * 60 * 60 * 1000;
+const ACCESS_TTL_MS = 365 * 24 * 60 * 60 * 1000;
+
+function normalizeEmail(value: string): string | null {
+  const email = value.trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email) ? email : null;
+}
+
+export async function createAppAccessInvitation(
+  deps: Deps,
+  ownerUserId: string,
+  input: { serverId: string; email: string },
+): Promise<{ ok: true; invitationUrl: string } | { error: string }> {
+  const email = normalizeEmail(input.email);
+  if (email === null) return { error: "invalid-email" };
+  const srv = await deps.db
+    .select({ id: server.id })
+    .from(server)
+    .where(and(eq(server.id, input.serverId), eq(server.userId, ownerUserId)))
+    .get();
+  if (!srv) return { error: "not-found" };
+  const owner = await deps.db
+    .select({ email: user.email })
+    .from(user)
+    .where(eq(user.id, ownerUserId))
+    .get();
+  if (owner?.email.toLowerCase() === email) return { error: "owner" };
+
+  const token = generateToken("bbinvite_", 32);
+  const now = new Date();
+  const recent = await deps.db
+    .select({ id: appAccessInvitation.id })
+    .from(appAccessInvitation)
+    .where(
+      and(
+        eq(appAccessInvitation.ownerUserId, ownerUserId),
+        gte(
+          appAccessInvitation.createdAt,
+          new Date(now.getTime() - 24 * 60 * 60 * 1000),
+        ),
+      ),
+    )
+    .all();
+  if (recent.length >= 20) return { error: "rate-limited" };
+  await deps.db
+    .insert(appAccessInvitation)
+    .values({
+      id: crypto.randomUUID(),
+      serverId: srv.id,
+      ownerUserId,
+      inviteeEmail: email,
+      tokenHash: await sha256Hex(token),
+      expiresAt: new Date(now.getTime() + INVITATION_TTL_MS),
+      createdAt: now,
+      updatedAt: now,
+    })
+    .run();
+  const invitationUrl = new URL("/dashboard", deps.appUrl);
+  invitationUrl.searchParams.set("invite", token);
+  return { ok: true, invitationUrl: invitationUrl.toString() };
+}
+
+export async function acceptAppAccessInvitation(
+  deps: Deps,
+  inviteeUserId: string,
+  token: string,
+): Promise<{ ok: true } | { error: string }> {
+  const invitee = await deps.db
+    .select({ email: user.email })
+    .from(user)
+    .where(eq(user.id, inviteeUserId))
+    .get();
+  if (!invitee) return { error: "not-found" };
+  const tokenHash = await sha256Hex(token.trim());
+  const now = new Date();
+  const accepted = await deps.db
+    .update(appAccessInvitation)
+    .set({
+      inviteeUserId,
+      acceptedAt: now,
+      accessExpiresAt: new Date(now.getTime() + ACCESS_TTL_MS),
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(appAccessInvitation.tokenHash, tokenHash),
+        eq(appAccessInvitation.inviteeEmail, invitee.email.toLowerCase()),
+        isNull(appAccessInvitation.acceptedAt),
+        isNull(appAccessInvitation.revokedAt),
+        gt(appAccessInvitation.expiresAt, now),
+      ),
+    )
+    .run();
+  return rowsChanged(accepted) === 1
+    ? { ok: true }
+    : { error: "invalid-invitation" };
+}
+
+export async function revokeAppAccessInvitation(
+  deps: Deps,
+  ownerUserId: string,
+  invitationId: string,
+): Promise<{ ok: true } | { error: string }> {
+  const revoked = await deps.db
+    .update(appAccessInvitation)
+    .set({ revokedAt: new Date(), updatedAt: new Date() })
+    .where(
+      and(
+        eq(appAccessInvitation.id, invitationId),
+        eq(appAccessInvitation.ownerUserId, ownerUserId),
+        isNull(appAccessInvitation.revokedAt),
+      ),
+    )
+    .run();
+  return rowsChanged(revoked) === 1 ? { ok: true } : { error: "not-found" };
 }
 
 export async function revokeMachine(

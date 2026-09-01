@@ -155,8 +155,18 @@ vi.mock("./cache.js", async () => {
   };
 });
 
+const { mockInvitationGet } = vi.hoisted(() => ({
+  mockInvitationGet: vi.fn(),
+}));
+
 vi.mock("drizzle-orm/d1", () => ({
-  drizzle: vi.fn(() => ({})),
+  drizzle: vi.fn(() => ({
+    select: () => ({
+      from: () => ({
+        where: () => ({ get: mockInvitationGet }),
+      }),
+    }),
+  })),
 }));
 
 import { drizzle } from "drizzle-orm/d1";
@@ -244,6 +254,11 @@ function resolvedMachine(
 const BASE = "getbb.app";
 const OWNER = "user-owner";
 const OTHER = "user-other";
+
+beforeEach(() => {
+  mockInvitationGet.mockReset();
+  mockInvitationGet.mockResolvedValue(undefined);
+});
 
 function makeEnv(doFetch: (req: Request) => Promise<Response> | Response) {
   const captured: Request[] = [];
@@ -1183,6 +1198,19 @@ describe("gate worker share hosts", () => {
     expect(await res.text()).toContain("not your server");
     expect(captured).toHaveLength(0);
     expect(mockRefreshAccountSession).not.toHaveBeenCalled();
+  });
+
+  it("allows an accepted active invitation to the resolved AxeAI app", async () => {
+    mockVerifySessionDetails.mockResolvedValue(sessionDetails(OTHER));
+    mockInvitationGet.mockResolvedValue({ id: "invitation-1" });
+    const { env, ctx, captured } = makeEnv(() => new Response("ok"));
+    const response = await worker.fetch(
+      visitorRequest("sawyer.getbb.app", "/"),
+      env as never,
+      ctx,
+    );
+    expect(response.status).toBe(200);
+    expect(captured).toHaveLength(1);
   });
 
   it("accepts the short-lived desktop cookie for the owning account", async () => {

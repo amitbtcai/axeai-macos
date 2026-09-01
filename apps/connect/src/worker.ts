@@ -1,6 +1,8 @@
 import { drizzle } from "drizzle-orm/d1";
+import { and, eq, gt, isNotNull, isNull } from "drizzle-orm";
 import {
   RESERVED_HANDLES,
+  appAccessInvitation,
   handleAppLinkAssociationRequest,
   parseVisitorHost,
   schema,
@@ -37,6 +39,7 @@ import {
   MACHINE_CREDENTIAL_HEADER,
   TUNNEL_TARGET_HEADER,
 } from "./protocol-headers.js";
+import { handleCloudProvisioning } from "./cloud-provisioning.js";
 
 export { TunnelDO };
 
@@ -318,6 +321,9 @@ export default {
   ): Promise<Response> {
     const runtime = resolveConnectRuntime(env);
     const url = resolveConnectRequestUrl(request.url, request.headers, runtime);
+    if (url.pathname === "/api/connect/cloud-provisioning") {
+      return handleCloudProvisioning(request, env);
+    }
     // Account-scoped APIs are handled on the gate before host/label routing so
     // they never proxy through a tunnel to a local bb origin. Auth is
     // machine/server credential or owner session — see servers.ts.
@@ -510,7 +516,26 @@ export default {
       sessionUserId !== resolved.userId &&
       desktopUserId !== resolved.userId
     ) {
-      return text("bb connect: not your server\n", 403);
+      const visitorUserId = sessionUserId ?? desktopUserId;
+      const invitation =
+        visitorUserId !== null && resolved.kind === "server"
+          ? await db
+              .select({ id: appAccessInvitation.id })
+              .from(appAccessInvitation)
+              .where(
+                and(
+                  eq(appAccessInvitation.serverId, resolved.server.id),
+                  eq(appAccessInvitation.inviteeUserId, visitorUserId),
+                  isNotNull(appAccessInvitation.acceptedAt),
+                  isNull(appAccessInvitation.revokedAt),
+                  gt(appAccessInvitation.accessExpiresAt, new Date()),
+                ),
+              )
+              .get()
+          : null;
+      if (invitation === null || invitation === undefined) {
+        return text("bb connect: not your server\n", 403);
+      }
     }
 
     const doRequest = requestForTunnelDo(request, target, "session", [

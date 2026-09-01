@@ -155,6 +155,7 @@ export const server = sqliteTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     name: text("name").notNull().default("default"),
+    cloudDeploymentId: text("cloud_deployment_id").unique(),
     // Globally-unique routing label (`<subdomain>.getbb.app`). Backfilled to the
     // owner's handle for pre-multi-server rows; see migration 0003.
     subdomain: text("subdomain").notNull().unique(),
@@ -165,6 +166,35 @@ export const server = sqliteTable(
     revokedAt: timestampMs("revoked_at"),
   },
   (table) => [uniqueIndex("server_user_name_idx").on(table.userId, table.name)],
+);
+
+export const appAccessInvitation = sqliteTable(
+  "app_access_invitation",
+  {
+    id: text("id").primaryKey(),
+    serverId: text("server_id")
+      .notNull()
+      .references(() => server.id, { onDelete: "cascade" }),
+    ownerUserId: text("owner_user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    inviteeEmail: text("invitee_email").notNull(),
+    inviteeUserId: text("invitee_user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: timestampMs("expires_at").notNull(),
+    acceptedAt: timestampMs("accepted_at"),
+    accessExpiresAt: timestampMs("access_expires_at"),
+    revokedAt: timestampMs("revoked_at"),
+    createdAt: timestampMs("created_at").notNull(),
+    updatedAt: timestampMs("updated_at").notNull(),
+  },
+  (table) => [
+    index("app_access_invitation_server_idx").on(table.serverId),
+    index("app_access_invitation_invitee_idx").on(table.inviteeUserId),
+    index("app_access_invitation_owner_idx").on(table.ownerUserId),
+  ],
 );
 
 /**
@@ -245,6 +275,7 @@ export const schema = {
   profile,
   labelClaim,
   server,
+  appAccessInvitation,
   machine,
   connectCode,
   auditLog,
