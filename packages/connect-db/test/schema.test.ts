@@ -32,6 +32,11 @@ const LABEL_CLAIM_TRIGGERS = [
   "server_label_claim_insert",
   "server_label_claim_update",
 ] as const;
+const APP_ACCESS_AUDIT_TRIGGERS = [
+  "app_access_invitation_accepted_audit",
+  "app_access_invitation_revoked_audit",
+  "app_access_invitation_sent_audit",
+] as const;
 
 function migrationFiles(): string[] {
   return readdirSync(MIGRATIONS_DIR)
@@ -645,7 +650,11 @@ describe("0003 backfill (staged application on real prior data)", () => {
             "SELECT name FROM sqlite_master WHERE type = 'trigger' ORDER BY name",
           )
           .all(),
-      ).toEqual(LABEL_CLAIM_TRIGGERS.map((name) => ({ name })));
+      ).toEqual(
+        [...APP_ACCESS_AUDIT_TRIGGERS, ...LABEL_CLAIM_TRIGGERS].map((name) => ({
+          name,
+        })),
+      );
     } finally {
       fresh.close();
     }

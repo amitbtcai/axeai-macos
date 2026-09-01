@@ -57,6 +57,13 @@
       "when": 1788295857815,
       "tag": "0007_cloud_deployment_reference",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1788297754133,
+      "tag": "0008_app_access_invitation_audit",
+      "breakpoints": true
     }
   ]
 }

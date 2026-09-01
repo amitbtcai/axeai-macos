@@ -4,6 +4,7 @@ import {
   MAX_PER_ACCOUNT,
   SERVER_OFFLINE_AFTER_MS,
   account,
+  auditLog,
   checkLabelAvailability,
   connectCode,
   profile,
@@ -179,7 +180,7 @@ export async function handleCloudProvisioning(
 ): Promise<Response> {
   if (!authorized(request, env)) return json({ error: "unauthorized" }, 401);
   const url = new URL(request.url);
-  if (request.method === "GET") {
+  if (request.method === "GET" || request.method === "DELETE") {
     const deploymentId = url.searchParams.get("deploymentId")?.trim();
     if (!deploymentId) return json({ error: "invalid-request" }, 400);
     const db = drizzle(env.DB, { schema });
@@ -189,6 +190,19 @@ export async function handleCloudProvisioning(
       .where(eq(server.cloudDeploymentId, deploymentId))
       .get();
     if (!srv) return json({ error: "not-found" }, 404);
+    if (request.method === "DELETE") {
+      await db
+        .insert(auditLog)
+        .values({
+          id: crypto.randomUUID(),
+          userId: srv.userId,
+          action: "cloud_app_deployment_unlinked",
+          createdAt: new Date(),
+        })
+        .run();
+      await db.delete(server).where(eq(server.id, srv.id)).run();
+      return json({ ok: true });
+    }
     const lastSeenAt = srv.lastSeenAt?.getTime() ?? null;
     return json({
       serverId: srv.id,

@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   connectCode,
+  auditLog,
   appAccessInvitation,
   labelClaim,
   machine,
@@ -278,6 +279,13 @@ describe("AxeAI app access invitations", () => {
       ok: true,
     });
     expect((await getAccountState(deps, "u2")).sharedServers).toHaveLength(0);
+    expect(db.select({ action: auditLog.action }).from(auditLog).all()).toEqual(
+      [
+        { action: "cloud_app_invitation_sent" },
+        { action: "cloud_app_invitation_accepted" },
+        { action: "cloud_app_invitation_revoked" },
+      ],
+    );
   });
 });
 
