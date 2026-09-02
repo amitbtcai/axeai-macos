@@ -42,6 +42,7 @@ import type {
 import type { WorkspaceOpenTarget } from "@bb/host-daemon-contract";
 import { appToast } from "@/components/ui/app-toast";
 import { copyToClipboardWithToast } from "@/lib/clipboard";
+import { appServerOrigin } from "@/lib/embedded-runtime";
 import type { ThreadSecondaryPanel as ThreadSecondaryPanelTab } from "@/lib/thread-secondary-panel";
 import { useForkThreadFromMessage } from "@/hooks/useForkThreadFromMessage";
 import { isThreadForkable } from "@bb/client-core";
@@ -1880,7 +1881,7 @@ function ThreadDetailViewInternal(props: ThreadRoutePathArgs) {
   const workspacePreviewRootPath = environment?.path ?? null;
   const threadOpenContext = resolveEnvironmentOpenContext({
     environment,
-    serverOrigin: window.location.origin,
+    serverOrigin: appServerOrigin(),
     threadEnvironmentIsLocal,
   });
   const {

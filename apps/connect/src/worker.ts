@@ -18,9 +18,11 @@ import {
   verifySessionCookieDetails,
 } from "./session.js";
 import {
+  createDesktopSessionCookie,
   handleCreateDesktopSession,
   handleDisconnectServer,
   handleListAccountServers,
+  verifyAxeAiBootstrapSession,
   verifyDesktopSessionCookie,
 } from "./servers.js";
 import { serveWithCache } from "./cache.js";
@@ -42,6 +44,51 @@ import {
 import { handleCloudProvisioning } from "./cloud-provisioning.js";
 
 export { TunnelDO };
+
+const AXEAI_EMBED_ORIGINS = new Set([
+  "https://axeai.com",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+]);
+
+function embedOrigin(request: Request): string | null {
+  const origin = request.headers.get("origin");
+  return origin !== null && AXEAI_EMBED_ORIGINS.has(origin) ? origin : null;
+}
+
+function withEmbedCors(request: Request, response: Response): Response {
+  if (response.status === 101) return response;
+  const origin = embedOrigin(request);
+  if (origin === null) return response;
+  const headers = new Headers(response.headers);
+  headers.set("access-control-allow-origin", origin);
+  headers.set("access-control-allow-credentials", "true");
+  headers.append("vary", "Origin");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+function embedPreflight(request: Request): Response | null {
+  const origin = embedOrigin(request);
+  if (request.method !== "OPTIONS" || origin === null) return null;
+  const requestedHeaders =
+    request.headers.get("access-control-request-headers") ??
+    "content-type, x-bb-app-surface";
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "access-control-allow-origin": origin,
+      "access-control-allow-credentials": "true",
+      "access-control-allow-methods": "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS",
+      "access-control-allow-headers": requestedHeaders,
+      "access-control-max-age": "86400",
+      vary: "Origin",
+    },
+  });
+}
 
 async function sha256Hex(value: string): Promise<string> {
   const digest = await crypto.subtle.digest(
@@ -342,6 +389,8 @@ export default {
     const host = resolveConnectRequestHost(request.headers, runtime);
     const parsed = parseVisitorHost(host, env.BASE_DOMAIN);
     if (!parsed) return text("bb connect: unknown host\n", 404);
+    const preflight = embedPreflight(request);
+    if (preflight !== null) return preflight;
     // bb mobile universal / app links: Apple's CDN and Android fetch the
     // association files anonymously from `https://<label>.getbb.app`, so
     // bare labels answer here — before label resolution (Apple may fetch
@@ -384,6 +433,74 @@ export default {
       isTunnelDial ? { fresh: true } : undefined,
     );
     if (!resolved) return text(`bb connect: no server for "${label}"\n`, 404);
+
+    if (url.pathname === "/api/connect/axeai-session") {
+      if (
+        request.method !== "POST" ||
+        target !== null ||
+        resolved.kind !== "server" ||
+        embedOrigin(request) === null
+      ) {
+        return withEmbedCors(
+          request,
+          Response.json({ error: "not-found" }, { status: 404 }),
+        );
+      }
+      const body = (await request.json().catch(() => null)) as {
+        session?: unknown;
+      } | null;
+      const bootstrap =
+        body !== null && typeof body.session === "string"
+          ? await verifyAxeAiBootstrapSession(
+              body.session,
+              env.BETTER_AUTH_SECRET,
+            )
+          : null;
+      if (bootstrap === null || bootstrap.serverId !== resolved.server.id) {
+        return withEmbedCors(
+          request,
+          Response.json({ error: "unauthorized" }, { status: 401 }),
+        );
+      }
+      if (bootstrap.userId !== resolved.userId) {
+        const invitation = await db
+          .select({ id: appAccessInvitation.id })
+          .from(appAccessInvitation)
+          .where(
+            and(
+              eq(appAccessInvitation.serverId, resolved.server.id),
+              eq(appAccessInvitation.inviteeUserId, bootstrap.userId),
+              isNotNull(appAccessInvitation.acceptedAt),
+              isNull(appAccessInvitation.revokedAt),
+              gt(appAccessInvitation.accessExpiresAt, new Date()),
+            ),
+          )
+          .get();
+        if (!invitation) {
+          return withEmbedCors(
+            request,
+            Response.json({ error: "forbidden" }, { status: 403 }),
+          );
+        }
+      }
+      const expiresAt = Date.now() + 60 * 60 * 1000;
+      const session = await createDesktopSessionCookie(
+        bootstrap.userId,
+        env.BETTER_AUTH_SECRET,
+        expiresAt,
+      );
+      const secure = runtime.localCloud ? "" : "; Secure";
+      return withEmbedCors(
+        request,
+        new Response(null, {
+          status: 204,
+          headers: {
+            "cache-control": "no-store",
+            "set-cookie": `${runtime.desktopSessionCookieName}=${session}; Max-Age=3600; Domain=.${env.BASE_DOMAIN}; Path=/; HttpOnly; SameSite=Lax${secure}`,
+          },
+        }),
+      );
+    }
 
     // Server routing stays exactly as on main (the bare label). Machine labels
     // are new and use ownership-generation identity from their first dial.
@@ -601,6 +718,6 @@ export default {
       );
       if (setCookies !== null) return withSetCookies(response, setCookies);
     }
-    return response;
+    return withEmbedCors(request, response);
   },
 } satisfies ExportedHandler<Env>;

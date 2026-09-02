@@ -15,6 +15,7 @@ import {
   schema,
   server,
   user,
+  verifyAxeAiBootstrapSession,
 } from "@bb/connect-db";
 import {
   type Deps,
@@ -22,6 +23,7 @@ import {
   acceptAppAccessInvitation,
   claimHandle,
   createAppAccessInvitation,
+  createAxeAiControlSession,
   createConnectCode,
   createMachineCodeForServerCredential,
   createServer,
@@ -200,6 +202,34 @@ describe("createServer (connect another bb)", () => {
 });
 
 describe("AxeAI app access invitations", () => {
+  it("creates a short-lived control session only for an accessible app", async () => {
+    seedUser("u1");
+    seedUser("u2");
+    await claimHandle(deps, "u1", "sawyer");
+    const owned = db.select().from(server).where(eq(server.userId, "u1")).get();
+    if (!owned) throw new Error("setup");
+    const control = await createAxeAiControlSession(
+      deps,
+      "u1",
+      owned.id,
+      "control-secret",
+    );
+    expect("session" in control).toBe(true);
+    if (!("session" in control)) throw new Error("control session missing");
+    expect(control.serverUrl).toBe("https://sawyer.getbb.app");
+    expect(
+      await verifyAxeAiBootstrapSession(control.session, "control-secret"),
+    ).toEqual({ serverId: owned.id, userId: "u1" });
+    expect(
+      await createAxeAiControlSession(
+        deps,
+        "u2",
+        owned.id,
+        "control-secret",
+      ),
+    ).toEqual({ error: "not-found" });
+  });
+
   it("accepts once for the invited account and lists the shared app", async () => {
     seedUser("u1");
     seedUser("u2");

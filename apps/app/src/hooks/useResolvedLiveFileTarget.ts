@@ -4,6 +4,7 @@ import type { OpenInTargetContext } from "@bb/host-daemon-contract";
 import { useEnvironment } from "@/hooks/queries/environment-queries";
 import { useThreadStorageLocation } from "@/hooks/queries/thread-queries";
 import { useHostDaemon } from "@/hooks/useHostDaemon";
+import { appServerOrigin } from "@/lib/embedded-runtime";
 
 type ResolvedLiveFileTarget =
   | { status: "loading" }
@@ -52,7 +53,7 @@ export function useResolvedLiveFileTarget(
           : {
               kind: "remote-ssh",
               hostId: target.hostId,
-              serverOrigin: window.location.origin,
+              serverOrigin: appServerOrigin(),
             },
       };
     }
@@ -74,7 +75,7 @@ export function useResolvedLiveFileTarget(
           : {
               kind: "remote-ssh",
               hostId: location.hostId,
-              serverOrigin: window.location.origin,
+              serverOrigin: appServerOrigin(),
             },
       };
     }
@@ -92,7 +93,7 @@ export function useResolvedLiveFileTarget(
         : {
             kind: "remote-ssh",
             hostId: environment.hostId,
-            serverOrigin: window.location.origin,
+            serverOrigin: appServerOrigin(),
           },
     };
   }, [

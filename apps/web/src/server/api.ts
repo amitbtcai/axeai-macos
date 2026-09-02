@@ -7,6 +7,7 @@ import {
   appAccessInvitation,
   checkLabelAvailability,
   connectCode,
+  createAxeAiBootstrapSession,
   labelClaim,
   machine,
   machineRoutingKey,
@@ -330,6 +331,29 @@ export async function getAccountState(
     sharedServers,
     ...base,
   };
+}
+
+export async function createAxeAiControlSession(
+  deps: Deps,
+  userId: string,
+  serverId: string,
+  secret: string,
+): Promise<
+  | { serverId: string; serverUrl: string; session: string }
+  | { error: "not-found" }
+> {
+  const state = await getAccountState(deps, userId);
+  const selected = [...state.servers, ...state.sharedServers].find(
+    (candidate) => candidate.id === serverId,
+  );
+  if (!selected) return { error: "not-found" };
+  const session = await createAxeAiBootstrapSession(
+    userId,
+    serverId,
+    secret,
+    Date.now() + 2 * 60 * 1000,
+  );
+  return { serverId, serverUrl: selected.serverUrl, session };
 }
 
 const INVITATION_TTL_MS = 24 * 60 * 60 * 1000;

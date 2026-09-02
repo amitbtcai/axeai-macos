@@ -3,6 +3,7 @@ import {
   acceptAppAccessInvitation,
   checkAvailability,
   claimHandle,
+  createAxeAiControlSession,
   createAppAccessInvitation,
   createConnectCode,
   createServer,
@@ -95,6 +96,17 @@ export const Route = createFileRoute("/api/internal/axeai-dashboard")({
                 reuse: body.reuse,
               }),
             });
+          case "create-control-session":
+            return typeof body.serverId === "string"
+              ? json({
+                  data: await createAxeAiControlSession(
+                    deps,
+                    userId,
+                    body.serverId,
+                    env.BETTER_AUTH_SECRET,
+                  ),
+                })
+              : json({ error: "invalid-request" }, 400);
           case "disconnect-server":
             return typeof body.serverId === "string"
               ? json({

@@ -3,6 +3,7 @@ import {
   type BuildTerminalWebSocketPathArgs,
 } from "@bb/client-core";
 import { buildDevWebSocketUrl } from "@/lib/dev-websocket-url";
+import { appServerOrigin } from "@/lib/embedded-runtime";
 
 type BuildTerminalWebSocketUrlArgs = BuildTerminalWebSocketPathArgs;
 
@@ -12,8 +13,9 @@ function buildWebSocketUrl(path: string): string {
     return devWebSocketUrl;
   }
 
-  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  return `${protocol}//${window.location.host}${path}`;
+  const serverOrigin = new URL(appServerOrigin());
+  const protocol = serverOrigin.protocol === "https:" ? "wss:" : "ws:";
+  return `${protocol}//${serverOrigin.host}${path}`;
 }
 
 export function buildTerminalWebSocketUrl(

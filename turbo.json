@@ -78,6 +78,18 @@
       ],
       "outputs": ["bundle-stats.json", "dist/**"]
     },
+    "@bb/app#build:embed": {
+      "dependsOn": ["topo"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/package.json",
+        "$TURBO_ROOT$/packages/tsconfig/*.json",
+        "$TURBO_ROOT$/pnpm-lock.yaml",
+        "$TURBO_ROOT$/pnpm-workspace.yaml",
+        "$TURBO_ROOT$/turbo.json"
+      ],
+      "outputs": ["dist-embed/**"]
+    },
     "build": {
       "dependsOn": ["topo"],
       "inputs": [

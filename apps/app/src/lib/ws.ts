@@ -1,4 +1,5 @@
 import ReconnectingWebSocket from "partysocket/ws";
+import { appServerOrigin } from "./embedded-runtime";
 import {
   browserAutomationCancelMessageLenientSchema,
   browserAutomationCloseMessageLenientSchema,
@@ -141,9 +142,10 @@ export class WebSocketManager {
   connect(): void {
     if (this.socket) return;
 
+    const serverOrigin = new URL(appServerOrigin());
     const url =
       buildDevWebSocketUrl({ path: "/ws" }) ??
-      `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/ws`;
+      `${serverOrigin.protocol === "https:" ? "wss:" : "ws:"}//${serverOrigin.host}/ws`;
 
     const socket = new ReconnectingWebSocket(url, undefined, {
       minReconnectionDelay: 1000,

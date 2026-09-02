@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" class="bb-app-shell-root">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#151515" id="theme-color" />
+    <title>AxeAI</title>
+    <script>
+      (function () {
+        var theme = null;
+        try {
+          theme = localStorage.getItem("bb.theme");
+        } catch {}
+        var dark =
+          theme === "dark" ||
+          (theme !== "light" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.getElementById("theme-color").content = dark
+          ? "#151515"
+          : "#ffffff";
+        document.documentElement.style.backgroundColor = dark
+          ? "#151515"
+          : "#ffffff";
+        if (dark) document.documentElement.classList.add("dark");
+      })();
+    </script>
+  </head>
+  <body class="bb-app-shell">
+    <div id="root"></div>
+    <script type="module" src="/src/embed-main.tsx"></script>
+  </body>
+</html>

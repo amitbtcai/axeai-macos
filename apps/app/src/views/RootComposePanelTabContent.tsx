@@ -31,6 +31,7 @@ import { useEnvironment } from "@/hooks/queries/environment-queries";
 import { useThreadStorageViewer } from "@/components/secondary-panel/useThreadStorageViewer";
 import { useHostDaemon } from "@/hooks/useHostDaemon";
 import { useLocalOpenTargets } from "@/hooks/useLocalOpenTargets";
+import { appServerOrigin } from "@/lib/embedded-runtime";
 import {
   buildOpenInEditorHandler,
   resolveEnvironmentOpenContext,
@@ -347,7 +348,7 @@ function RootComposeFilePreviewTabContent({
         ? (environment?.hostId ?? null)
         : projectSourceRoutingHostId;
   const { isLocalDaemonHost } = useHostDaemon();
-  const serverOrigin = window.location.origin;
+  const serverOrigin = appServerOrigin();
   const environmentOpenContext = resolveEnvironmentOpenContext({
     environment,
     threadEnvironmentIsLocal: environment

@@ -28,6 +28,7 @@ import {
 import { TruncateStart } from "@/components/ui/truncate-start.js";
 import { copyToClipboardWithToast } from "@/lib/clipboard";
 import { openUrlInExternalBrowser } from "@/lib/url-open-routing";
+import { appServerOrigin } from "@/lib/embedded-runtime";
 import type {
   FilePreviewLineRange,
   WorkspaceFilePreviewStatusLabel,
@@ -220,7 +221,7 @@ function toAbsolutePreviewUrl(url: string): string {
   if (typeof window === "undefined") {
     return url;
   }
-  return new URL(url, window.location.href).toString();
+  return new URL(url, appServerOrigin()).toString();
 }
 
 function getFilePreviewToggleKind(

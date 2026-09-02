@@ -129,9 +129,11 @@ vi.mock("./account-session.js", () => ({
 }));
 
 vi.mock("./servers.js", () => ({
+  createDesktopSessionCookie: vi.fn(),
   handleCreateDesktopSession: vi.fn(),
   handleDisconnectServer: vi.fn(),
   handleListAccountServers: vi.fn(),
+  verifyAxeAiBootstrapSession: vi.fn(),
   verifyDesktopSessionCookie: vi.fn(),
 }));
 
@@ -181,9 +183,11 @@ import {
 } from "./session.js";
 import { refreshAccountSessionCookies } from "./account-session.js";
 import {
+  createDesktopSessionCookie,
   handleCreateDesktopSession,
   handleDisconnectServer,
   handleListAccountServers,
+  verifyAxeAiBootstrapSession,
   verifyDesktopSessionCookie,
 } from "./servers.js";
 import { SECURE_DESKTOP_SESSION_COOKIE as DESKTOP_SESSION_COOKIE } from "./cloud-dev.js";
@@ -201,8 +205,10 @@ const mockVerifyMachine = vi.mocked(verifyMachineCredentialDetails);
 const mockVerifySessionDetails = vi.mocked(verifySessionCookieDetails);
 const mockServeWithCache = vi.mocked(serveWithCache);
 const mockHandleListAccountServers = vi.mocked(handleListAccountServers);
+const mockCreateDesktopSession = vi.mocked(createDesktopSessionCookie);
 const mockHandleCreateDesktopSession = vi.mocked(handleCreateDesktopSession);
 const mockHandleDisconnectServer = vi.mocked(handleDisconnectServer);
+const mockVerifyAxeAiBootstrap = vi.mocked(verifyAxeAiBootstrapSession);
 const mockVerifyDesktopSession = vi.mocked(verifyDesktopSessionCookie);
 const mockHandleAssignMachineLabel = vi.mocked(handleAssignMachineLabel);
 
@@ -362,6 +368,65 @@ describe("POST /api/connect/desktop-session", () => {
     expect(response.status).toBe(200);
     expect(mockHandleCreateDesktopSession).toHaveBeenCalledTimes(1);
     expect(captured).toHaveLength(0);
+  });
+});
+
+describe("POST /api/connect/axeai-session", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    mockResolveLabel.mockReset();
+    mockVerifyAxeAiBootstrap.mockReset();
+    mockVerifyDesktopSession.mockReset();
+    mockCreateDesktopSession.mockReset();
+  });
+
+  it("exchanges an AxeAI bootstrap session for a scoped remote cookie", async () => {
+    mockResolveLabel.mockResolvedValue(resolvedServer());
+    mockVerifyAxeAiBootstrap.mockResolvedValue({
+      serverId: "srv1",
+      userId: OWNER,
+    });
+    mockCreateDesktopSession.mockResolvedValue("remote-session");
+    const { env, ctx } = makeEnv(() => new Response("origin"));
+    const response = await worker.fetch(
+      visitorRequest("sawyer.getbb.app", "/api/connect/axeai-session", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          origin: "https://axeai.com",
+        },
+        body: JSON.stringify({ session: "bootstrap-session" }),
+      }),
+      env as never,
+      ctx,
+    );
+    expect(response.status).toBe(204);
+    expect(response.headers.get("access-control-allow-origin")).toBe(
+      "https://axeai.com",
+    );
+    expect(response.headers.get("set-cookie")).toContain("remote-session");
+    expect(response.headers.get("set-cookie")).toContain(
+      "Domain=.getbb.app",
+    );
+    expect(mockVerifyAxeAiBootstrap).toHaveBeenCalledWith(
+      "bootstrap-session",
+      "test-secret",
+    );
+  });
+
+  it("does not expose the exchange to an untrusted browser origin", async () => {
+    mockResolveLabel.mockResolvedValue(resolvedServer());
+    const { env, ctx } = makeEnv(() => new Response("origin"));
+    const response = await worker.fetch(
+      visitorRequest("sawyer.getbb.app", "/api/connect/axeai-session", {
+        method: "POST",
+        headers: { origin: "https://example.com" },
+      }),
+      env as never,
+      ctx,
+    );
+    expect(response.status).toBe(404);
+    expect(response.headers.get("access-control-allow-origin")).toBeNull();
   });
 });
 
