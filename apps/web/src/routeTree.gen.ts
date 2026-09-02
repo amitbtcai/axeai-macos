@@ -22,6 +22,7 @@ import { Route as ApiSubscribeRouteImport } from './routes/api.subscribe'
 import { Route as DotwellKnownAssetlinksDotjsonRouteImport } from './routes/[.]well-known.assetlinks[.]json'
 import { Route as DotwellKnownAppleAppSiteAssociationRouteImport } from './routes/[.]well-known.apple-app-site-association'
 import { Route as MarketplaceV1SplatRouteImport } from './routes/marketplace.v1.$'
+import { Route as ApiInternalAxeaiDashboardRouteImport } from './routes/api.internal.axeai-dashboard'
 import { Route as ApiConnectRevokeMachineRouteImport } from './routes/api.connect.revoke-machine'
 import { Route as ApiConnectRedeemMachineRouteImport } from './routes/api.connect.redeem-machine'
 import { Route as ApiConnectRedeemRouteImport } from './routes/api.connect.redeem'
@@ -95,6 +96,12 @@ const MarketplaceV1SplatRoute = MarketplaceV1SplatRouteImport.update({
   path: '/marketplace/v1/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiInternalAxeaiDashboardRoute =
+  ApiInternalAxeaiDashboardRouteImport.update({
+    id: '/api/internal/axeai-dashboard',
+    path: '/api/internal/axeai-dashboard',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiConnectRevokeMachineRoute = ApiConnectRevokeMachineRouteImport.update({
   id: '/api/connect/revoke-machine',
   path: '/api/connect/revoke-machine',
@@ -139,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/api/connect/redeem': typeof ApiConnectRedeemRoute
   '/api/connect/redeem-machine': typeof ApiConnectRedeemMachineRoute
   '/api/connect/revoke-machine': typeof ApiConnectRevokeMachineRoute
+  '/api/internal/axeai-dashboard': typeof ApiInternalAxeaiDashboardRoute
   '/marketplace/v1/$': typeof MarketplaceV1SplatRoute
 }
 export interface FileRoutesByTo {
@@ -159,6 +167,7 @@ export interface FileRoutesByTo {
   '/api/connect/redeem': typeof ApiConnectRedeemRoute
   '/api/connect/redeem-machine': typeof ApiConnectRedeemMachineRoute
   '/api/connect/revoke-machine': typeof ApiConnectRevokeMachineRoute
+  '/api/internal/axeai-dashboard': typeof ApiInternalAxeaiDashboardRoute
   '/marketplace/v1/$': typeof MarketplaceV1SplatRoute
 }
 export interface FileRoutesById {
@@ -180,6 +189,7 @@ export interface FileRoutesById {
   '/api/connect/redeem': typeof ApiConnectRedeemRoute
   '/api/connect/redeem-machine': typeof ApiConnectRedeemMachineRoute
   '/api/connect/revoke-machine': typeof ApiConnectRevokeMachineRoute
+  '/api/internal/axeai-dashboard': typeof ApiInternalAxeaiDashboardRoute
   '/marketplace/v1/$': typeof MarketplaceV1SplatRoute
 }
 export interface FileRouteTypes {
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/api/connect/redeem'
     | '/api/connect/redeem-machine'
     | '/api/connect/revoke-machine'
+    | '/api/internal/axeai-dashboard'
     | '/marketplace/v1/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/api/connect/redeem'
     | '/api/connect/redeem-machine'
     | '/api/connect/revoke-machine'
+    | '/api/internal/axeai-dashboard'
     | '/marketplace/v1/$'
   id:
     | '__root__'
@@ -242,6 +254,7 @@ export interface FileRouteTypes {
     | '/api/connect/redeem'
     | '/api/connect/redeem-machine'
     | '/api/connect/revoke-machine'
+    | '/api/internal/axeai-dashboard'
     | '/marketplace/v1/$'
   fileRoutesById: FileRoutesById
 }
@@ -263,6 +276,7 @@ export interface RootRouteChildren {
   ApiConnectRedeemRoute: typeof ApiConnectRedeemRoute
   ApiConnectRedeemMachineRoute: typeof ApiConnectRedeemMachineRoute
   ApiConnectRevokeMachineRoute: typeof ApiConnectRevokeMachineRoute
+  ApiInternalAxeaiDashboardRoute: typeof ApiInternalAxeaiDashboardRoute
   MarketplaceV1SplatRoute: typeof MarketplaceV1SplatRoute
 }
 
@@ -359,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceV1SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/internal/axeai-dashboard': {
+      id: '/api/internal/axeai-dashboard'
+      path: '/api/internal/axeai-dashboard'
+      fullPath: '/api/internal/axeai-dashboard'
+      preLoaderRoute: typeof ApiInternalAxeaiDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/connect/revoke-machine': {
       id: '/api/connect/revoke-machine'
       path: '/api/connect/revoke-machine'
@@ -416,6 +437,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiConnectRedeemRoute: ApiConnectRedeemRoute,
   ApiConnectRedeemMachineRoute: ApiConnectRedeemMachineRoute,
   ApiConnectRevokeMachineRoute: ApiConnectRevokeMachineRoute,
+  ApiInternalAxeaiDashboardRoute: ApiInternalAxeaiDashboardRoute,
   MarketplaceV1SplatRoute: MarketplaceV1SplatRoute,
 }
 export const routeTree = rootRouteImport

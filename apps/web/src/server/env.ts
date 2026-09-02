@@ -10,6 +10,7 @@ export interface Env {
   AXEAI_AUTH_ISSUER?: string;
   AXEAI_AUTH_CLIENT_ID?: string;
   BETTER_AUTH_SECRET: string;
+  AXEAI_DASHBOARD_SERVICE_SECRET?: string;
   LANDING_POSTHOG_KEY?: string;
   RESEND_API_KEY?: string;
   RESEND_AUDIENCE_ID?: string;

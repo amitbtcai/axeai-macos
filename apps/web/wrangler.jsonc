@@ -29,6 +29,7 @@
   "secrets": {
     "required": [
       "BETTER_AUTH_SECRET",
+      "AXEAI_DASHBOARD_SERVICE_SECRET",
     ],
   },
   "d1_databases": [
@@ -76,6 +77,7 @@
       "secrets": {
         "required": [
           "BETTER_AUTH_SECRET",
+          "AXEAI_DASHBOARD_SERVICE_SECRET",
         ],
       },
       "vars": {
