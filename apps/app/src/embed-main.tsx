@@ -37,9 +37,6 @@ async function start(): Promise<void> {
   });
   if (!exchange.ok) throw new Error("remote_session_exchange_failed");
 
-  const base = document.createElement("base");
-  base.href = `${serverUrl.origin}/`;
-  document.head.prepend(base);
   installEmbeddedFetch(serverUrl.origin);
   const { mountEmbeddedApp } = await import("./embedded-app-entry");
   mountEmbeddedApp();
