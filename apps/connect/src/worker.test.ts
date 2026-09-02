@@ -1297,6 +1297,28 @@ describe("gate worker share hosts", () => {
     expect(captured).toHaveLength(1);
   });
 
+  it("translates the authenticated AxeAI origin for the local app", async () => {
+    mockParseCookie.mockImplementation((_header, name) =>
+      name === DESKTOP_SESSION_COOKIE ? "desktop-token" : null,
+    );
+    mockVerifyDesktopSession.mockResolvedValue(OWNER);
+    const { env, ctx, captured } = makeEnv(() => new Response("ok"));
+    const response = await worker.fetch(
+      visitorRequest("sawyer.getbb.app", "/api/v1/system/config", {
+        headers: { origin: "https://axeai.com" },
+      }),
+      env as never,
+      ctx,
+    );
+    expect(response.status).toBe(200);
+    expect(captured[0]?.headers.get("origin")).toBe(
+      "https://sawyer.getbb.app",
+    );
+    expect(response.headers.get("access-control-allow-origin")).toBe(
+      "https://axeai.com",
+    );
+  });
+
   it("uses the desktop cookie when a stale GitHub session belongs to another account", async () => {
     mockParseCookie.mockImplementation((_header, name) =>
       name === DESKTOP_SESSION_COOKIE ? "desktop-token" : "github-token",

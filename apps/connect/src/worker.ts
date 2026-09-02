@@ -655,7 +655,17 @@ export default {
       }
     }
 
-    const doRequest = requestForTunnelDo(request, target, "session", [
+    const embeddedOrigin = embedOrigin(request);
+    const tunnelRequest =
+      embeddedOrigin === null
+        ? request
+        : new Request(request, {
+            headers: new Headers(request.headers),
+          });
+    if (embeddedOrigin !== null) {
+      tunnelRequest.headers.set("origin", url.origin);
+    }
+    const doRequest = requestForTunnelDo(tunnelRequest, target, "session", [
       runtime.sessionCookieName,
       runtime.desktopSessionCookieName,
     ]);
