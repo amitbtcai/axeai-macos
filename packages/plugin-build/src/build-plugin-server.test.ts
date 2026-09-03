@@ -2,6 +2,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  realpath,
   rm,
   symlink,
   writeFile,
@@ -138,8 +139,8 @@ describe("plugin server build", () => {
     });
 
     it("names the unbuilt SDK dist when the package is installed without it", async () => {
-      const dir = await mkdtemp(
-        join(tmpdir(), "bb-plugin-server-unbuilt-sdk-"),
+      const dir = await realpath(
+        await mkdtemp(join(tmpdir(), "bb-plugin-server-unbuilt-sdk-")),
       );
       tempDirs.push(dir);
       await writeFixture(dir);
