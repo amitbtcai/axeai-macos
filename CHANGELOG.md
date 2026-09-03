@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.40.5
+
+Fixes macOS test compatibility and adds cloud computer access features.
+
+### Bug fixes
+
+- Resolve macOS `/tmp` symlink mismatch in plugin build tests.
+
+### New and improved
+
+- Embedded AxeAI remote control client for cloud computer access.
+- Cloud deployment cleanup and auditing.
+- Shared Remote Access invitations.
+- AxeAI Remote Access dashboard service.
+
 ## 0.40.4
 
 AxeAI agents can securely operate fresh tabs in the visible desktop Browser through native Chromium controls.
